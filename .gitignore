@@ -1,0 +1,4 @@
+rust/examples/mobilenet-base/build
+rust/examples/mobilenet-base/target
+
+.DS_Store
