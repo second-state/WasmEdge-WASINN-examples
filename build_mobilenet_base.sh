@@ -13,7 +13,6 @@ else
 
     FIXTURE=https://github.com/intel/openvino-rs/raw/main/crates/openvino/tests/fixtures/mobilenet
     pushd $WASI_NN_DIR/rust/
-    cargo build --release --target=wasm32-wasi
     mkdir -p $WASI_NN_DIR/rust/examples/mobilenet-base/build
     RUST_BUILD_DIR=$(realpath $WASI_NN_DIR/rust/examples/mobilenet-base/build/)
     pushd examples/mobilenet-base
