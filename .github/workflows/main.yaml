@@ -2,18 +2,18 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [master]
     paths-ignore:
-      - '**/*.md'
+      - "**/*.md"
 
   pull_request:
-    branches: [ main ]
+    branches: [master]
     paths-ignore:
-      - '**/*.md'
+      - "**/*.md"
 
 env:
   CARGO_TERM_COLOR: always
@@ -36,18 +36,25 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - name: Build WasmEdge Wasi-NN with OpenVINO backend using g++
-        env: 
-          CMAKE_BUILD_TYPE: "Release"
+      - name: Install Rust wasi32
+        run: |
+          chmod +x ./scripts/install_rust_wasm32.sh
+          bash ./scripts/install_rust_wasm32.sh
+      - name: Install OpenVINO
+        env:
           OPENVINO_VERSION: "2021.4.582"
           OPENVINO_YEAR: "2021"
         run: |
+          chmod +x ./scripts/install_openvino.sh
+          bash ./scripts/install_openvino.sh
+      - name: Build WasmEdge Wasi-NN with OpenVINO backend using g++
+        env:
+          CMAKE_BUILD_TYPE: "Release"
+        run: |
           git clone https://github.com/WasmEdge/WasmEdge -b proposal/wasi_nn --recursive
-          chmod +x ./.github/scripts/build.sh
-          bash ./.github/scripts/build.sh
-
-      # Runs a single command using the runners shell
+          chmod +x ./scripts/build_wasmedge.sh
+          bash ./scripts/build_wasmedge.sh
       - name: Build and run Rust example
         run: |
-          chmod +x ./.github/scripts/test_rust.sh
-          bash ./.github/scripts/test_rust.sh
+          chmod +x ./.github/scripts/build_example.sh
+          bash ./.github/scripts/build_example.sh
