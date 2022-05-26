@@ -12,10 +12,10 @@ else
     source /opt/intel/openvino_2021/bin/setupvars.sh
 
     pushd $WASI_NN_DIR/rust/
-    mkdir -p $WASI_NN_DIR/rust/examples/mobilenet-base/build
-    RUST_BUILD_DIR=$(realpath $WASI_NN_DIR/rust/examples/mobilenet-base/build/)
+    mkdir -p $WASI_NN_DIR/rust/mobilenet-base/build
+    RUST_BUILD_DIR=$(realpath $WASI_NN_DIR/rust/mobilenet-base/build/)
     bash ${WASI_NN_DIR}/scripts/download_mobilenet.sh ${RUST_BUILD_DIR}
-    pushd examples/mobilenet-base
+    pushd mobilenet-base
     cargo build --release --target=wasm32-wasi
     cp target/wasm32-wasi/release/mobilenet-base-example.wasm $RUST_BUILD_DIR
     pushd build
