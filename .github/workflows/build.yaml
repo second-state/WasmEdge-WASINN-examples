@@ -1,8 +1,5 @@
 name: Build and Test WasmEdge WASI-NN examples
 
-concurrency:
-  cancel-in-progress: true
-
 on:
   push:
     branches: [master]
@@ -20,7 +17,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: wasmedge/wasmedge:ubuntu-build-gcc
+      image: wasmedge/wasmedge:latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -42,17 +39,18 @@ jobs:
         env:
           CMAKE_BUILD_TYPE: "Release"
         run: |
-          git clone https://github.com/WasmEdge/WasmEdge -b proposal/wasi_nn --recursive
-          source /opt/intel/openvino_2021/bin/setupvars.sh
-          ldconfig
-          cd ./WasmEdge
-          cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DWASMEDGE_WASINN_BUILD_OPENVINO=ON .
-          cmake --build build
+          bash -c "\
+          source /opt/intel/openvino_2021/bin/setupvars.sh;\
+          ldconfig;\
+          git clone https://github.com/WasmEdge/WasmEdge -b proposal/wasi_nn;\
+          cd ./WasmEdge;\
+          cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DWASMEDGE_WASINN_BUILD_OPENVINO=ON .;\
+          cmake --build build"
       - name: Build and run Rust example - Mobilenet
         run: |
-          source /opt/intel/openvino_2021/bin/setupvars.sh
-          ldconfig
-          cd mobilenet
-          ./download_mobilenet.sh
-          ../WasmEdge/build/tools/wasmedge/wasmedge --dir .:. wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr
-
+          bash -c "\
+          source /opt/intel/openvino_2021/bin/setupvars.sh;\
+          ldconfig;\
+          cd mobilenet;\
+          ./download_mobilenet.sh;\
+          ../WasmEdge/build/tools/wasmedge/wasmedge --dir .:. wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr"
