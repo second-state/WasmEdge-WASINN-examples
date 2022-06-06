@@ -1,15 +1,13 @@
-# This is a basic workflow to help you get started with Actions
+name: Build and Test WasmEdge WASI-NN examples
 
-name: CI
+concurrency:
+  cancel-in-progress: true
 
-# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [master]
     paths-ignore:
       - "**/*.md"
-
   pull_request:
     branches: [master]
     paths-ignore:
@@ -18,43 +16,43 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
     container:
       image: wasmedge/wasmedge:ubuntu-build-gcc
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: true
+          fetch-depth: 0
       - name: Install Stable Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
       - name: Install Rust wasi32
         run: |
-          chmod +x ./scripts/install_rust_wasm32.sh
-          bash ./scripts/install_rust_wasm32.sh
+          rustup target add wasm32-wasi
       - name: Install OpenVINO
         env:
           OPENVINO_VERSION: "2021.4.582"
           OPENVINO_YEAR: "2021"
         run: |
-          chmod +x ./scripts/install_openvino.sh
-          bash ./scripts/install_openvino.sh
+          ./scripts/install_openvino.sh
       - name: Build WasmEdge Wasi-NN with OpenVINO backend using g++
         env:
           CMAKE_BUILD_TYPE: "Release"
         run: |
           git clone https://github.com/WasmEdge/WasmEdge -b proposal/wasi_nn --recursive
-          chmod +x ./scripts/build_wasmedge.sh
-          bash ./scripts/build_wasmedge.sh
-      - name: Build and run Rust example
+          source /opt/intel/openvino_2021/bin/setupvars.sh
+          ldconfig
+          cd ./WasmEdge
+          cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DWASMEDGE_WASINN_BUILD_OPENVINO=ON .
+          cmake --build build
+      - name: Build and run Rust example - Mobilenet
         run: |
-          chmod +x ./.github/scripts/build_example.sh
-          bash ./.github/scripts/build_example.sh
+          source /opt/intel/openvino_2021/bin/setupvars.sh
+          ldconfig
+          cd mobilenet
+          ./download_mobilenet.sh
+          ../WasmEdge/build/tools/wasmedge/wasmedge --dir .:. wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr
+
