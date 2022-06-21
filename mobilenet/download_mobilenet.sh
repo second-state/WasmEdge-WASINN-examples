@@ -1,4 +1,4 @@
-FIXTURE=https://github.com/intel/openvino-rs/raw/v0.3.3/crates/openvino/tests/fixtures/mobilenet/
+FIXTURE=https://github.com/intel/openvino-rs/raw/v0.3.3/crates/openvino/tests/fixtures/mobilenet
 TODIR=$1
 
 if [ ! -f $TODIR/mobilenet.bin ]; then
