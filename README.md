@@ -69,9 +69,13 @@ And build with the `WASMEDGE_WASINN_BUILD_OPENVINO` option:
 ```bash
 cmake -Bbuild -GNinja -DWASMEDGE_WASINN_BUILD_OPENVINO=ON .
 cmake --build build
+# For the WASI-NN plugin, you should install this project.
+cmake --install build
 ```
 
-After the building, developers can find the `wasmedge` executable with OpenVINO supporting in the `build/tools/wasmedge` folder.
+After the installation, developers can execute the `wasmedge` executable with WASI-NN plugin.
+
+> Notice: If you didn't install the project, you should give the `WASMEDGE_PLUGIN_PATH` environment variable for specifying the WASI-NN plugin path (the built plugin is at `build/plugins/wasi_nn`).
 
 ### Examples
 
