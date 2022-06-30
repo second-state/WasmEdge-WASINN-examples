@@ -1,4 +1,3 @@
 mobilenet.bin
 mobilenet.xml
-tensor-1x224x224x3-f32.bgr
 input.jpg
