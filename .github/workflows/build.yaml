@@ -42,9 +42,9 @@ jobs:
           bash -c "\
           source /opt/intel/openvino_2021/bin/setupvars.sh;\
           ldconfig;\
-          git clone https://github.com/WasmEdge/WasmEdge -b proposal/wasi_nn;\
+          git clone https://github.com/WasmEdge/WasmEdge;\
           cd ./WasmEdge;\
-          cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DWASMEDGE_WASINN_BUILD_OPENVINO=ON .;\
+          cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DWASMEDGE_WASINN_BACKEND="OpenVINO" .;\
           cmake --build build;"
       - name: Build and run Rust example - Mobilenet
         run: |

@@ -57,17 +57,17 @@ In Rust, download the [crate from crates.io][crates.io] by adding `wasi-nn = "0.
 #### Build the WasmEdge with WASI-NN supporting
 
 For running the examples, developers should [build WasmEdge from source](https://wasmedge.org/book/en/extend/build.html).
-First developers should get the source and checkout the `proposal/wasi_nn` branch:
+First developers should get the source:
 
 ```bash
-git clone -b proposal/wasi_nn https://github.com/WasmEdge/WasmEdge.git
+git clone https://github.com/WasmEdge/WasmEdge.git
 cd WasmEdge
 ```
 
-And build with the `WASMEDGE_WASINN_BUILD_OPENVINO` option:
+And build with the `WASMEDGE_WASINN_BACKEND` argument:
 
 ```bash
-cmake -Bbuild -GNinja -DWASMEDGE_WASINN_BUILD_OPENVINO=ON .
+cmake -Bbuild -GNinja -DWASMEDGE_WASINN_BACKEND="OpenVINO" .
 cmake --build build
 # For the WASI-NN plugin, you should install this project.
 cmake --install build
