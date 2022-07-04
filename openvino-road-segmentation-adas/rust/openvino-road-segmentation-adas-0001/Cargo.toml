@@ -1,0 +1,8 @@
+[package]
+authors = ["Sam Liu <sam@secondstate.io>"]
+edition = "2021"
+name = "rust-road-segmentation-adas"
+version = "0.1.0"
+
+[dependencies]
+wasi-nn = "0.1.0"
