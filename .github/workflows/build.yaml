@@ -52,7 +52,7 @@ jobs:
           source /opt/intel/openvino_2021/bin/setupvars.sh;\
           ldconfig;\
           cd WasmEdge && cmake --install build && cd ..;\
-          cd examples/mobilenet;\
+          cd openvino-mobilenet-raw;\
           ./download_mobilenet.sh;\
           wasmedge --dir .:. wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr"
       - name: Build and run Rust example - Mobilenet Image
@@ -61,6 +61,6 @@ jobs:
           source /opt/intel/openvino_2021/bin/setupvars.sh;\
           ldconfig;\
           cd WasmEdge && cmake --install build && cd ..;\
-          cd examples/mobilenet_image;\
+          cd openvino-mobilenet-image;\
           ./download_mobilenet.sh;\
           wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.xml mobilenet.bin input.jpg"
