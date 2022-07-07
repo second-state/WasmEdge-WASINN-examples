@@ -38,7 +38,7 @@ First download the fixture files with the script:
 
 it will also download a testing image `input.jpg`
 
-![](https://github.com/bytecodealliance/wasi-nn/tree/main/rust/images/1.jpg)
+![](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/images/1.jpg)
 
 And execute the WASM with the `wasmedge` with OpenVINO supporting:
 

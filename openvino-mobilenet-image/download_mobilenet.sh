@@ -8,5 +8,5 @@ if [ ! -f $TODIR/mobilenet.xml ]; then
     wget --no-clobber --directory-prefix=$TODIR $FIXTURE/mobilenet.xml
 fi
 if [ ! -f $TODIR/input.jpg ]; then
-    wget --no-clobber --directory-prefix=$TODIR https://github.com/bytecodealliance/wasi-nn/tree/main/rust/images/1.jpg -O input.jpg
+    wget --no-clobber --directory-prefix=$TODIR https://github.com/bytecodealliance/wasi-nn/raw/main/rust/images/1.jpg -O input.jpg
 fi
