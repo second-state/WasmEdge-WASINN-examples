@@ -1,5 +1,13 @@
 **/build
 **/target
 
+openvino-mobilenet-image/mobilenet.bin
+openvino-mobilenet-image/mobilenet.xml
+openvino-mobilenet-image/input.jpg
+
+openvino-mobilenet-raw/mobilenet.bin
+openvino-mobilenet-raw/mobilenet.xml
+openvino-mobilenet-raw/tensor-1x224x224x3-f32.bgr
+
 .DS_Store
 Cargo.lock
