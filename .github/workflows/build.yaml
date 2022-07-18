@@ -44,7 +44,7 @@ jobs:
           ldconfig;\
           git clone https://github.com/WasmEdge/WasmEdge;\
           cd ./WasmEdge;\
-          cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DWASMEDGE_WASINN_BACKEND="OpenVINO" .;\
+          cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DWASMEDGE_PLUGIN_WASI_NN_BACKEND="OpenVINO" .;\
           cmake --build build;"
       - name: Build and run Rust example - Mobilenet
         run: |

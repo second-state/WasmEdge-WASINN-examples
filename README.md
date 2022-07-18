@@ -64,10 +64,10 @@ git clone https://github.com/WasmEdge/WasmEdge.git
 cd WasmEdge
 ```
 
-And build with the `WASMEDGE_WASINN_BACKEND` argument:
+And build with the `WASMEDGE_PLUGIN_WASI_NN_BACKEND` argument:
 
 ```bash
-cmake -Bbuild -GNinja -DWASMEDGE_WASINN_BACKEND="OpenVINO" .
+cmake -Bbuild -GNinja -WASMEDGE_PLUGIN_WASI_NN_BACKEND="OpenVINO" .
 cmake --build build
 # For the WASI-NN plugin, you should install this project.
 cmake --install build
