@@ -1,3 +1,4 @@
+use image::{io::Reader, DynamicImage};
 use std::{env, fs};
 use wasmedge_nn::nn::{ctx::WasiNnCtx, Dtype, ExecutionTarget, GraphEncoding, Tensor};
 
@@ -5,14 +6,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
     let model_xml_name: &str = &args[1];
     let model_bin_name: &str = &args[2];
-    let tensor_name: &str = &args[3];
+    let image_name: &str = &args[3];
 
-    // let tensor_data = fs::read(tensor_name).unwrap();
+    // load image
     let tensor_data = image_to_tensor(image_name.to_string(), 512, 896);
     println!("Load input tensor, size in bytes: {}", tensor_data.len());
     let tensor = Tensor {
         dimensions: &[1, 3, 512, 896],
-        r#type: Dtype::F32.into(), // wasi_nn::TENSOR_TYPE_F32,
+        r#type: Dtype::F32.into(),
         data: &tensor_data,
     };
 
