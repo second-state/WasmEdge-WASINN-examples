@@ -28,7 +28,7 @@ The comments in the project structure below describe the usage of each component
 ├── model --------------------------------------- (OpenVINO model files)
 │   ├── road-segmentation-adas-0001.bin
 │   └── road-segmentation-adas-0001.xml
-├── openvino-road-segmentation-adas-0001 -------- (Create wasm module which invoke wasi-nn interface)
+├── openvino-road-segmentation-adas-basic -------- (Create wasm module which invoke wasi-nn interface)
 │   ├── Cargo.lock
 │   ├── Cargo.toml
 │   └── src
@@ -77,7 +77,7 @@ cargo build --release
 This project contains the main steps of model inference task, including creating `OpenVINO graph` from the given model files, performing inference, and then dumping the output tensor to a file. This project will be compiled into a wasm module, which will be run on `WasmEdge runtime`. Before building the project, use `rustup target list` command to check if the `wasm32-wasi` target has already been installed. If it has not, use `rustup target add wasm32-wasi` to install the target. Then, you can use the following commands to build the project.
 
 ```bash
-cd openvino-road-segmentation-adas-0001
+cd openvino-road-segmentation-adas-basic
 cargo build --target=wasm32-wasi --release
 ```
 
