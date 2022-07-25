@@ -1,6 +1,9 @@
 use image::{io::Reader, DynamicImage};
 use std::env;
-use wasmedge_nn::nn::{ctx::WasiNnCtx, Dtype, ExecutionTarget, GraphEncoding, Tensor};
+use wasmedge_nn::{
+    cv,
+    nn::{ctx::WasiNnCtx, Dtype, ExecutionTarget, GraphEncoding},
+};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
@@ -9,14 +12,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let image_name: &str = &args[3];
 
     // load image
-    let tensor_data = image_to_tensor(image_name.to_string(), 512, 896);
-    println!("Load input tensor, size in bytes: {}", tensor_data.len());
-    let tensor = Tensor {
-        dimensions: &[1, 3, 512, 896],
-        r#type: Dtype::F32.into(),
-        data: &tensor_data,
-    };
+    println!("Load image file and convert it into tensor ...");
+    let tensor = cv::image_to_tensor(image_name.to_string(), 512, 896, Dtype::F32)?;
 
+    // create wasi-nn context
     let mut ctx = WasiNnCtx::new()?;
 
     println!("Load model files ...");
