@@ -30,20 +30,22 @@ wasmedgec rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-imag
 
 ## Run
 
-First download the fixture files with the script:
+First generate the fixture files with the script:
 
 ```bash
-./download_mobilenet.sh
+./download_data.sh fixtures && cd fixtures
+python -m pip install -r requirements.txt
+python generate_mobilenet.py
 ```
 
-it will also download a testing image `input.jpg`
-
+The above will download a testing image `input.jpg`
 ![](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/images/1.jpg)
+as well as a pre-trained mobilenet model, then convert the model into the torchscript model for C++.
 
-And execute the WASM with the `wasmedge` with OpenVINO supporting:
+And execute the WASM with the `wasmedge` with PyTorch supporting:
 
 ```bash
-wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.pt input.jpg
+wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image.wasm fixtures/mobilenet.pt input.jpg
 ```
 
 You will get the output:

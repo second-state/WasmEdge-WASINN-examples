@@ -9,8 +9,8 @@ openvino-mobilenet-raw/mobilenet.bin
 openvino-mobilenet-raw/mobilenet.xml
 openvino-mobilenet-raw/tensor-1x224x224x3-f32.bgr
 
-pytorch-mobilenet-image/input.jpg
-pytorch-mobilenet-image/mobilenet.pt
+pytorch-mobilenet-image/fixtures/input.jpg
+# pytorch-mobilenet-image/mobilenet.pt
 
 .DS_Store
 Cargo.lock
