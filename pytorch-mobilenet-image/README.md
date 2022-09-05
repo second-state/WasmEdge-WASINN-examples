@@ -30,13 +30,16 @@ wasmedgec rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-imag
 
 ## Run
 
-First generate the fixture files with the script:
+First generate the fixture of the pre-trained mobilenet with the script:
 
 ```bash
 ./download_data.sh fixtures && cd fixtures
 python -m pip install -r requirements.txt
+# generate the model fixture
 python generate_mobilenet.py
 ```
+
+(or you can use the pre-generated fixture in `fixtures/mobilenet.pt`)
 
 The above will download a testing image `input.jpg`
 ![](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/images/1.jpg)
