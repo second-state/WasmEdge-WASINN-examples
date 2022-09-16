@@ -1,6 +1,6 @@
-# Mobilenet example for WASI-NN
+# Mobilenet Example For WASI-NN with PyTorch Backend
 
-This package is a high-level Rust bindings for [wasi-nn] example of Mobilenet.
+This package is a high-level Rust bindings for [wasi-nn] example of Mobilenet with PyTorch backend.
 
 [wasi-nn]: https://github.com/WebAssembly/wasi-nn
 
@@ -21,34 +21,51 @@ Compile the application to WebAssembly:
 cargo build --target=wasm32-wasi --release
 ```
 
-The output WASM file will be at `target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm`.
+The output WASM file will be at [`target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm`](wasmedge-wasinn-example-mobilenet-image.wasm).
 To speed up the image processing, we can enable the AOT mode in WasmEdge with:
 
 ```bash
-wasmedgec rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm wasmedge-wasinn-example-mobilenet-image.wasm
+wasmedgec rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm wasmedge-wasinn-example-mobilenet-image-aot.wasm
 ```
 
 ## Run
 
+### Generate Model
+
 First generate the fixture of the pre-trained mobilenet with the script:
 
 ```bash
-./download_data.sh fixtures && cd fixtures
-python -m pip install -r requirements.txt
+pip3 install torch==1.8.2 torchvision==0.9.2 pillow --extra-index-url https://download.pytorch.org/whl/lts/1.8/cpu
 # generate the model fixture
-python generate_mobilenet.py
+python3 gen_mobilenet_model.py
 ```
 
-(or you can use the pre-generated fixture in `fixtures/mobilenet.pt`)
+(Or you can use the pre-generated one at [`mobilenet.pt`](mobilenet.pt))
 
-The above will download a testing image `input.jpg`
-![](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/images/1.jpg)
-as well as a pre-trained mobilenet model, then convert the model into the torchscript model for C++.
+### Download Test Image
 
-And execute the WASM with the `wasmedge` with PyTorch supporting:
+Then download the testing image `input.jpg`:
 
 ```bash
-wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image.wasm fixtures/mobilenet.pt input.jpg
+./download_data.sh   
+```
+
+![banana](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/images/1.jpg)
+
+### Generate Tensor
+
+If you want to generate the [raw tensor](image-1x3x224x224.rgb), you can run:
+
+```bash
+python3 gen_tensor input.jpg image-1x3x224x224.rgb
+```
+
+### Execute
+
+Execute the WASM with the `wasmedge` with PyTorch supporting:
+
+```bash
+wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.pt input.jpg
 ```
 
 You will get the output:

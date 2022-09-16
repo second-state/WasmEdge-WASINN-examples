@@ -21,7 +21,7 @@ Compile the application to WebAssembly:
 cargo build --target=wasm32-wasi --release
 ```
 
-The output WASM file will be at `target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm`.
+The output WASM file will be at [`target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm`](wasmedge-wasinn-example-mobilenet-image.wasm).
 To speed up the image processing, we can enable the AOT mode in WasmEdge with:
 
 ```bash
@@ -38,7 +38,7 @@ First download the fixture files with the script:
 
 it will also download a testing image `input.jpg`
 
-![](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/images/1.jpg)
+![banana](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/images/1.jpg)
 
 And execute the WASM with the `wasmedge` with OpenVINO supporting:
 
