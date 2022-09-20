@@ -50,7 +50,7 @@ Then download the testing image `input.jpg`:
 ./download_data.sh   
 ```
 
-![banana](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/images/1.jpg)
+![banana](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/examples/images/1.jpg)
 
 ### Generate Tensor
 
