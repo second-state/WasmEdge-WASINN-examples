@@ -12,6 +12,7 @@ openvino-mobilenet-raw/tensor-1x224x224x3-f32.bgr
 pytorch-mobilenet-image/input.jpg
 
 tflite-birds_v1-image/lite-model_aiy_vision_classifier_birds_V1_3.tflite
+tflite-birds_v1-image/bird.jpg
 
 .DS_Store
 Cargo.lock
