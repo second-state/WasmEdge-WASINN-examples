@@ -1,5 +1,5 @@
 [package]
-name = "wasmedge-wasinn-example-mobilenet-image"
+name = "wasmedge-wasinn-example-tflite-bird-image"
 version = "0.19.0"
 authors = ["Second-State"]
 readme = "README.md"

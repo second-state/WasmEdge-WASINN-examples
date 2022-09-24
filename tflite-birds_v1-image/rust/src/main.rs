@@ -26,7 +26,7 @@ fn infer_image() {
     let graph = unsafe {
         wasi_nn::load(
             &[&weights],
-            4, // encoding for tflite
+            3, // encoding for tflite
             wasi_nn::EXECUTION_TARGET_CPU,
         )
         .unwrap()
@@ -53,13 +53,13 @@ fn infer_image() {
     }
     println!("Executed graph inference");
     // Retrieve the output.
-    let mut output_buffer = vec![0f32; 1001];
+    let mut output_buffer = vec![0u8; 965];
     unsafe {
         wasi_nn::get_output(
             context,
             0,
-            &mut output_buffer[..] as *mut [f32] as *mut u8,
-            (output_buffer.len() * 4).try_into().unwrap(),
+            &mut output_buffer[..] as *mut [u8] as *mut u8,
+            output_buffer.len().try_into().unwrap(),
         )
         .unwrap();
     }
@@ -79,10 +79,9 @@ fn infer_image() {
 // Sort the buffer of probabilities. The graph places the match probability for each class at the
 // index for that class (e.g. the probability of class 42 is placed at buffer[42]). Here we convert
 // to a wrapping InferenceResult and sort the results.
-fn sort_results(buffer: &[f32]) -> Vec<InferenceResult> {
+fn sort_results(buffer: &[u8]) -> Vec<InferenceResult> {
     let mut results: Vec<InferenceResult> = buffer
         .iter()
-        .skip(1)
         .enumerate()
         .map(|(c, p)| InferenceResult(c, *p))
         .collect();
@@ -104,4 +103,4 @@ fn image_to_tensor(path: String, height: u32, width: u32) -> Vec<u8> {
 
 // A wrapper for class ID and match probabilities.
 #[derive(Debug, PartialEq)]
-struct InferenceResult(usize, f32);
+struct InferenceResult(usize, u8);
