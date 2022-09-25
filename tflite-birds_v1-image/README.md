@@ -1,4 +1,4 @@
-# Mobilenet Example For WASI-NN with PyTorch Backend
+# Mobilenet Example For WASI-NN with Tensorflow Lite Backend
 
 This package is a high-level Rust bindings for [wasi-nn] example of Mobilenet with Tensorflow Lite backend.
 
@@ -43,6 +43,14 @@ The testing image is located at `./bird.jpg`:
 ![banana](https://raw.githubusercontent.com/second-state/wasm-learning/master/rust/birds_v1/bird.jpg)
 
 The `tflite` model is located at `./lite-model_aiy_vision_classifier_birds_V1_3.tflite`
+
+### Generate Image Tensor
+
+If you want to generate the [raw](birdx224x224x3.rgb) tensor, you can run:
+
+```shell
+cd rust/image-converter/ && cargo run ../../bird.jpg ../../birdx224x224x3.rgb
+```
 
 ### Execute
 
