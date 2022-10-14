@@ -14,7 +14,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  build-20220811:
     runs-on: ubuntu-latest
     container:
       image: wasmedge/wasmedge:latest
@@ -35,32 +35,83 @@ jobs:
           OPENVINO_YEAR: "2021"
         run: |
           ./scripts/install_openvino.sh
-      - name: Build WasmEdge Wasi-NN with OpenVINO backend using g++
+      - name: Build WasmEdge Wasi-NN with OpenVINO backend using clang++
         env:
           CMAKE_BUILD_TYPE: "Release"
+        shell: bash
         run: |
-          bash -c "\
-          source /opt/intel/openvino_2021/bin/setupvars.sh;\
-          ldconfig;\
-          git clone https://github.com/WasmEdge/WasmEdge;\
-          cd ./WasmEdge;\
-          cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DWASMEDGE_PLUGIN_WASI_NN_BACKEND="OpenVINO" .;\
-          cmake --build build;"
+          source /opt/intel/openvino_2021/bin/setupvars.sh
+          ldconfig
+          git clone https://github.com/WasmEdge/WasmEdge
+          cd ./WasmEdge
+          git reset --hard 04360342
+          cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DWASMEDGE_PLUGIN_WASI_NN_BACKEND="OpenVINO" .
+          cmake --build build
+          cmake --install build
       - name: Build and run Rust example - Mobilenet
+        shell: bash
         run: |
-          bash -c "\
-          source /opt/intel/openvino_2021/bin/setupvars.sh;\
-          ldconfig;\
-          cd WasmEdge && cmake --install build && cd ..;\
-          cd openvino-mobilenet-raw;\
-          ./download_mobilenet.sh;\
-          wasmedge --dir .:. wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr"
+          source /opt/intel/openvino_2021/bin/setupvars.sh
+          ldconfig
+          cd openvino-mobilenet-raw
+          ./download_mobilenet.sh
+          wasmedge --dir .:. wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr
       - name: Build and run Rust example - Mobilenet Image
+        shell: bash
         run: |
-          bash -c "\
-          source /opt/intel/openvino_2021/bin/setupvars.sh;\
-          ldconfig;\
-          cd WasmEdge && cmake --install build && cd ..;\
-          cd openvino-mobilenet-image;\
-          ./download_mobilenet.sh;\
-          wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.xml mobilenet.bin input.jpg"
+          source /opt/intel/openvino_2021/bin/setupvars.sh
+          ldconfig
+          cd openvino-mobilenet-image
+          ./download_mobilenet.sh
+          wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.xml mobilenet.bin input.jpg
+
+  build-20220816:
+    runs-on: ubuntu-latest
+    container:
+      image: wasmedge/wasmedge:latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install Stable Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install Rust wasi32
+        run: |
+          rustup target add wasm32-wasi
+      - name: Install OpenVINO
+        env:
+          OPENVINO_VERSION: "2021.4.582"
+          OPENVINO_YEAR: "2021"
+        run: |
+          ./scripts/install_openvino.sh
+      - name: Build WasmEdge Wasi-NN with OpenVINO backend using clang++
+        env:
+          CMAKE_BUILD_TYPE: "Release"
+        shell: bash
+        run: |
+          source /opt/intel/openvino_2021/bin/setupvars.sh
+          ldconfig
+          git clone https://github.com/WasmEdge/WasmEdge
+          cd ./WasmEdge
+          git reset --hard f228b496
+          cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DWASMEDGE_PLUGIN_WASI_NN_BACKEND="OpenVINO" .
+          cmake --build build
+          cmake --install build
+      - name: Build and run Rust example - Mobilenet
+        shell: bash
+        run: |
+          source /opt/intel/openvino_2021/bin/setupvars.sh
+          ldconfig
+          cd openvino-mobilenet-raw
+          ./download_mobilenet.sh
+          wasmedge --dir .:. wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr
+      - name: Build and run Rust example - Mobilenet Image
+        shell: bash
+        run: |
+          source /opt/intel/openvino_2021/bin/setupvars.sh
+          ldconfig
+          cd openvino-mobilenet-image
+          ./download_mobilenet.sh
+          wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.xml mobilenet.bin input.jpg
