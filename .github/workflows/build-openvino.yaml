@@ -1,4 +1,4 @@
-name: Build and Test WasmEdge WASI-NN examples
+name: Build and Test WasmEdge WASI-NN OpenVINO backend
 
 on:
   push:
@@ -47,6 +47,7 @@ jobs:
           cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DWASMEDGE_PLUGIN_WASI_NN_BACKEND="OpenVINO" .;\
           cmake --build build;"
       - name: Build and run Rust example - Mobilenet
+        continue-on-error: true
         run: |
           bash -c "\
           source /opt/intel/openvino_2021/bin/setupvars.sh;\
@@ -56,6 +57,7 @@ jobs:
           ./download_mobilenet.sh;\
           wasmedge --dir .:. wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr"
       - name: Build and run Rust example - Mobilenet Image
+        continue-on-error: true
         run: |
           bash -c "\
           source /opt/intel/openvino_2021/bin/setupvars.sh;\
