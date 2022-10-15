@@ -22,37 +22,34 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Install Stable Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - name: Install Rust wasi32
-        run: |
-          rustup target add wasm32-wasi
       - name: Install PyTorch
         shell: bash
         env:
           PYTORCH_VERSION: "1.8.2"
-          PYTORCH_INSTALL_TO: "build"
+          PYTORCH_INSTALL_TO: "."
         run: |
           apt update
           apt install unzip
           bash ./scripts/install_libtorch.sh
-          export Torch_DIR=$(pwd)/${PYTORCH_INSTALL_TO}/libtorch
       - name: Build WasmEdge Wasi-NN with PyTorch backend using g++
         shell: bash
         env:
           CMAKE_BUILD_TYPE: "Release"
+          PYTORCH_INSTALL_TO: "."
         run: |
+          export Torch_DIR=$(pwd)/${PYTORCH_INSTALL_TO}/libtorch
           git clone https://github.com/WasmEdge/WasmEdge
           cd ./WasmEdge
           cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DWASMEDGE_PLUGIN_WASI_NN_BACKEND="PyTorch" .
           cmake --build build
       - name: Build and run Rust example - Mobilenet
         shell: bash
+        env:
+          PYTORCH_INSTALL_TO: "."
         run: |
+          export Torch_DIR=$(pwd)/${PYTORCH_INSTALL_TO}/libtorch
           export LD_LIBRARY_PATH=$Torch_DIR/lib:$LD_LIBRARY_PATH
           cd WasmEdge && cmake --install build && cd ..
           cd pytorch-mobilenet-image
           ./download_data.sh 
-          wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.xml mobilenet.pt input.jpg
+          wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.pt input.jpg
