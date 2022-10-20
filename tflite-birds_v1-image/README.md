@@ -34,15 +34,9 @@ wasmedgec rust/tflite-bird/target/wasm32-wasi/release/wasmedge-wasinn-example-tf
 
 ### Download fixture
 
-Use the below script to download the testing image `input.jpg` and the `tflite` model:
-
-```bash
-./download_data.sh   
-```
-
 The testing image is located at `./bird.jpg`:
 
-![banana](https://raw.githubusercontent.com/second-state/wasm-learning/master/rust/birds_v1/bird.jpg)
+![Aix galericulata](bird.jpg)
 
 The `tflite` model is located at `./lite-model_aiy_vision_classifier_birds_V1_3.tflite`
 
