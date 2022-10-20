@@ -26,7 +26,7 @@ fn infer_image() {
     let graph = unsafe {
         wasi_nn::load(
             &[&weights],
-            3, // encoding for tflite
+            4, // encoding for tflite: wasi_nn::GRAPH_ENCODING_TENSORFLOWLITE
             wasi_nn::EXECUTION_TARGET_CPU,
         )
         .unwrap()
@@ -97,8 +97,7 @@ fn image_to_tensor(path: String, height: u32, width: u32) -> Vec<u8> {
     let bgr_img = dyn_img.to_rgb8();
     // Get an array of the pixel values
     let raw_u8_arr: &[u8] = &bgr_img.as_raw()[..];
-    let u8_f32_arr = raw_u8_arr.to_vec();
-    return u8_f32_arr;
+    return raw_u8_arr.to_vec();
 }
 
 // A wrapper for class ID and match probabilities.

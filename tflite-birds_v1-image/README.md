@@ -13,6 +13,8 @@ This crate depends on the `wasi-nn` in the `Cargo.toml`:
 wasi-nn = "0.1.0"
 ```
 
+> Note: After the `TENSORFLOWLITE` encoding added into the wasi-nn crate, we'll update this example to use the newer version.
+
 ## Build
 
 Compile the application to WebAssembly:

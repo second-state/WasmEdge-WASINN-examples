@@ -45,7 +45,7 @@ fn infer_image() {
     println!("Read input tensor, size in bytes: {}", tensor_data.len());
     let tensor = wasi_nn::Tensor {
         dimensions: &[1, 3, 224, 224],
-        r#type: wasi_nn::TENSOR_TYPE_F32,
+        type_: wasi_nn::TENSOR_TYPE_F32,
         data: &tensor_data,
     };
     unsafe {

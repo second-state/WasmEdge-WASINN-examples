@@ -7,7 +7,7 @@ edition = "2018"
 publish = false
 
 [dependencies]
-wasi-nn = { version = "0.1.0" }
+wasi-nn = { version = "0.2.1" }
 
 # This crate is built with the wasm32-wasi target, so it's separate
 # from the main Wasmtime build, so use this directive to exclude it
