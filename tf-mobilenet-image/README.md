@@ -2,7 +2,7 @@
 
 This package is a high-level Rust bindings for [wasi-nn] example of Mobilenet with Tensorflow Lite backend.
 
-[wasi-nn]: https://github.com/WebAssembly/wasi-nn
+[wasi-nn]: https://github.com/second-state/wasmedge-wasi-nn
 
 ## Dependencies
 
@@ -10,7 +10,7 @@ This crate depends on the `wasi-nn` in the `Cargo.toml`:
 
 ```toml
 [dependencies]
-wasi-nn = "0.1.0"
+wasmedge-wasi-nn = "0.2.1"
 ```
 
 ## Build
@@ -18,21 +18,21 @@ wasi-nn = "0.1.0"
 Compile the application to WebAssembly:
 
 ```bash
-cd rust/tflite-bird && cargo build --target=wasm32-wasi --release
+cd rust/tf-mobilenet && cargo build --target=wasm32-wasi --release
 ```
 
-The output WASM file will be at [`rust/tflite-bird/target/wasm32-wasi/release/wasmedge-wasinn-example-tflite-bird-image.wasm`](wasmedge-wasinn-example-tflite-bird-image.wasm).
+The output WASM file will be at [`rust/tf-mobilenet/target/wasm32-wasi/release/wasmedge-wasinn-example-tf-mobilenet-image.wasm`](wasmedge-wasinn-example-tf-mobilenet-image.wasm).
 To speed up the image processing, we can enable the AOT mode in WasmEdge with:
 
 ```bash
-wasmedgec rust/tflite-bird/target/wasm32-wasi/release/wasmedge-wasinn-example-tflite-bird-image.wasm wasmedge-wasinn-example-tflite-bird-image.wasm
+wasmedgec rust/tf-mobilenet/target/wasm32-wasi/release/wasmedge-wasinn-example-tf-mobilenet-image.wasm wasmedge-wasinn-example-tf-mobilenet-image.wasm
 ```
 
 ## Run
 
 ### Download fixture
 
-Use the below script to download the testing image `input.jpg` and the `tflite` model:
+Use the below script to download the testing image `input.jpg` and the `tf` model:
 
 ```bash
 ./download_data.sh   
@@ -40,16 +40,16 @@ Use the below script to download the testing image `input.jpg` and the `tflite` 
 
 The testing image is located at `./bird.jpg`:
 
-![banana](https://raw.githubusercontent.com/second-state/wasm-learning/master/rust/birds_v1/bird.jpg)
+![banana](https://raw.githubusercontent.com/second-state/wasm-learning/master/rust/mobilenet_birds_tfhub/PurpleGallinule.jpg)
 
-The `tflite` model is located at `./lite-model_aiy_vision_classifier_birds_V1_3.tflite`
+The `tf` model is located at `./frozen.pd`
 
 ### Generate Image Tensor
 
 If you want to generate the [raw](birdx224x224x3.rgb) tensor, you can run:
 
 ```shell
-cd rust/image-converter/ && cargo run ../../bird.jpg ../../birdx224x224x3.rgb
+cd rust/image-converter/ && cargo run ../../PurpleGallinule.jpg ../../birdx224x224x3.rgb
 ```
 
 ### Execute
@@ -57,7 +57,7 @@ cd rust/image-converter/ && cargo run ../../bird.jpg ../../birdx224x224x3.rgb
 Execute the WASM with the `wasmedge` with Tensorflow Lite supporting:
 
 ```bash
-wasmedge --dir .:. wasmedge-wasinn-example-tflite-bird-image.wasm lite-model_aiy_vision_classifier_birds_V1_3.tflite bird.jpg
+wasmedge --dir .:. wasmedge-wasinn-example-tf-mobilenet-image.wasm frozen.pd PurpleGallinule.jpg
 ```
 
 You will get the output:
