@@ -42,7 +42,7 @@ The testing image is located at `./bird.jpg`:
 
 ![banana](https://raw.githubusercontent.com/second-state/wasm-learning/master/rust/mobilenet_birds_tfhub/PurpleGallinule.jpg)
 
-The `tf` model is located at `./frozen.pd`
+The `tf` model is located at `./frozen.pb`
 
 ### Generate Image Tensor
 
@@ -57,7 +57,7 @@ cd rust/image-converter/ && cargo run ../../PurpleGallinule.jpg ../../birdx224x2
 Execute the WASM with the `wasmedge` with Tensorflow Lite supporting:
 
 ```bash
-wasmedge --dir .:. wasmedge-wasinn-example-tf-mobilenet-image.wasm frozen.pd PurpleGallinule.jpg
+wasmedge --dir .:. wasmedge-wasinn-example-tf-mobilenet-image.wasm frozen.pb PurpleGallinule.jpg
 ```
 
 You will get the output:

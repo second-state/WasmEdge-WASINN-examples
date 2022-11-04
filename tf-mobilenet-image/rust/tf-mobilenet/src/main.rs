@@ -26,7 +26,7 @@ fn infer_image() {
     let graph = unsafe {
         wasi_nn::load(
             &[&weights],
-            3, // encoding for tflite
+            wasi_nn::GRAPH_ENCODING_TENSORFLOW, // encoding for tflite
             wasi_nn::EXECUTION_TARGET_CPU,
         )
         .unwrap()
@@ -41,12 +41,13 @@ fn infer_image() {
     println!("Read input tensor, size in bytes: {}", tensor_data.len());
     let tensor = wasi_nn::Tensor {
         dimensions: &[1, 224, 224, 3],
-        r#type: wasi_nn::TENSOR_TYPE_U8,
+        type_: wasi_nn::TENSOR_TYPE_F32,
         data: &tensor_data,
     };
     unsafe {
-        wasi_nn::set_input(context, 0, tensor).unwrap();
+        wasi_nn::set_input_by_string(context, "hub_input/images", tensor).unwrap();
     }
+    println!("Set input done");
     // Execute the inference.
     unsafe {
         wasi_nn::compute(context).unwrap();
@@ -55,9 +56,9 @@ fn infer_image() {
     // Retrieve the output.
     let mut output_buffer = vec![0f32; 965];
     unsafe {
-        wasi_nn::get_output(
+        wasi_nn::get_output_by_string(
             context,
-            0,
+            "prediction",
             &mut output_buffer[..] as *mut [f32] as *mut u8,
             (output_buffer.len() * 4).try_into().unwrap(),
         )
