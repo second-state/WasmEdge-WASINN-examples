@@ -31,6 +31,8 @@ First download the fixture files with the script:
 ./download_mobilenet.sh
 ```
 
+Users should [install the WasmEdge with WASI-NN OpenVINO backend plug-in](https://wasmedge.org/book/en/write_wasm/rust/wasinn.html#get-wasmedge-with-wasi-nn-plug-in-openvino-backend).
+
 And execute the WASM with the `wasmedge` with OpenVINO supporting:
 
 ```bash

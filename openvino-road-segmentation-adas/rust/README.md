@@ -85,7 +85,7 @@ If the build is successful, you can find `rust-road-segmentation-adas.wasm` file
 
 ### Do inference on WasmEdge runtime
 
-Please check if WasmEdge runtime has already installed on your system or not. If it has not, please reference the [Install and Uninstall WasmEdge](https://wasmedge.org/book/en/start/install.html) guide to deploy WasmEdge runtime. Run the command `wasmedge --version` in terminal and if you can see `wasmedge version 0.10.0-71-ge920d6e6` or similar version information, it means WasmEdge runtime has been installed successfully.
+Please check if WasmEdge runtime with WASI-NN OpenVINO backend has already installed on your system or not. If it has not, please reference the [Install WasmEdge with WASI-NN plug-in](https://wasmedge.org/book/en/write_wasm/rust/wasinn.html#get-wasmedge-with-wasi-nn-plug-in-openvino-backend) guide to deploy WasmEdge runtime. Run the command `wasmedge --version` in terminal and if you can see `wasmedge version 0.11.2` or similar version information, it means WasmEdge runtime has been installed successfully.
 
 Now, run the following command in the root directory of this repo to perform the inference on the WasmEdge runtime.
 

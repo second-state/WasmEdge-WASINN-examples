@@ -50,6 +50,8 @@ cd rust/image-converter/ && cargo run ../../bird.jpg ../../birdx224x224x3.rgb
 
 ### Execute
 
+Users should [install the WasmEdge with WASI-NN TensorFlow-Lite backend plug-in](https://wasmedge.org/book/en/write_wasm/rust/wasinn.html#get-wasmedge-with-wasi-nn-plug-in-tensorflow-lite-backend).
+
 Execute the WASM with the `wasmedge` with Tensorflow Lite supporting:
 
 ```bash

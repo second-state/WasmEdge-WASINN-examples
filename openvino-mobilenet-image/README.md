@@ -40,6 +40,8 @@ it will also download a testing image `input.jpg`
 
 ![banana](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/examples/images/1.jpg)
 
+Users should [install the WasmEdge with WASI-NN OpenVINO backend plug-in](https://wasmedge.org/book/en/write_wasm/rust/wasinn.html#get-wasmedge-with-wasi-nn-plug-in-openvino-backend).
+
 And execute the WASM with the `wasmedge` with OpenVINO supporting:
 
 ```bash
