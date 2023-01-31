@@ -25,7 +25,7 @@ The output WASM file will be at [`rust/tf-mobilenet/target/wasm32-wasi/release/w
 To speed up the image processing, we can enable the AOT mode in WasmEdge with:
 
 ```bash
-wasmedgec rust/tf-mobilenet/target/wasm32-wasi/release/wasmedge-wasinn-example-tf-mobilenet-image.wasm wasmedge-wasinn-example-tf-mobilenet-image.wasm
+wasmedgec rust/tf-mobilenet/target/wasm32-wasi/release/wasmedge-wasinn-example-tf-mobilenet-image.wasm run.wasm
 ```
 
 ## Run
@@ -49,7 +49,7 @@ The `tf` model is located at `./frozen.pb`
 If you want to generate the [raw](birdx224x224x3.rgb) tensor, you can run:
 
 ```shell
-cd rust/image-converter/ && cargo run ../../PurpleGallinule.jpg ../../birdx224x224x3.rgb
+cd rust/image-converter/ && cargo run ../../bird.jpg ../../birdx224x224x3.rgb
 ```
 
 ### Execute
@@ -57,7 +57,7 @@ cd rust/image-converter/ && cargo run ../../PurpleGallinule.jpg ../../birdx224x2
 Execute the WASM with the `wasmedge` with Tensorflow Lite supporting:
 
 ```bash
-wasmedge --dir .:. wasmedge-wasinn-example-tf-mobilenet-image.wasm frozen.pb PurpleGallinule.jpg
+wasmedge --dir .:. wasmedge-wasinn-example-tf-mobilenet-image.wasm saved_model.pb bird.jpg
 ```
 
 You will get the output:
