@@ -42,15 +42,9 @@ python3 gen_mobilenet_model.py
 
 (Or you can use the pre-generated one at [`mobilenet.pt`](mobilenet.pt))
 
-### Download Test Image
+### Test Image
 
-Then download the testing image `input.jpg`:
-
-```bash
-./download_data.sh   
-```
-
-![banana](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/examples/images/1.jpg)
+The testing image `input.jpg` is downloaded from https://github.com/bytecodealliance/wasi-nn/raw/main/rust/examples/images/1.jpg with license Apache-2.0
 
 ### Generate Tensor
 
