@@ -49,7 +49,7 @@ The `tf` model is located at `./frozen.pb`
 If you want to generate the [raw](birdx224x224x3.rgb) tensor, you can run:
 
 ```shell
-cd rust/image-converter/ && cargo run ../../bird.jpg ../../birdx224x224x3.rgb
+cd rust/image-converter/ && cargo run ../../PurpleGallinule.jpg ../../birdX224X224X3.rgb && cd ../..
 ```
 
 ### Execute
@@ -57,7 +57,7 @@ cd rust/image-converter/ && cargo run ../../bird.jpg ../../birdx224x224x3.rgb
 Execute the WASM with the `wasmedge` with Tensorflow Lite supporting:
 
 ```bash
-wasmedge --dir .:. wasmedge-wasinn-example-tf-mobilenet-image.wasm saved_model.pb bird.jpg
+wasmedge --dir .:. wasmedge-wasinn-example-tf-mobilenet-image.wasm saved_model.pb PurpleGallinule.jpg
 ```
 
 You will get the output:

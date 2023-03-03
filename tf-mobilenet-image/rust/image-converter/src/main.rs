@@ -26,9 +26,9 @@ fn image_to_tensor(path: String, height: u32, width: u32) -> Vec<u8> {
         image::imageops::resize(&img, height, width, ::image::imageops::FilterType::Triangle);
     let mut flat_img: Vec<f32> = Vec::new();
     for rgb in resized.pixels() {
-        flat_img.push(rgb[0] as f32 / 255.);
-        flat_img.push(rgb[1] as f32 / 255.);
-        flat_img.push(rgb[2] as f32 / 255.);
+        flat_img.push(rgb[0] as f32 / 255.0);
+        flat_img.push(rgb[1] as f32 / 255.0);
+        flat_img.push(rgb[2] as f32 / 255.0);
     }
     let bytes_required = flat_img.len() * 4;
     let mut u8_f32_arr: Vec<u8> = vec![0; bytes_required];
@@ -40,7 +40,7 @@ fn image_to_tensor(path: String, height: u32, width: u32) -> Vec<u8> {
             let u8_bytes = u8_f32.to_ne_bytes();
 
             for j in 0..4 {
-                u8_f32_arr[((flat_img.len() / 3 * c + i) * 4) + j] = u8_bytes[j];
+                u8_f32_arr[((i * 3 + c) * 4) + j] = u8_bytes[j];
             }
         }
     }

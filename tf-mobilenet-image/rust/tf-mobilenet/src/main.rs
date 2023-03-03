@@ -117,7 +117,7 @@ fn image_to_tensor(path: String, height: u32, width: u32) -> Vec<u8> {
             let u8_bytes = u8_f32.to_ne_bytes();
 
             for j in 0..4 {
-                u8_f32_arr[((flat_img.len() / 3 * c + i) * 4) + j] = u8_bytes[j];
+                u8_f32_arr[((i * 3 + c) * 4) + j] = u8_bytes[j];
             }
         }
     }
