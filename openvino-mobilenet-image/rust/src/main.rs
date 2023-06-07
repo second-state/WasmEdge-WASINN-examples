@@ -7,15 +7,6 @@ use wasi_nn;
 mod imagenet_classes;
 
 pub fn main() {
-    main_entry();
-}
-
-#[no_mangle]
-fn main_entry() {
-    infer_image();
-}
-
-fn infer_image() {
     let args: Vec<String> = env::args().collect();
     let model_xml_name: &str = &args[1];
     let model_bin_name: &str = &args[2];

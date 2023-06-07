@@ -7,15 +7,6 @@ use wasi_nn;
 mod imagenet_classes;
 
 pub fn main() {
-    main_entry();
-}
-
-#[no_mangle]
-fn main_entry() {
-    infer_image();
-}
-
-fn infer_image() {
     let args: Vec<String> = env::args().collect();
     let model_bin_name: &str = &args[1];
     let image_name: &str = &args[2];
@@ -26,7 +17,7 @@ fn infer_image() {
     let graph = unsafe {
         wasi_nn::load(
             &[&weights],
-            4, // encoding for tflite: wasi_nn::GRAPH_ENCODING_TENSORFLOWLITE
+            wasi_nn::GRAPH_ENCODING_TENSORFLOWLITE,
             wasi_nn::EXECUTION_TARGET_CPU,
         )
         .unwrap()
@@ -41,7 +32,7 @@ fn infer_image() {
     println!("Read input tensor, size in bytes: {}", tensor_data.len());
     let tensor = wasi_nn::Tensor {
         dimensions: &[1, 224, 224, 3],
-        r#type: wasi_nn::TENSOR_TYPE_U8,
+        type_: wasi_nn::TENSOR_TYPE_U8,
         data: &tensor_data,
     };
     unsafe {
@@ -89,8 +80,8 @@ fn sort_results(buffer: &[u8]) -> Vec<InferenceResult> {
     results
 }
 
-// Take the image located at 'path', open it, resize it to height x width, and then converts
-// the pixel precision to FP32. The resulting BGR pixel vector is then returned.
+// Take the image located at 'path', open it, resize it to height x width. The resulting RGB
+// pixel vector is then returned.
 fn image_to_tensor(path: String, height: u32, width: u32) -> Vec<u8> {
     let pixels = Reader::open(path).unwrap().decode().unwrap();
     let dyn_img: DynamicImage = pixels.resize_exact(width, height, image::imageops::Triangle);

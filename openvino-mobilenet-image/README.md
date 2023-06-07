@@ -10,7 +10,7 @@ This crate depends on the `wasi-nn` in the `Cargo.toml`:
 
 ```toml
 [dependencies]
-wasi-nn = "0.2.1"
+wasi-nn = "0.3.0"
 ```
 
 ## Build
@@ -36,7 +36,7 @@ First download the fixture files with the script:
 ./download_mobilenet.sh
 ```
 
-The testing image `input.jpg` is downloaded from https://github.com/bytecodealliance/wasi-nn/raw/main/rust/examples/images/1.jpg with license Apache-2.0
+The testing image `input.jpg` is downloaded from <https://github.com/bytecodealliance/wasi-nn/raw/main/rust/examples/images/1.jpg> with license Apache-2.0
 
 Users should [install the WasmEdge with WASI-NN OpenVINO backend plug-in](https://wasmedge.org/book/en/write_wasm/rust/wasinn.html#get-wasmedge-with-wasi-nn-plug-in-openvino-backend).
 

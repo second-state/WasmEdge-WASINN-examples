@@ -1,16 +1,13 @@
 [package]
 name = "wasmedge-wasinn-example-tflite-bird-image"
-version = "0.19.0"
+version = "0.1.0"
 authors = ["Second-State"]
 readme = "README.md"
-edition = "2018"
+edition = "2021"
 publish = false
 
 [dependencies]
 image = { version = "0.23.14", default-features = false, features = ["gif", "jpeg", "ico", "png", "pnm", "tga", "tiff", "webp", "bmp", "hdr", "dxt", "dds", "farbfeld"]  }
-wasi-nn = { version = "0.1.0" }
+wasi-nn = { version = "0.3.0" }
 
-# This crate is built with the wasm32-wasi target, so it's separate
-# from the main Wasmtime build, so use this directive to exclude it
-# from the parent directory's workspace.
 [workspace]

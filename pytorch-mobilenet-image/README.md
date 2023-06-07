@@ -10,7 +10,7 @@ This crate depends on the `wasi-nn` in the `Cargo.toml`:
 
 ```toml
 [dependencies]
-wasi-nn = "0.2.1"
+wasi-nn = "0.3.0"
 ```
 
 ## Build
@@ -44,7 +44,7 @@ python3 gen_mobilenet_model.py
 
 ### Test Image
 
-The testing image `input.jpg` is downloaded from https://github.com/bytecodealliance/wasi-nn/raw/main/rust/examples/images/1.jpg with license Apache-2.0
+The testing image `input.jpg` is downloaded from <https://github.com/bytecodealliance/wasi-nn/raw/main/rust/examples/images/1.jpg> with license Apache-2.0
 
 ### Generate Tensor
 

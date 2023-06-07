@@ -10,7 +10,7 @@ This crate depends on the `wasi-nn` in the `Cargo.toml`:
 
 ```toml
 [dependencies]
-wasi-nn = "0.2.1"
+wasi-nn = "0.3.0"
 ```
 
 ## Build
