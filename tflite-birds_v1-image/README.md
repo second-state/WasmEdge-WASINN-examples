@@ -10,7 +10,7 @@ This crate depends on the `wasi-nn` in the `Cargo.toml`:
 
 ```toml
 [dependencies]
-wasi-nn = "0.3.0"
+wasi-nn = "0.4.0"
 ```
 
 ## Build
@@ -18,33 +18,25 @@ wasi-nn = "0.3.0"
 Compile the application to WebAssembly:
 
 ```bash
-cd rust/tflite-bird && cargo build --target=wasm32-wasi --release
+cd rust && cargo build --target=wasm32-wasi --release
 ```
 
-The output WASM file will be at [`rust/tflite-bird/target/wasm32-wasi/release/wasmedge-wasinn-example-tflite-bird-image.wasm`](wasmedge-wasinn-example-tflite-bird-image.wasm).
+The output WASM file will be at [`rust/target/wasm32-wasi/release/wasmedge-wasinn-example-tflite-bird-image.wasm`](wasmedge-wasinn-example-tflite-bird-image.wasm).
 To speed up the image processing, we can enable the AOT mode in WasmEdge with:
 
 ```bash
-wasmedgec rust/tflite-bird/target/wasm32-wasi/release/wasmedge-wasinn-example-tflite-bird-image.wasm wasmedge-wasinn-example-tflite-bird-image.wasm
+wasmedge compile rust/target/wasm32-wasi/release/wasmedge-wasinn-example-tflite-bird-image.wasm wasmedge-wasinn-example-tflite-bird-image.wasm
 ```
 
 ## Run
 
-### Download fixture
+### Test data
 
 The testing image is located at `./bird.jpg`:
 
 ![Aix galericulata](bird.jpg)
 
 The `tflite` model is located at `./lite-model_aiy_vision_classifier_birds_V1_3.tflite`
-
-### Generate Image Tensor
-
-If you want to generate the [raw](birdx224x224x3.rgb) tensor, you can run:
-
-```shell
-cd rust/image-converter/ && cargo run ../../bird.jpg ../../birdx224x224x3.rgb
-```
 
 ### Execute
 

@@ -1,60 +1,38 @@
 use image::io::Reader;
 use image::DynamicImage;
-use std::convert::TryInto;
 use std::env;
 use std::fs;
-use wasi_nn;
+use std::error::Error;
+use wasi_nn::{GraphBuilder, GraphEncoding, ExecutionTarget, TensorType};
 mod imagenet_classes;
 
-pub fn main() {
+pub fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
     let model_bin_name: &str = &args[1];
     let image_name: &str = &args[2];
 
-    let weights = fs::read(model_bin_name).unwrap();
+    let weights = fs::read(model_bin_name)?;
     println!("Read graph weights, size in bytes: {}", weights.len());
 
-    let graph = unsafe {
-        wasi_nn::load(
-            &[&weights],
-            wasi_nn::GRAPH_ENCODING_TENSORFLOWLITE,
-            wasi_nn::EXECUTION_TARGET_CPU,
-        )
-        .unwrap()
-    };
+    let graph = GraphBuilder::new(GraphEncoding::TensorflowLite, ExecutionTarget::CPU).build_from_bytes(&[&weights])?;
+    let mut ctx = graph.init_execution_context()?;
     println!("Loaded graph into wasi-nn with ID: {}", graph);
-
-    let context = unsafe { wasi_nn::init_execution_context(graph).unwrap() };
-    println!("Created wasi-nn execution context with ID: {}", context);
 
     // Load a tensor that precisely matches the graph input tensor (see
     let tensor_data = image_to_tensor(image_name.to_string(), 224, 224);
     println!("Read input tensor, size in bytes: {}", tensor_data.len());
-    let tensor = wasi_nn::Tensor {
-        dimensions: &[1, 224, 224, 3],
-        type_: wasi_nn::TENSOR_TYPE_U8,
-        data: &tensor_data,
-    };
-    unsafe {
-        wasi_nn::set_input(context, 0, tensor).unwrap();
-    }
-    // Execute the inference.
-    unsafe {
-        wasi_nn::compute(context).unwrap();
-    }
-    println!("Executed graph inference");
-    // Retrieve the output.
-    let mut output_buffer = vec![0u8; 965];
-    unsafe {
-        wasi_nn::get_output(
-            context,
-            0,
-            &mut output_buffer[..] as *mut [u8] as *mut u8,
-            output_buffer.len().try_into().unwrap(),
-        )
-        .unwrap();
-    }
 
+    // Pass tensor data into the TFLite runtime
+    ctx.set_input(0, TensorType::U8, &[1, 224, 224, 3], &tensor_data)?;
+
+    // Execute the inference.
+    ctx.compute()?;
+
+    // Retrieve the output.
+    let mut output_buffer = vec![0u8; imagenet_classes::AIY_BIRDS_V1.len()];
+    _ = ctx.get_output(0, &mut output_buffer)?;
+
+    // Sort the result with the highest probability result first
     let results = sort_results(&output_buffer);
     for i in 0..5 {
         println!(
@@ -65,6 +43,8 @@ pub fn main() {
             imagenet_classes::AIY_BIRDS_V1[results[i].0]
         );
     }
+
+    Ok(())
 }
 
 // Sort the buffer of probabilities. The graph places the match probability for each class at the
