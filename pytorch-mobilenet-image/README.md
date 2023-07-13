@@ -10,7 +10,7 @@ This crate depends on the `wasi-nn` in the `Cargo.toml`:
 
 ```toml
 [dependencies]
-wasi-nn = "0.3.0"
+wasi-nn = "0.4.0"
 ```
 
 ## Build
@@ -67,7 +67,6 @@ wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.pt inp
 You will get the output:
 
 ```console
-Read torchscript binaries, size in bytes: 14376924
 Loaded graph into wasi-nn with ID: 0
 Created wasi-nn execution context with ID: 0
 Read input tensor, size in bytes: 602112
