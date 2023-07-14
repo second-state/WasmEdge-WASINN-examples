@@ -27,7 +27,7 @@ To run this example on your local system, you need to guarantee the following de
 
 ### Generate inference wasm module
 
-Before building the project, use `rustup target list` command to check if the `wasm32-wasi` target has already been installed. If it has not, use `rustup target add wasm32-wasi` to install the target. 
+Before building the project, use `rustup target list` command to check if the `wasm32-wasi` target has already been installed. If it has not, use `rustup target add wasm32-wasi` to install the target.
 
 Now you can use the following commands to generate the wasm module for model inference.
 
@@ -57,4 +57,4 @@ The generated output tensor will be dumped to the `wasinn-openvino-inference-out
 
 To visualize the input image and the inference output tensor, you can use the `visualize_inference_result.ipynb` file. You may have to modify some file paths in the file, if the files used in the notebook are dumped in different directories. The following picture shows the inference result of road segmentation task.
 
-![road segmentation result](../image/segmentation_result.png)
+![road segmentation result](image/segmentation_result.png)
