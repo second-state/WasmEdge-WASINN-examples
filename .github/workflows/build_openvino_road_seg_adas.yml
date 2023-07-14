@@ -58,7 +58,7 @@ jobs:
           ldconfig
 
       - name: Build and run openvino-road-segmentation-adas
-        working-directory: openvino-road-segmentation-adas/rust
+        working-directory: openvino-road-segmentation-adas
         run: |
           bash /opt/intel/openvino_2021/bin/setupvars.sh
           ldconfig
@@ -66,4 +66,4 @@ jobs:
           cargo build --target=wasm32-wasi --release
           cp target/wasm32-wasi/release/openvino-road-seg-adas.wasm ..
           cd ..
-          # wasmedge --dir .:. openvino-road-seg-adas.wasm ./model/road-segmentation-adas-0001.xml ./model/road-segmentation-adas-0001.bin ./image/empty_road_mapillary.jpg
+          wasmedge --dir .:. openvino-road-seg-adas.wasm ./model/road-segmentation-adas-0001.xml ./model/road-segmentation-adas-0001.bin ./image/empty_road_mapillary.jpg
