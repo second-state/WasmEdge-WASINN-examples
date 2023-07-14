@@ -1,0 +1,93 @@
+name: Build and Test WasmEdge WASI-NN examples
+
+on:
+  push:
+    paths:
+      - ".github/workflows/build_openvino.yml"
+      - "openvino-mobilenet-raw/**"
+      - "openvino-mobilenet-image/**"
+      - "openvino-road-segmentation-adas/**"
+      - "scripts/install_openvino.sh"
+  pull_request:
+    branches: [master]
+    paths-ignore:
+      - "**/*.md"
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_openvino_examples:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [1.71]
+    container:
+      image: wasmedge/wasmedge:ubuntu-build-clang
+    steps:
+      - name: Checkout Wasi-NN examples
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Rust-stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust }}
+          target: wasm32-wasi
+
+      - name: Install dependencies
+        run: |
+          apt update
+          apt install -y libtbb2
+
+      - name: Install OpenVINO
+        env:
+          OPENVINO_VERSION: "2021.4.582"
+          OPENVINO_YEAR: "2021"
+        working-directory: scripts
+        run: |
+          bash install_openvino.sh
+
+      - name: Install WasmEdge with Wasi-NN OpenVINO plugin
+        env:
+          CMAKE_BUILD_TYPE: "Release"
+          VERSION: "0.13.1"
+        run: |
+          bash /opt/intel/openvino_2021/bin/setupvars.sh
+          ldconfig
+          curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION -p /usr/local --plugins wasi_nn-openvino
+          ldconfig
+
+      - name: Build and run openvino-mobilenet-raw
+        working-directory: openvino-mobilenet-raw
+        run: |
+          bash /opt/intel/openvino_2021/bin/setupvars.sh
+          ldconfig
+          bash download_mobilenet.sh
+          cd rust
+          cargo build --target wasm32-wasi --release
+          cd ..
+          wasmedge --dir .:. ./rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr
+      
+      - name: Build and run openvino-mobilenet-image
+        working-directory: openvino-mobilenet-image
+        run: |
+          bash /opt/intel/openvino_2021/bin/setupvars.sh
+          ldconfig
+          bash download_mobilenet.sh
+          cd rust
+          cargo build --target wasm32-wasi --release
+          cd ..
+          wasmedge --dir .:. ./rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.xml mobilenet.bin input.jpg
+      
+      - name: Build and run openvino-road-segmentation-adas
+        working-directory: openvino-road-segmentation-adas/rust
+        run: |
+          bash /opt/intel/openvino_2021/bin/setupvars.sh
+          ldconfig
+          cd openvino-road-seg-adas
+          cargo build --target=wasm32-wasi --release
+          cp target/wasm32-wasi/release/openvino-road-seg-adas.wasm ..
+          cd ..
+          # wasmedge --dir .:. openvino-road-seg-adas.wasm ./model/road-segmentation-adas-0001.xml ./model/road-segmentation-adas-0001.bin ./image/empty_road_mapillary.jpg
