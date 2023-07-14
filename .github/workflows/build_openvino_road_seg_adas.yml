@@ -1,11 +1,9 @@
-name: Build and Test WasmEdge WASI-NN examples
+name: OpenVINO Road Segmentation ADAS Example
 
 on:
   push:
     paths:
-      - ".github/workflows/build_openvino.yml"
-      - "openvino-mobilenet-raw/**"
-      - "openvino-mobilenet-image/**"
+      - ".github/workflows/build_openvino_road_seg_adas.yml"
       - "openvino-road-segmentation-adas/**"
       - "scripts/install_openvino.sh"
   pull_request:
@@ -59,28 +57,6 @@ jobs:
           curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION -p /usr/local --plugins wasi_nn-openvino
           ldconfig
 
-      - name: Build and run openvino-mobilenet-raw
-        working-directory: openvino-mobilenet-raw
-        run: |
-          bash /opt/intel/openvino_2021/bin/setupvars.sh
-          ldconfig
-          bash download_mobilenet.sh
-          cd rust
-          cargo build --target wasm32-wasi --release
-          cd ..
-          wasmedge --dir .:. ./rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr
-      
-      - name: Build and run openvino-mobilenet-image
-        working-directory: openvino-mobilenet-image
-        run: |
-          bash /opt/intel/openvino_2021/bin/setupvars.sh
-          ldconfig
-          bash download_mobilenet.sh
-          cd rust
-          cargo build --target wasm32-wasi --release
-          cd ..
-          wasmedge --dir .:. ./rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.xml mobilenet.bin input.jpg
-      
       - name: Build and run openvino-road-segmentation-adas
         working-directory: openvino-road-segmentation-adas/rust
         run: |
