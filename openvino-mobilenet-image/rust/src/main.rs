@@ -1,6 +1,5 @@
 use image::io::Reader;
 use image::DynamicImage;
-use std::convert::TryInto;
 use std::env;
 use std::fs;
 use wasi_nn;
@@ -18,46 +17,29 @@ pub fn main() {
     let weights = fs::read(model_bin_name).unwrap();
     println!("Read graph weights, size in bytes: {}", weights.len());
 
-    let graph = unsafe {
-        wasi_nn::load(
-            &[&xml.into_bytes(), &weights],
-            wasi_nn::GRAPH_ENCODING_OPENVINO,
-            wasi_nn::EXECUTION_TARGET_CPU,
-        )
-        .unwrap()
-    };
-    println!("Loaded graph into wasi-nn with ID: {}", graph);
+    let graph = wasi_nn::GraphBuilder::new(
+        wasi_nn::GraphEncoding::Openvino,
+        wasi_nn::ExecutionTarget::CPU,
+    )
+    .build_from_bytes(&[xml.into_bytes(), weights])
+    .unwrap();
+    println!("Loaded graph into wasi-nn with ID: {:?}", graph);
 
-    let context = unsafe { wasi_nn::init_execution_context(graph).unwrap() };
-    println!("Created wasi-nn execution context with ID: {}", context);
+    let mut context = graph.init_execution_context().unwrap();
+    println!("Created wasi-nn execution context with ID: {:?}", context);
 
     // Load a tensor that precisely matches the graph input tensor (see
     let tensor_data = image_to_tensor(image_name.to_string(), 224, 224);
     println!("Read input tensor, size in bytes: {}", tensor_data.len());
-    let tensor = wasi_nn::Tensor {
-        dimensions: &[1, 3, 224, 224],
-        type_: wasi_nn::TENSOR_TYPE_F32,
-        data: &tensor_data,
-    };
-    unsafe {
-        wasi_nn::set_input(context, 0, tensor).unwrap();
-    }
+    context
+        .set_input(0, wasi_nn::TensorType::F32, &[1, 3, 224, 224], &tensor_data)
+        .unwrap();
     // Execute the inference.
-    unsafe {
-        wasi_nn::compute(context).unwrap();
-    }
+    context.compute().unwrap();
     println!("Executed graph inference");
     // Retrieve the output.
     let mut output_buffer = vec![0f32; 1001];
-    unsafe {
-        wasi_nn::get_output(
-            context,
-            0,
-            &mut output_buffer[..] as *mut [f32] as *mut u8,
-            (output_buffer.len() * 4).try_into().unwrap(),
-        )
-        .unwrap();
-    }
+    context.get_output(0, &mut output_buffer).unwrap();
 
     let results = sort_results(&output_buffer);
     for i in 0..5 {

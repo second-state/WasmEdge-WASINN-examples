@@ -6,7 +6,7 @@
 //!
 //! In the environment where WasmEdge is deployed, run `wasmedge --dir .:. <path to rust-road-segmentation-adas.wasm> ../model/road-segmentation-adas-0001.xml ../model/road-segmentation-adas-0001.bin <path to input tensor>`. After the inference, the result tensor `wasinn-openvino-inference-output-1x4x512x896xf32.tensor` will be returned. You can use opencv or other tools to visualize the inference result.
 
-use std::{convert::TryInto, env, fs};
+use std::{env, fs};
 use wasi_nn as nn;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -24,14 +24,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let tensor_data = fs::read(tensor_name).unwrap();
     println!("Load input tensor, size in bytes: {}", tensor_data.len());
-    let tensor = nn::Tensor {
-        dimensions: &[1, 3, 512, 896],
-        r#type: nn::TENSOR_TYPE_F32,
-        data: &tensor_data,
-    };
 
     // do inference
-    let output_buffer = infer(xml_bytes.as_slice(), weights.as_slice(), tensor)?;
+    let output_buffer = infer(
+        xml_bytes.as_slice(),
+        weights.as_slice(),
+        nn::TensorType::F32,
+        &[1, 3, 512, 896],
+        &tensor_data,
+    )?;
 
     // dump result
     dump(
@@ -46,41 +47,28 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 fn infer(
     xml_bytes: impl AsRef<[u8]>,
     weights: impl AsRef<[u8]>,
-    in_tensor: nn::Tensor,
+    in_tensor_type: nn::TensorType,
+    in_tensor_dimensions: &[usize],
+    in_tensor_data: &Vec<u8>,
 ) -> Result<Vec<f32>, Box<dyn std::error::Error>> {
-    let graph = unsafe {
-        wasi_nn::load(
-            &[xml_bytes.as_ref(), weights.as_ref()],
-            wasi_nn::GRAPH_ENCODING_OPENVINO,
-            wasi_nn::EXECUTION_TARGET_CPU,
-        )
-        .unwrap()
-    };
-    println!("Loaded graph into wasi-nn with ID: {}", graph);
+    let graph = nn::GraphBuilder::new(nn::GraphEncoding::Openvino, nn::ExecutionTarget::CPU)
+        .build_from_bytes(&[xml_bytes.as_ref(), weights.as_ref()])
+        .unwrap();
+    println!("Loaded graph into wasi-nn with ID: {:?}", graph);
 
-    let context = unsafe { wasi_nn::init_execution_context(graph).unwrap() };
-    println!("Created wasi-nn execution context with ID: {}", context);
+    let mut context = graph.init_execution_context().unwrap();
+    println!("Created wasi-nn execution context with ID: {:?}", context);
 
-    unsafe {
-        wasi_nn::set_input(context, 0, in_tensor).unwrap();
-    }
+    context
+        .set_input(0, in_tensor_type, in_tensor_dimensions, in_tensor_data)
+        .unwrap();
     // Execute the inference.
-    unsafe {
-        wasi_nn::compute(context).unwrap();
-    }
+    context.compute().unwrap();
     println!("Executed graph inference");
 
     // Retrieve the output.
     let mut output_buffer = vec![0f32; 1 * 4 * 512 * 896];
-    let bytes_written = unsafe {
-        wasi_nn::get_output(
-            context,
-            0,
-            &mut output_buffer[..] as *mut [f32] as *mut u8,
-            (output_buffer.len() * 4).try_into().unwrap(),
-        )
-        .unwrap()
-    };
+    let bytes_written = context.get_output(0, &mut output_buffer).unwrap();
 
     println!("bytes_written: {:?}", bytes_written);
 
