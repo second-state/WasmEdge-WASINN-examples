@@ -11,49 +11,71 @@ In this example, we'll use `WasmEdge wasi-nn interfaces` to demonstrates a popul
 
 The model files and the images used for this demonstration are from the [Intel openvino_notebooks repo](https://github.com/openvinotoolkit/openvino_notebooks/blob/main/notebooks/003-hello-segmentation/README.md) on Github.
 
-## Steps
+## Set up the environment
 
-### Prerequisites
+- Install `rustup` and `Rust`
 
-To run this example on your local system, you need to guarantee the following depencies are installed:
+  Go to the [official Rust webpage](https://www.rust-lang.org/tools/install) and follow the instructions to install `rustup` and `Rust`.
 
-- [Install OpenVINO 2021.4](https://docs.openvino.ai/2021.4/get_started.html)
+  > It is recommended to use Rust 1.68 or above in the stable channel.
 
-- [Install WasmEdge Runtime](https://wasmedge.org/book/en/start/install.html)
+  Then, add `wasm32-wasi` target to the Rustup toolchain:
 
-- Install Jupyter notebook (Optional)
+  ```bash
+  rustup target add wasm32-wasi
+  ```
 
-*Notice that M1 Mac is not supported as OpenVINO cannot be installed on M1 Mac.*
+- Clone the example repo
 
-### Generate inference wasm module
+  ```bash
+  git clone https://github.com/second-state/WasmEdge-WASINN-examples.git
+  ```
 
-Before building the project, use `rustup target list` command to check if the `wasm32-wasi` target has already been installed. If it has not, use `rustup target add wasm32-wasi` to install the target.
+- Install OpenVINO
 
-Now you can use the following commands to generate the wasm module for model inference.
+  ```bash
+  export OPENVINO_VERSION=2021.4.582
+  export OPENVINO_YEAR=2021
+  bash WasmEdge-WASINN-examples/scripts/install_openvino.sh
 
-```bash
-// in the root directory of 'openvino-road-seg-adas' project
+  bash /opt/intel/openvino_2021/bin/setupvars.sh
+  ldconfig
+  ```
 
-cargo build --target=wasm32-wasi --release
-```
+- Install WasmEdge with Wasi-NN OpenVINO plugin
 
-If the build is successful, you can find `openvino-road-seg-adas.wasm` file in the directory of `target/wasm32-wasi/release`.
+  ```bash
+  export CMAKE_BUILD_TYPE=Release
+  export VERSION=0.13.1
 
-### Do inference on WasmEdge runtime
+  curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION -p /usr/local --plugins wasi_nn-openvino
+  ldconfig
+  ```
 
-Please check if WasmEdge runtime has already been installed on your system or not. If it has not, please reference the [Install and Uninstall WasmEdge](https://wasmedge.org/book/en/start/install.html) guide to deploy WasmEdge runtime. Run the command `wasmedge --version` in terminal and if you can see `wasmedge version 0.10.0-71-ge920d6e6` or similar version information, it means WasmEdge runtime has been installed successfully.
+## Build and run `openvino-road-segmentation-adas` example
 
-Now, run the following command to perform the inference on the WasmEdge runtime.
+- Download `MobileNet` model file
 
-```bash
-// in the root directory of 'openvino-road-seg-adas' project
+  ```bash
+  cd openvino-road-segmentation-adas
+  ```
 
-wasmedge --dir .:. target/wasm32-wasi/release/openvino-road-seg-adas.wasm ../model/road-segmentation-adas-0001.xml ../model/road-segmentation-adas-0001.bin ../image/empty_road_mapillary.jpg
-```
+- Build and run the example
 
-The generated output tensor will be dumped to the `wasinn-openvino-inference-output-1x4x512x896xf32.tensor` file if the command runs successfully.
+  ```bash
+  cd openvino-road-seg-adas
+  cargo build --target wasm32-wasi --release
+  cd ..
 
-### Visualize the inference result
+  wasmedge --dir .:. ./openvino-road-seg-adas/target/wasm32-wasi/release/openvino-road-seg-adas.wasm \
+  ./model/road-segmentation-adas-0001.xml \
+  ./model/road-segmentation-adas-0001.bin \
+  ./image/empty_road_mapillary.jpg
+  ```
+
+  If the commands run successfully, an output tensor will be generated and saved to `wasinn-openvino-inference-output-1x4x512x896xf32.tensor`.
+
+## Visualize the inference result
 
 To visualize the input image and the inference output tensor, you can use the `visualize_inference_result.ipynb` file. You may have to modify some file paths in the file, if the files used in the notebook are dumped in different directories. The following picture shows the inference result of road segmentation task.
 
