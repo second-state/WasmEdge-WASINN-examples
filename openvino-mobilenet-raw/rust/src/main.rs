@@ -70,28 +70,3 @@ fn sort_results(buffer: &[f32]) -> Vec<InferenceResult> {
 // A wrapper for class ID and match probabilities.
 #[derive(Debug, PartialEq)]
 struct InferenceResult(usize, f32);
-    }
-    let ground_truth_result = [963, 762, 909, 926, 567];
-    // let ground_truth_pred = [0.7113048, 0.0707076, 0.036355935, 0.015456136, 0.015344063];
-    for i in 0..ground_truth_result.len() {
-        assert_eq!(results[i].0, ground_truth_result[i]);
-    }
-}
-
-// Sort the buffer of probabilities. The graph places the match probability for each class at the
-// index for that class (e.g. the probability of class 42 is placed at buffer[42]). Here we convert
-// to a wrapping InferenceResult and sort the results.
-fn sort_results(buffer: &[f32]) -> Vec<InferenceResult> {
-    let mut results: Vec<InferenceResult> = buffer
-        .iter()
-        .skip(1)
-        .enumerate()
-        .map(|(c, p)| InferenceResult(c, *p))
-        .collect();
-    results.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
-    results
-}
-
-// A wrapper for class ID and match probabilities.
-#[derive(Debug, PartialEq)]
-struct InferenceResult(usize, f32);
