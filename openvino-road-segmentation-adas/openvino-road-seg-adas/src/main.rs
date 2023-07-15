@@ -1,4 +1,4 @@
-use image::{DynamicImage， io::Reader};
+use image::{io::Reader, DynamicImage};
 use std::env;
 use wasi_nn::{ExecutionTarget, GraphBuilder, GraphEncoding, TensorType};
 
