@@ -1,12 +1,8 @@
-use image::io::Reader;
-use image::DynamicImage;
+use image::{io::Reader, DynamicImage};
 use std::env;
-use wasi_nn;
-mod imagenet_classes;
-
 use wasi_nn::{ExecutionTarget, GraphBuilder, GraphEncoding, TensorType};
 
-pub fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
     let model_xml_path: &str = &args[1];
     let model_bin_path: &str = &args[2];
@@ -22,8 +18,8 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("done");
 
     print!("Set input tensor ...");
-    let input_dims = vec![1, 3, 224, 224];
-    let tensor_data = image_to_tensor(image_name.to_string(), 224, 224);
+    let input_dims = vec![1, 3, 512, 896];
+    let tensor_data = image_to_tensor(image_name.to_string(), 512, 896);
     context.set_input(0, TensorType::F32, &input_dims, tensor_data)?;
     println!("done");
 
@@ -33,37 +29,40 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     print!("Retrieve the output ...");
     // Copy output to abuffer.
-    let mut output_buffer = vec![0f32; 1001];
+    let mut output_buffer = vec![0u8; 1 * 4 * 512 * 896 * 4];
     let size_in_bytes = context.get_output(0, &mut output_buffer)?;
     println!("done");
     println!("The size of the output buffer is {} bytes", size_in_bytes);
 
-    let results = sort_results(&output_buffer);
-    for i in 0..5 {
-        println!(
-            "   {}.) [{}]({:.4}){}",
-            i + 1,
-            results[i].0,
-            results[i].1,
-            imagenet_classes::IMAGENET_CLASSES[results[i].0]
-        );
-    }
+    println!("Dump result ...");
+    dump(
+        "wasinn-openvino-inference-output-1x4x512x896xf32.tensor",
+        output_buffer.as_slice(),
+    )?;
 
     Ok(())
 }
 
-// Sort the buffer of probabilities. The graph places the match probability for each class at the
-// index for that class (e.g. the probability of class 42 is placed at buffer[42]). Here we convert
-// to a wrapping InferenceResult and sort the results.
-fn sort_results(buffer: &[f32]) -> Vec<InferenceResult> {
-    let mut results: Vec<InferenceResult> = buffer
-        .iter()
-        .skip(1)
-        .enumerate()
-        .map(|(c, p)| InferenceResult(c, *p))
-        .collect();
-    results.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
-    results
+/// Dump data to the specified binary file.
+fn dump<T>(
+    path: impl AsRef<std::path::Path>,
+    buffer: impl AsRef<[T]>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    println!("\tdump tensor to {:?}", path.as_ref());
+
+    let dst_slice: &[u8] = unsafe {
+        std::slice::from_raw_parts(
+            buffer.as_ref().as_ptr() as *const u8,
+            buffer.as_ref().len() * std::mem::size_of::<T>(),
+        )
+    };
+    println!("\tThe size of bytes: {}", dst_slice.len());
+
+    std::fs::write(path, &dst_slice).expect("failed to write file");
+
+    println!("*** done ***");
+
+    Ok(())
 }
 
 // Take the image located at 'path', open it, resize it to height x width, and then converts
@@ -89,7 +88,3 @@ fn image_to_tensor(path: String, height: u32, width: u32) -> Vec<u8> {
     }
     return u8_f32_arr;
 }
-
-// A wrapper for class ID and match probabilities.
-#[derive(Debug, PartialEq)]
-struct InferenceResult(usize, f32);

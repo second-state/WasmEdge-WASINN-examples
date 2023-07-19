@@ -1,8 +1,0 @@
-[package]
-authors = ["Sam Liu <sam@secondstate.io>"]
-edition = "2021"
-name = "openvino-road-seg-adas"
-version = "0.2.0"
-
-[dependencies]
-wasmedge-nn = "0.5.2"

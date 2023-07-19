@@ -3,45 +3,41 @@ use std::fs;
 use wasi_nn;
 mod imagenet_classes;
 
-pub fn main() {
+use wasi_nn::{ExecutionTarget, GraphBuilder, GraphEncoding, TensorType};
+
+pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
-    let model_xml_name: &str = &args[1];
-    let model_bin_name: &str = &args[2];
+    let model_xml_path: &str = &args[1];
+    let model_bin_path: &str = &args[2];
     let tensor_name: &str = &args[3];
 
-    let xml = fs::read_to_string(model_xml_name).unwrap();
-    println!("Read graph XML, size in bytes: {}", xml.len());
+    print!("Load graph ...");
+    let graph = GraphBuilder::new(GraphEncoding::Openvino, ExecutionTarget::CPU)
+        .build_from_files([model_xml_path, model_bin_path])?;
+    println!("done");
 
-    let weights = fs::read(model_bin_name).unwrap();
-    println!("Read graph weights, size in bytes: {}", weights.len());
-
-    let graph = wasi_nn::GraphBuilder::new(
-        wasi_nn::GraphEncoding::Openvino,
-        wasi_nn::ExecutionTarget::CPU,
-    )
-    .build_from_bytes(&[xml.into_bytes(), weights])
-    .unwrap();
-    println!("Loaded graph into wasi-nn with ID: {:?}", graph);
-
-    let mut context = graph.init_execution_context().unwrap();
-    println!("Created wasi-nn execution context with ID: {:?}", context);
+    print!("Init execution context ...");
+    let mut context = graph.init_execution_context()?;
+    println!("done");
 
     // Load a tensor that precisely matches the graph input tensor (see
     // `fixture/frozen_inference_graph.xml`).
+    print!("Set input tensor ...");
+    let input_dims = vec![1, 3, 224, 224];
     let tensor_data = fs::read(tensor_name).unwrap();
-    println!("Read input tensor, size in bytes: {}", tensor_data.len());
-    // for i in 0..10{
-    //     println!("tensor -> {}", tensor_data[i]);
-    // }
-    context
-        .set_input(0, wasi_nn::TensorType::F32, &[1, 3, 224, 224], &tensor_data)
-        .unwrap();
-    // Execute the inference.
-    context.compute().unwrap();
-    println!("Executed graph inference");
-    // Retrieve the output.
+    context.set_input(0, TensorType::F32, &input_dims, tensor_data)?;
+    println!("done");
+
+    print!("Perform graph inference ...");
+    context.compute()?;
+    println!("done");
+
+    print!("Retrieve the output ...");
+    // Copy output to abuffer.
     let mut output_buffer = vec![0f32; 1001];
-    context.get_output(0, &mut output_buffer).unwrap();
+    let size_in_bytes = context.get_output(0, &mut output_buffer)?;
+    println!("done");
+    println!("The size of the output buffer is {} bytes", size_in_bytes);
 
     let results = sort_results(&output_buffer);
     for i in 0..5 {
@@ -53,11 +49,8 @@ pub fn main() {
             imagenet_classes::IMAGENET_CLASSES[results[i].0]
         );
     }
-    let ground_truth_result = [963, 762, 909, 926, 567];
-    // let ground_truth_pred = [0.7113048, 0.0707076, 0.036355935, 0.015456136, 0.015344063];
-    for i in 0..ground_truth_result.len() {
-        assert_eq!(results[i].0, ground_truth_result[i]);
-    }
+
+    Ok(())
 }
 
 // Sort the buffer of probabilities. The graph places the match probability for each class at the

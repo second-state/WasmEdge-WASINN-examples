@@ -1,56 +1,79 @@
-# Mobilenet example for WASI-NN
+# Mobilenet example with WasmEdge WASI-NN OpenVINO plugin
 
-This package is a high-level Rust bindings for [wasi-nn] example of Mobilenet.
+This example demonstrates how to use WasmEdge WASI-NN OpenVINO plugin to perform an inference task with Mobilenet model.
 
-[wasi-nn]: https://github.com/WebAssembly/wasi-nn
+## Set up the environment
 
-## Dependencies
+- Install `rustup` and `Rust`
 
-This crate depends on the `wasi-nn` in the `Cargo.toml`:
+  Go to the [official Rust webpage](https://www.rust-lang.org/tools/install) and follow the instructions to install `rustup` and `Rust`.
 
-```toml
-[dependencies]
-wasi-nn = "0.4.0"
-```
+  > It is recommended to use Rust 1.68 or above in the stable channel.
 
-## Build
+  Then, add `wasm32-wasi` target to the Rustup toolchain:
 
-Compile the application to WebAssembly:
+  ```bash
+  rustup target add wasm32-wasi
+  ```
 
-```bash
-cargo build --target=wasm32-wasi --release
-```
+- Clone the example repo
 
-The output WASM file will be at `target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet.wasm`.
+  ```bash
+  git clone https://github.com/second-state/WasmEdge-WASINN-examples.git
+  ```
 
-## Run
+- Install OpenVINO
 
-First download the fixture files with the script:
+  ```bash
+  export OPENVINO_VERSION=2021.4.582
+  export OPENVINO_YEAR=2021
+  bash WasmEdge-WASINN-examples/scripts/install_openvino.sh
 
-```bash
-./download_mobilenet.sh
-```
+  bash /opt/intel/openvino_2021/bin/setupvars.sh
+  ldconfig
+  ```
 
-Users should [install the WasmEdge with WASI-NN OpenVINO backend plug-in](https://wasmedge.org/book/en/write_wasm/rust/wasinn.html#get-wasmedge-with-wasi-nn-plug-in-openvino-backend).
+- Install WasmEdge with Wasi-NN OpenVINO plugin
 
-And execute the WASM with the `wasmedge` with OpenVINO supporting:
+  ```bash
+  export CMAKE_BUILD_TYPE=Release
+  export VERSION=0.13.1
 
-```bash
-wasmedge --dir .:. wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr
-```
+  curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION -p /usr/local --plugins wasi_nn-openvino
+  ldconfig
+  ```
 
-You will get the output:
+## Build and run `openvino-mobilenet-raw` example
 
-```bash
-Read graph XML, size in bytes: 143525
-Read graph weights, size in bytes: 13956476
-Loaded graph into wasi-nn with ID: 0
-Created wasi-nn execution context with ID: 0
-Read input tensor, size in bytes: 602112
-Executed graph inference
-   1.) [963](0.7113)pizza, pizza pie
-   2.) [762](0.0707)restaurant, eating house, eating place, eatery
-   3.) [909](0.0364)wok
-   4.) [926](0.0155)hot pot, hotpot
-   5.) [567](0.0153)frying pan, frypan, skillet
-```
+- Download `MobileNet` model file
+
+  ```bash
+  cd openvino-mobilenet-raw
+  bash download_mobilenet.sh
+  ```
+
+- Build and run the example
+
+  ```bash
+  cd rust
+  cargo build --target wasm32-wasi --release
+  cd ..
+
+  wasmedge --dir .:. ./rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.xml mobilenet.bin input.jpg
+  ```
+
+  If the commands above run successfully, you will get the output:
+
+  ```bash
+  Read graph XML, size in bytes: 143525
+  Read graph weights, size in bytes: 13956476
+  Loaded graph into wasi-nn with ID: 0
+  Created wasi-nn execution context with ID: 0
+  Read input tensor, size in bytes: 602112
+  Executed graph inference
+     1.) [963](0.7113)pizza, pizza pie
+     2.) [762](0.0707)restaurant, eating house, eating place, eatery
+     3.) [909](0.0364)wok
+     4.) [926](0.0155)hot pot, hotpot
+     5.) [567](0.0153)frying pan, frypan, skillet
+  ```
