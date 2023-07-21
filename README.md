@@ -12,36 +12,13 @@
 
 ### Introduction
 
-This project provides the examples of high-level [wasi-nn] bindings on Rust programming language. Developers can refer to this project to write their machine learning application in a high-level language using the bindings, compile it to WebAssembly, and run it with a WebAssembly runtime that supports the [wasi-nn] proposal, such as [WasmEdge].
-
-> __NOTE__: These bindings are experimental (use at your own risk) and subject to upstream changes in the [wasi-nn] specification.
+This project provides the examples of high-level [wasi-nn] bindings and WasmEdge-TensorFlow plug-ins on Rust programming language. Developers can refer to this project to write their machine learning application in a high-level language using the bindings, compile it to WebAssembly, and run it with a WebAssembly runtime that supports the [wasi-nn] proposal, such as [WasmEdge].
 
 ### Prerequisites
 
-#### OpenVINO Installation
-
-Developers should install the [OpenVINO] first before build and run WasmEdge with wasi-nn and the examples.
-For this project, we use the version `2021.4.582`. Please refer to the [installation script](scripts/install_openvino.sh).
-
-```bash
-curl -sSL https://apt.repos.intel.com/openvino/2021/GPG-PUB-KEY-INTEL-OPENVINO-2021 | sudo gpg --dearmor > /usr/share/keyrings/GPG-PUB-KEY-INTEL-OPENVINO-2021.gpg
-echo "deb [signed-by=/usr/share/keyrings/GPG-PUB-KEY-INTEL-OPENVINO-2021.gpg] https://apt.repos.intel.com/openvino/2021 all main" | sudo tee /etc/apt/sources.list.d/intel-openvino-2021.list
-sudo apt update
-sudo apt install -y intel-openvino-runtime-ubuntu20-2021.4.582
-```
-
-After the installation, you may need to add the path:
-
-```bash
-source /opt/intel/openvino_2021/bin/setupvars.sh
-sudo ldconfig
-```
-
-[OpenVINO]: https://www.intel.com/content/www/us/en/developer/tools/openvino-toolkit/overview.html
-
 #### Rust Installation
 
-Please refer to the [Rust Official Site](https://www.rust-lang.org/tools/install) for the Rust installation.
+For building the WASM files from rust source, please refer to the [Rust Official Site](https://www.rust-lang.org/tools/install) for the Rust installation.
 After the installation, developers should add the `wasm32-wasi` target.
 
 ```bash
@@ -50,32 +27,22 @@ rustup target add wasm32-wasi
 
 #### Download the `wasi-nn` Rust Crate
 
-In Rust, download the [crate from crates.io][crates.io] by adding `wasi-nn = "0.1"` as a Cargo dependency.
+In Rust, download the [crate from crates.io](https://crates.io/crates/wasi-nn) by adding `wasi-nn = "0.4.0"` as a Cargo dependency.
 
-[crates.io]: https://crates.io/crates/wasi-nn
+For using WasmEdge-TensorFlow plug-ins, please download the [crate from crates.io](https://crates.io/crates/wasmedge_tensorflow_interface) by adding `wasmedge_tensorflow_interface = "0.3.0"` as a Cargo dependency.
 
-#### Build the WasmEdge with WASI-NN supporting
+#### WasmEdge Installation
 
-For running the examples, developers should [build WasmEdge from source](https://wasmedge.org/book/en/extend/build.html).
-First developers should get the source:
+You can refer to [here to install WasmEdge](https://wasmedge.org/docs/start/install#install).
 
-```bash
-git clone https://github.com/WasmEdge/WasmEdge.git
-cd WasmEdge
-```
+For the examples with different wasi-nn backends or using the WasmEdge-Tensorflow plug-ins, please install with plug-ins and their dependencies:
 
-And build with the `WASMEDGE_PLUGIN_WASI_NN_BACKEND` argument:
-
-```bash
-cmake -Bbuild -GNinja -WASMEDGE_PLUGIN_WASI_NN_BACKEND="OpenVINO" .
-cmake --build build
-# For the WASI-NN plugin, you should install this project.
-cmake --install build
-```
-
-After the installation, developers can execute the `wasmedge` executable with WASI-NN plugin.
-
-> Notice: If you didn't install the project, you should give the `WASMEDGE_PLUGIN_PATH` environment variable for specifying the WASI-NN plugin path (the built plugin is at `build/plugins/wasi_nn`).
+- [wasi-nn plug-in with OpenVINO backend](https://wasmedge.org/docs/start/install#wasi-nn-plug-in-with-openvino-backend)
+- [wasi-nn plug-in with PyTorch backend](https://wasmedge.org/docs/start/install#wasi-nn-plug-in-with-pytorch-backend)
+- [wasi-nn plug-in with PyTorch backend](https://wasmedge.org/docs/start/install#wasi-nn-plug-in-with-tensorflow-lite-backend)
+- [WasmEdge-Image plug-in](https://wasmedge.org/docs/start/install#wasmedge-image-plug-in)
+- [WasmEdge-TensorFlow plug-in](https://wasmedge.org/docs/start/install#wasmedge-tensorflow-plug-in)
+- [WasmEdge-TensorFlow-Lite plug-in](https://wasmedge.org/docs/start/install#wasmedge-tensorflow-lite-plug-in)
 
 ### Examples
 
@@ -86,6 +53,7 @@ After the installation, developers can execute the `wasmedge` executable with WA
 - [WASI]
 - [wasi-nn]
 - [WasmEdge]
+- [WasmEdge-TensorFlow rust interface](https://crates.io/crates/wasmedge_tensorflow_interface)
 - [wasi-nn-guest](https://github.com/radu-matei/wasi-nn-guest)
 
 [WasmEdge]: https://wasmedge.org/

@@ -56,7 +56,7 @@ python3 gen_tensor input.jpg image-1x3x224x224.rgb
 
 ### Execute
 
-Users should [install the WasmEdge with WASI-NN PyTorch backend plug-in](https://wasmedge.org/book/en/write_wasm/rust/wasinn.html#get-wasmedge-with-wasi-nn-plug-in-pytorch-backend).
+Users should [install the WasmEdge with WASI-NN PyTorch backend plug-in](https://wasmedge.org/docs/start/install#wasi-nn-plug-in-with-pytorch-backend).
 
 Execute the WASM with the `wasmedge` with PyTorch supporting:
 

@@ -1,0 +1,12 @@
+[package]
+name = "wasmedge-tf-example-mobilenet"
+version = "0.1.0"
+authors = ["Second-State"]
+readme = "README.md"
+edition = "2021"
+publish = false
+
+[dependencies]
+wasmedge_tensorflow_interface = "0.3.0"
+
+[workspace]

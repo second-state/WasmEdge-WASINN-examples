@@ -40,7 +40,7 @@ The `tflite` model is located at `./lite-model_aiy_vision_classifier_birds_V1_3.
 
 ### Execute
 
-Users should [install the WasmEdge with WASI-NN TensorFlow-Lite backend plug-in](https://wasmedge.org/book/en/write_wasm/rust/wasinn.html#get-wasmedge-with-wasi-nn-plug-in-tensorflow-lite-backend).
+Users should [install the WasmEdge with WASI-NN TensorFlow-Lite backend plug-in](https://wasmedge.org/docs/start/install#wasi-nn-plug-in-with-tensorflow-lite-backend).
 
 Execute the WASM with the `wasmedge` with Tensorflow Lite supporting:
 
