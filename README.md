@@ -21,22 +21,16 @@ This project provides the examples of high-level [wasi-nn] bindings on Rust prog
 #### OpenVINO Installation
 
 Developers should install the [OpenVINO] first before build and run WasmEdge with wasi-nn and the examples.
-For this project, we use the version `2021.4.582`. Please refer to the [installation script](scripts/install_openvino.sh).
+For this project, we use the version `2023.0.0`. Please refer to the [installation script](scripts/install_openvino.sh).
 
 ```bash
-curl -sSL https://apt.repos.intel.com/openvino/2021/GPG-PUB-KEY-INTEL-OPENVINO-2021 | sudo gpg --dearmor > /usr/share/keyrings/GPG-PUB-KEY-INTEL-OPENVINO-2021.gpg
-echo "deb [signed-by=/usr/share/keyrings/GPG-PUB-KEY-INTEL-OPENVINO-2021.gpg] https://apt.repos.intel.com/openvino/2021 all main" | sudo tee /etc/apt/sources.list.d/intel-openvino-2021.list
+wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+echo "deb https://apt.repos.intel.com/openvino/2023 ubuntu20 main" | sudo tee /etc/apt/sources.list.d/intel-openvino-2023.list
 sudo apt update
-sudo apt install -y intel-openvino-runtime-ubuntu20-2021.4.582
+sudo apt-get -y install openvino
+ldconfig
 ```
-
-After the installation, you may need to add the path:
-
-```bash
-source /opt/intel/openvino_2021/bin/setupvars.sh
-sudo ldconfig
-```
-
 [OpenVINO]: https://www.intel.com/content/www/us/en/developer/tools/openvino-toolkit/overview.html
 
 #### Rust Installation

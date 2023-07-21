@@ -25,11 +25,7 @@ This example demonstrates how to use WasmEdge WASI-NN OpenVINO plugin to perform
 - Install OpenVINO
 
   ```bash
-  export OPENVINO_VERSION=2021.4.582
-  export OPENVINO_YEAR=2021
   bash WasmEdge-WASINN-examples/scripts/install_openvino.sh
-
-  bash /opt/intel/openvino_2021/bin/setupvars.sh
   ldconfig
   ```
 

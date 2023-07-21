@@ -42,8 +42,8 @@ jobs:
 
       - name: Install OpenVINO
         env:
-          OPENVINO_VERSION: "2021.4.582"
-          OPENVINO_YEAR: "2021"
+          OPENVINO_VERSION: "2023.0.0"
+          OPENVINO_YEAR: "2023"
         working-directory: scripts
         run: |
           bash install_openvino.sh
@@ -53,7 +53,6 @@ jobs:
           CMAKE_BUILD_TYPE: "Release"
           VERSION: "0.13.1"
         run: |
-          bash /opt/intel/openvino_2021/bin/setupvars.sh
           ldconfig
           curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION -p /usr/local --plugins wasi_nn-openvino
           ldconfig
@@ -61,7 +60,6 @@ jobs:
       - name: Build and run openvino-mobilenet-raw
         working-directory: openvino-mobilenet-raw
         run: |
-          bash /opt/intel/openvino_2021/bin/setupvars.sh
           ldconfig
           bash download_mobilenet.sh
           cd rust
@@ -72,7 +70,6 @@ jobs:
       - name: Build and run openvino-mobilenet-image
         working-directory: openvino-mobilenet-image
         run: |
-          bash /opt/intel/openvino_2021/bin/setupvars.sh
           ldconfig
           bash download_mobilenet.sh
           cd rust
