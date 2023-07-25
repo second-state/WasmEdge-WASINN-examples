@@ -33,6 +33,8 @@ The model files and the images used for this demonstration are from the [Intel o
 
 - Install OpenVINO
 
+Please refer to https://docs.openvino.ai/2023.0/openvino_docs_install_guides_installing_openvino_apt.html.
+
   ```bash
   bash WasmEdge-WASINN-examples/scripts/install_openvino.sh
   ldconfig
