@@ -24,7 +24,7 @@ This example demonstrates how to use WasmEdge WASI-NN OpenVINO plugin to perform
 
 - Install OpenVINO
 
-Please refer to https://docs.openvino.ai/2023.0/openvino_docs_install_guides_installing_openvino_apt.html.
+Please refer to [WasmEdge Docs](https://wasmedge.org/docs/contribute/source/plugin/wasi_nn) and [OpenVINO™](https://docs.openvino.ai/2023.0/openvino_docs_install_guides_installing_openvino_apt.html)(2023) for the installation process.
 
   ```bash
   bash WasmEdge-WASINN-examples/scripts/install_openvino.sh
