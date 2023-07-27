@@ -35,7 +35,7 @@ Please refer to [WasmEdge Docs](https://wasmedge.org/docs/contribute/source/plug
 
   ```bash
   export CMAKE_BUILD_TYPE=Release
-  export VERSION=0.13.1
+  export VERSION=0.13.2
 
   curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION -p /usr/local --plugins wasi_nn-openvino
   ldconfig
