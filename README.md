@@ -16,6 +16,21 @@ This project provides the examples of high-level [wasi-nn] bindings and WasmEdge
 
 ### Prerequisites
 
+#### OpenVINO Installation
+
+Developers should install the [OpenVINO] first before build and run WasmEdge with wasi-nn and the examples.
+For this project, we use the version `2023.0.0`. Please refer to [WasmEdge Docs](https://wasmedge.org/docs/contribute/source/plugin/wasi_nn) and [OpenVINO™](https://docs.openvino.ai/2023.0/openvino_docs_install_guides_installing_openvino_apt.html)(2023)
+
+```bash
+wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+echo "deb https://apt.repos.intel.com/openvino/2023 ubuntu20 main" | sudo tee /etc/apt/sources.list.d/intel-openvino-2023.list
+sudo apt update
+sudo apt-get -y install openvino
+ldconfig
+```
+[OpenVINO]: https://www.intel.com/content/www/us/en/developer/tools/openvino-toolkit/overview.html
+
 #### Rust Installation
 
 For building the WASM files from rust source, please refer to the [Rust Official Site](https://www.rust-lang.org/tools/install) for the Rust installation.

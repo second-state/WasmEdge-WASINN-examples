@@ -24,12 +24,10 @@ This example demonstrates how to use WasmEdge WASI-NN OpenVINO plugin to perform
 
 - Install OpenVINO
 
-  ```bash
-  export OPENVINO_VERSION=2021.4.582
-  export OPENVINO_YEAR=2021
-  bash WasmEdge-WASINN-examples/scripts/install_openvino.sh
+Please refer to [WasmEdge Docs](https://wasmedge.org/docs/contribute/source/plugin/wasi_nn) and [OpenVINO™](https://docs.openvino.ai/2023.0/openvino_docs_install_guides_installing_openvino_apt.html)(2023) for the installation process.
 
-  bash /opt/intel/openvino_2021/bin/setupvars.sh
+  ```bash
+  bash WasmEdge-WASINN-examples/scripts/install_openvino.sh
   ldconfig
   ```
 
@@ -37,7 +35,7 @@ This example demonstrates how to use WasmEdge WASI-NN OpenVINO plugin to perform
 
   ```bash
   export CMAKE_BUILD_TYPE=Release
-  export VERSION=0.13.1
+  export VERSION=0.13.2
 
   curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION -p /usr/local --plugins wasi_nn-openvino
   ldconfig
