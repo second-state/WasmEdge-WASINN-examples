@@ -1,0 +1,26 @@
+[package]
+name = "wasmedge-wasinn-example-yolo-image"
+version = "0.1.0"
+authors = ["Second-State"]
+readme = "README.md"
+edition = "2021"
+publish = false
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+image = { version = "0.24.7", default-features = false, features = [
+    "gif",
+    "jpeg",
+    "ico",
+    "png",
+    "pnm",
+    "tga",
+    "tiff",
+    "webp",
+    "bmp",
+    "hdr",
+    "dxt",
+    "dds",
+    "farbfeld",
+] }
+wasi-nn = { version = "0.6.0" }

@@ -8,5 +8,9 @@ openvino-mobilenet-raw/mobilenet.bin
 openvino-mobilenet-raw/mobilenet.xml
 openvino-mobilenet-raw/tensor-1x224x224x3-f32.bgr
 
+pytorch-yolo-image/*.pt
+pytorch-yolo-image/*.onnx
+pytorch-yolo-image/*.torchscript
+
 .DS_Store
 Cargo.lock
