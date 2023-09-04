@@ -8,5 +8,7 @@ openvino-mobilenet-raw/mobilenet.bin
 openvino-mobilenet-raw/mobilenet.xml
 openvino-mobilenet-raw/tensor-1x224x224x3-f32.bgr
 
+wasmedge-ggml-llama/llama-2-7b-chat.ggmlv3.q4_0.bin
+
 .DS_Store
 Cargo.lock
