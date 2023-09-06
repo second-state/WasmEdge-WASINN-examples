@@ -1,0 +1,44 @@
+name: Build and Test llama2 examples
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'info'
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Install apt-get packages
+      run: |
+        sudo ACCEPT_EULA=Y apt-get update
+        sudo ACCEPT_EULA=Y apt-get upgrade
+        sudo apt-get install wget git curl software-properties-common build-essential
+    
+    - name: Install Rust target for wasm
+      run: |
+        rustup target add wasm32-wasi
+        
+    - name: Install WasmEdge + WASI-NN + GGML
+      run: |
+        VERSION=0.13.4
+        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -v $VERSION --plugins wasi_nn-ggml -p /usr/local
+        
+    - name: Example
+      run: |
+        cd wasmedge-ggml-llama
+        curl -LO https://huggingface.co/TheBloke/orca_mini_3B-GGML/resolve/main/orca-mini-3b.ggmlv3.q4_0.bin
+        cargo build --target wasm32-wasi --release
+        wasmedge compile target/wasm32-wasi/release/wasmedge-ggml-llama.wasm wasmedge-ggml-llama.wasm
+        wasmedge --dir .:. --nn-preload default:GGML:CPU:orca-mini-3b.ggmlv3.q4_0.bin wasmedge-ggml-llama.wasm default 'Once upon a time, '
