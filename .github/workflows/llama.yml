@@ -38,7 +38,7 @@ jobs:
     - name: Example
       run: |
         cd wasmedge-ggml-llama
-        curl -LO https://huggingface.co/localmodels/Llama-2-7B-Chat-ggml/resolve/main/llama-2-7b-chat.ggmlv3.q4_0.bin
+        curl -LO https://huggingface.co/localmodels/Llama-2-7B-Chat-ggml/resolve/main/llama-2-7b-chat.ggmlv3.q2_K.bin
         cargo build --target wasm32-wasi --release
         wasmedge compile target/wasm32-wasi/release/wasmedge-ggml-llama.wasm wasmedge-ggml-llama.wasm
         wasmedge --dir .:. --nn-preload default:GGML:CPU:llama-2-7b-chat.ggmlv3.q4_0.bin wasmedge-ggml-llama.wasm default 'Once upon a time, '
