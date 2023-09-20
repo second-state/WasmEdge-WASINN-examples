@@ -50,14 +50,11 @@ jobs:
           CMAKE_BUILD_TYPE: "Release"
           VERSION: "0.13.4"
         run: |
-          ldconfig
           curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION -p /usr/local --plugins wasi_nn-openvino
-          ldconfig
 
       - name: Build and run openvino-mobilenet-raw
         working-directory: openvino-mobilenet-raw
         run: |
-          ldconfig
           bash download_mobilenet.sh
           cd rust
           cargo build --target wasm32-wasi --release
@@ -67,7 +64,6 @@ jobs:
       - name: Build and run openvino-mobilenet-image
         working-directory: openvino-mobilenet-image
         run: |
-          ldconfig
           bash download_mobilenet.sh
           cd rust
           cargo build --target wasm32-wasi --release

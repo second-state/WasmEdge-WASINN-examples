@@ -49,14 +49,11 @@ jobs:
           CMAKE_BUILD_TYPE: "Release"
           VERSION: "0.13.4"
         run: |
-          ldconfig
           curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION -p /usr/local --plugins wasi_nn-openvino
-          ldconfig
 
       - name: Build and run openvino-road-segmentation-adas
         working-directory: openvino-road-segmentation-adas
         run: |
-          ldconfig
           cd openvino-road-seg-adas
           cargo build --target=wasm32-wasi --release
           cp target/wasm32-wasi/release/openvino-road-seg-adas.wasm ..
