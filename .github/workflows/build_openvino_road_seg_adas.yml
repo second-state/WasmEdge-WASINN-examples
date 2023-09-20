@@ -1,15 +1,20 @@
 name: OpenVINO Road Segmentation ADAS Example
 
 on:
+  schedule:
+    - cron: "0 0 * * *"
   push:
+    branches: [master]
     paths:
       - ".github/workflows/build_openvino_road_seg_adas.yml"
       - "openvino-road-segmentation-adas/**"
       - "scripts/install_openvino.sh"
   pull_request:
     branches: [master]
-    paths-ignore:
-      - "**/*.md"
+    paths:
+      - ".github/workflows/build_openvino_road_seg_adas.yml"
+      - "openvino-road-segmentation-adas/**"
+      - "scripts/install_openvino.sh"
 
 env:
   CARGO_TERM_COLOR: always
