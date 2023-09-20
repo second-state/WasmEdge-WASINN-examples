@@ -54,9 +54,11 @@ jobs:
       run: |
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$(pwd)/libtorch/lib
         cd pytorch-mobilenet-image
+        cd rust
         cargo build --target wasm32-wasi --release
-        wasmedge compile rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm wasmedge-wasinn-example-mobilenet-image-aot.wasm
-        wasmedge compile rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image-named-model.wasm wasmedge-wasinn-example-mobilenet-image-named-model-aot.wasm
+        wasmedge compile rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm ../wasmedge-wasinn-example-mobilenet-image-aot.wasm
+        wasmedge compile rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image-named-model.wasm ../wasmedge-wasinn-example-mobilenet-image-named-model-aot.wasm
+        cd ..
         echo "Run without named model"
         wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image-aot.wasm mobilenet.pt input.jpg
         echo "Run with named model"
