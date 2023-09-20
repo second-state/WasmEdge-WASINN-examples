@@ -7,5 +7,5 @@ echo "deb https://apt.repos.intel.com/openvino/2023 ubuntu20 main" | tee /etc/ap
 apt update
 apt upgrade -y
 apt search openvino
-apt-get -y install openvino-2023.0.0
+apt-get -y install openvino-2023.0.2
 export PATH=/usr/lib/x86_64-linux-gnu:$PATH
