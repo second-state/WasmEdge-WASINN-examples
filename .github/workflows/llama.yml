@@ -1,4 +1,4 @@
-name: Build and Test llama2 examples
+name: ggml llama2 examples
 
 on:
   schedule:

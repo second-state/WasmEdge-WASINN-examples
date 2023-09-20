@@ -1,4 +1,4 @@
-name: Build and Test TFlite examples
+name: TFlite examples
 
 on:
   schedule:
