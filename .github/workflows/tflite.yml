@@ -1,6 +1,8 @@
 name: Build and Test TFlite examples
 
 on:
+  schedule:
+    - cron: "0 0 * * *"
   workflow_dispatch:
     inputs:
       logLevel:
@@ -9,8 +11,14 @@ on:
         default: 'info'
   push:
     branches: [ '*' ]
+    paths:
+      - ".github/workflows/tflite.yml"
+      - "tflite-birds_v1-image/**"
   pull_request:
     branches: [ '*' ]
+    paths:
+      - ".github/workflows/tflite.yml"
+      - "tflite-birds_v1-image/**"
 
 jobs:
   build:

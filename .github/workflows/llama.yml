@@ -1,6 +1,8 @@
 name: Build and Test llama2 examples
 
 on:
+  schedule:
+    - cron: "0 0 * * *"
   workflow_dispatch:
     inputs:
       logLevel:
@@ -9,8 +11,14 @@ on:
         default: 'info'
   push:
     branches: [ '*' ]
+    paths:
+      - ".github/workflows/llama.yml"
+      - "wasmedge-ggml-llama/**"
   pull_request:
     branches: [ '*' ]
+    paths:
+      - ".github/workflows/llama.yml"
+      - "wasmedge-ggml-llama/**"
 
 jobs:
   build:
