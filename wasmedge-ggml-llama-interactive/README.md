@@ -16,7 +16,7 @@ The output WASM file will be at `target/wasm32-wasi/release/`.
 To speed up the image processing, we can enable the AOT mode in WasmEdge with:
 
 ```bash
-wasmedgec target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm aot.wasm
+wasmedge compile target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm aot.wasm
 ```
 
 ## Get Model
