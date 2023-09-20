@@ -34,7 +34,7 @@ Execute the WASM with the `wasmedge` using the named model feature to preload la
 ```bash
 wasmedge --dir .:. \
   --nn-preload default:GGML:CPU:Llama-2-7B-Chat-q4_0.gguf \
-  wasmedge-ggml-llama-aot.wasm default
+  aot.wasm default
 ```
 
 After executing the command, you may need to wait a moment for the input prompt to appear.
