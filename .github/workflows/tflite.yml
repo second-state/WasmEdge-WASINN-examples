@@ -1,6 +1,8 @@
-name: Build and Test TFlite examples
+name: TFlite examples
 
 on:
+  schedule:
+    - cron: "0 0 * * *"
   workflow_dispatch:
     inputs:
       logLevel:
@@ -9,8 +11,14 @@ on:
         default: 'info'
   push:
     branches: [ '*' ]
+    paths:
+      - ".github/workflows/tflite.yml"
+      - "tflite-birds_v1-image/**"
   pull_request:
     branches: [ '*' ]
+    paths:
+      - ".github/workflows/tflite.yml"
+      - "tflite-birds_v1-image/**"
 
 jobs:
   build:
@@ -18,7 +26,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       
     - name: Install apt-get packages
       run: |
