@@ -53,7 +53,7 @@ The testing image `input.jpg` is downloaded from <https://github.com/bytecodeall
 If you want to generate the [raw tensor](image-1x3x224x224.rgb), you can run:
 
 ```bash
-python3 gen_tensor input.jpg image-1x3x224x224.rgb
+python3 gen_tensor.py input.jpg image-1x3x224x224.rgb
 ```
 
 ### Execute
