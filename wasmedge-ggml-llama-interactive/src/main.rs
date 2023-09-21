@@ -32,9 +32,9 @@ fn main() {
         println!("Question:");
         let input = read_input();
         if saved_prompt == "" {
-            saved_prompt = format!("[INST] {} {} [/INST]", system_prompt, input.trim());
+            saved_prompt = format!("<s>[INST] {} {} [/INST]", system_prompt, input.trim());
         } else {
-            saved_prompt = format!("{} [INST] {} [/INST]", saved_prompt, input.trim());
+            saved_prompt = format!("{}<s>[INST] {} [/INST]", saved_prompt, input.trim());
         }
 
         // Set prompt to the input tensor.
@@ -48,8 +48,10 @@ fn main() {
 
         // Retrieve the output.
         let mut output_buffer = vec![0u8; 1000];
-        context.get_output(0, &mut output_buffer).unwrap();
-        let output = String::from_utf8(output_buffer.clone()).unwrap();
+        let output_size = context.get_output(0, &mut output_buffer).unwrap();
+        let output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
         println!("Answer:\n{}", output.trim());
+
+        saved_prompt = format!("{} {} </s>", saved_prompt, output.trim());
     }
 }

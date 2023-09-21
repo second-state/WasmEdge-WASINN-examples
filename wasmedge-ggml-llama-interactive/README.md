@@ -24,7 +24,7 @@ wasmedge compile target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm
 Download llama model:
 
 ```bash
-curl -LO https://huggingface.co/Rabinovich/Llama-2-7B-Chat-GGUF/resolve/main/Llama-2-7B-Chat-q4_0.gguf
+curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf
 ```
 
 ### Execute
@@ -33,7 +33,7 @@ Execute the WASM with the `wasmedge` using the named model feature to preload la
 
 ```bash
 wasmedge --dir .:. \
-  --nn-preload default:GGML:CPU:Llama-2-7B-Chat-q4_0.gguf \
+  --nn-preload default:GGML:CPU:llama-2-7b-chat.Q4_0.gguf \
   aot.wasm default
 ```
 
