@@ -1,15 +1,20 @@
 name: OpenVINO Road Segmentation ADAS Example
 
 on:
+  schedule:
+    - cron: "0 0 * * *"
   push:
+    branches: [master]
     paths:
       - ".github/workflows/build_openvino_road_seg_adas.yml"
       - "openvino-road-segmentation-adas/**"
       - "scripts/install_openvino.sh"
   pull_request:
     branches: [master]
-    paths-ignore:
-      - "**/*.md"
+    paths:
+      - ".github/workflows/build_openvino_road_seg_adas.yml"
+      - "openvino-road-segmentation-adas/**"
+      - "scripts/install_openvino.sh"
 
 env:
   CARGO_TERM_COLOR: always
@@ -40,9 +45,6 @@ jobs:
           apt install -y libtbb2
 
       - name: Install OpenVINO
-        env:
-          OPENVINO_VERSION: "2023.0.0"
-          OPENVINO_YEAR: "2023"
         working-directory: scripts
         run: |
           bash install_openvino.sh
@@ -50,16 +52,13 @@ jobs:
       - name: Install WasmEdge with Wasi-NN OpenVINO plugin
         env:
           CMAKE_BUILD_TYPE: "Release"
-          VERSION: "0.13.2"
+          VERSION: "0.13.4"
         run: |
-          ldconfig
           curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION -p /usr/local --plugins wasi_nn-openvino
-          ldconfig
 
       - name: Build and run openvino-road-segmentation-adas
         working-directory: openvino-road-segmentation-adas
         run: |
-          ldconfig
           cd openvino-road-seg-adas
           cargo build --target=wasm32-wasi --release
           cp target/wasm32-wasi/release/openvino-road-seg-adas.wasm ..

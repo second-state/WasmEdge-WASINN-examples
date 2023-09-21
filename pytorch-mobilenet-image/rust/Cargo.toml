@@ -8,6 +8,14 @@ publish = false
 
 [dependencies]
 image = { version = "0.23.14", default-features = false, features = ["gif", "jpeg", "ico", "png", "pnm", "tga", "tiff", "webp", "bmp", "hdr", "dxt", "dds", "farbfeld"]  }
-wasi-nn = { version = "0.4.0" }
+wasi-nn = { version = "0.6.0" }
+
+[[bin]]
+name = "wasmedge-wasinn-example-mobilenet-image"
+path = "src/main.rs"
+
+[[bin]]
+name = "wasmedge-wasinn-example-mobilenet-image-named-model"
+path = "src/named_model.rs"
 
 [workspace]
