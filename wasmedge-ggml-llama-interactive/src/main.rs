@@ -52,6 +52,6 @@ fn main() {
         let output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
         println!("Answer:\n{}", output.trim());
 
-        saved_prompt = format!("{} {} </s>", saved_prompt, output.trim());
+        saved_prompt = format!("{} {} ", saved_prompt, output.trim());
     }
 }
