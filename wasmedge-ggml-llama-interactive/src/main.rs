@@ -25,16 +25,16 @@ fn main() {
             .unwrap();
     let mut context = graph.init_execution_context().unwrap();
 
-    let system_prompt = String::from("<<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe. <</SYS>>\n\n");
+    let system_prompt = String::from("<<SYS>>You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe. <</SYS>>");
     let mut saved_prompt = String::new();
 
     loop {
         println!("Question:");
         let input = read_input();
         if saved_prompt == "" {
-            saved_prompt = format!("<s>[INST] {} {} [/INST]", system_prompt, input.trim());
+            saved_prompt = format!("[INST] {} {} [/INST]", system_prompt, input.trim());
         } else {
-            saved_prompt = format!("{}<s>[INST] {} [/INST]", saved_prompt, input.trim());
+            saved_prompt = format!("{} [INST] {} [/INST]", saved_prompt, input.trim());
         }
 
         // Set prompt to the input tensor.
