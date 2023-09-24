@@ -1,5 +1,7 @@
 # Llama Example For WASI-NN with GGML Backend
 
+[See it in action!](https://x.com/juntao/status/1705588244602114303)
+
 ## Requirement
 
 ### For macOS (apple silicon)
