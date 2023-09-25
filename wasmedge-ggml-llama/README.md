@@ -17,18 +17,13 @@ cargo build --target wasm32-wasi --release
 ```
 
 The output WASM file will be at `target/wasm32-wasi/release/`.
-To speed up the image processing, we can enable the AOT mode in WasmEdge with:
-
-```bash
-wasmedgec target/wasm32-wasi/release/wasmedge-ggml-llama.wasm wasmedge-ggml-llama-aot.wasm
-```
 
 ## Get Model
 
 Download llama model:
 
 ```bash
-curl -LO https://huggingface.co/localmodels/Llama-2-7B-Chat-ggml/resolve/main/llama-2-7b-chat.ggmlv3.q4_0.bin
+curl -LO https://huggingface.co/TheBloke/Llama-2-7B-GGUF/resolve/main/llama-2-7b.Q5_K_M.gguf
 ```
 
 ### Execute
@@ -37,8 +32,8 @@ Execute the WASM with the `wasmedge` using the named model feature to preload la
 
 ```bash
 wasmedge --dir .:. \
-  --nn-preload default:GGML:CPU:llama-2-7b-chat.ggmlv3.q4_0.bin \
-  wasmedge-ggml-llama-aot.wasm default 'Once upon a time, '
+  --nn-preload default:GGML:CPU:llama-2-7b.Q5_K_M.gguf \
+  target/wasm32-wasi/release/wasmedge-ggml-llama.wasm default 'Once upon a time, '
 ```
 
 After executing the command, it takes some time to wait for the output.
