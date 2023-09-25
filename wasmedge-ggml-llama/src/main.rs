@@ -7,7 +7,7 @@ fn main() {
     let prompt: &str = &args[2];
 
     let graph =
-        wasi_nn::GraphBuilder::new(wasi_nn::GraphEncoding::Ggml, wasi_nn::ExecutionTarget::CPU)
+        wasi_nn::GraphBuilder::new(wasi_nn::GraphEncoding::Ggml, wasi_nn::ExecutionTarget::AUTO)
             .build_from_cache(model_name)
             .unwrap();
     println!("Loaded model into wasi-nn with ID: {:?}", graph);
