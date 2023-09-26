@@ -20,7 +20,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build_openvino_examples:
+  build_pytorch_examples:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -47,6 +47,7 @@ jobs:
       - name: Install LibTorch
         working-directory: scripts
         run: |
+          set -e 
           bash install_libtorch.sh
 
       - name: Install WasmEdge
@@ -63,6 +64,7 @@ jobs:
           curl https://bootstrap.pypa.io/get-pip.py > get-pip.py && python3 get-pip.py
           pip install ultralytics
           python get_model.py
+          cd rust
           cargo build --target=wasm32-wasi --release
           cp target/wasm32-wasi/release/wasmedge-wasinn-example-yolo-image.wasm ..
           cd ..
