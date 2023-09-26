@@ -29,8 +29,8 @@ pub fn main() {
 
     // Load a tensor that precisely matches the graph input tensor dimensions
     // Graph expects 1,3,640,640 dimensional tensor
-
-    let tensor_data = pre_process_image(image_name.to_string())
+    let (raw_processed, resize_scale) = pre_process_image(image_name.to_string());
+    let tensor_data = raw_processed
         .into_iter()
         .flatten()
         .collect::<Vec<Vec<f32>>>()
@@ -63,11 +63,10 @@ pub fn main() {
     let mut output_buffer = vec![0f32; 1 * 84 * 8400];
     context.get_output(0, &mut output_buffer).unwrap();
 
-    let results = post_process_results(&output_buffer);
+    let confidence_threshold = 0.5;
+    let results = post_process_results(&output_buffer, confidence_threshold, resize_scale);
     for result in results {
-        if result.probability > 0.5 {
-            println!("{:?}", result);
-        }
+        println!("{:?}", result);
     }
 }
 
@@ -76,13 +75,17 @@ const SIZE: usize = 640;
 const SIZE_U32: u32 = 640;
 type Channel = Vec<Vec<f32>>;
 
-fn pre_process_image(path: String) -> [Channel; 3] {
+struct ResizeScale(pub f32);
+
+fn pre_process_image(path: String) -> ([Channel; 3], ResizeScale) {
     let mut file_img = File::open(path).unwrap();
     let mut img_buf = Vec::new();
     file_img.read_to_end(&mut img_buf).unwrap();
     let img = image::load_from_memory(&img_buf).unwrap().to_rgb8();
 
     let (height, width);
+    let length = img.width().max(img.height());
+    let scale: ResizeScale = ResizeScale(length as f32 / SIZE_U32 as f32);
     if img.width() > img.height() {
         // height is the shorter length
         height = SIZE_U32 * img.height() / img.width();
@@ -93,7 +96,7 @@ fn pre_process_image(path: String) -> [Channel; 3] {
         height = SIZE_U32;
     }
 
-    let resized =
+    let resized: image::ImageBuffer<image::Rgb<u8>, Vec<u8>> =
         image::imageops::resize(&img, width, height, ::image::imageops::FilterType::Triangle);
 
     // We need the image to fit the 640 x 640 size,
@@ -121,11 +124,15 @@ fn pre_process_image(path: String) -> [Channel; 3] {
     let final_tensor: [Vec<Vec<f32>>; 3];
     final_tensor = [red, green, blue];
 
-    final_tensor
+    (final_tensor, scale)
 }
 
 // Function to process output tensor from YOLO
-fn post_process_results(buffer: &[f32]) -> Vec<InferenceResult> {
+fn post_process_results(
+    buffer: &[f32],
+    conf_threshold: f32,
+    scale: ResizeScale,
+) -> Vec<InferenceResult> {
     // Output buffer is in columar format
     // 84 rows x 8400 columns as a single Vec of f32
     let mut columns = Vec::new();
@@ -145,23 +152,28 @@ fn post_process_results(buffer: &[f32]) -> Vec<InferenceResult> {
     let mut results = Vec::new();
 
     for row in rows {
-        let x = row[0].round() as u32;
-        let y = row[1].round() as u32;
-        let width = row[2].round() as u32;
-        let height = row[3].round() as u32;
-
         // Get maximum likeliehood for each detection
         // Iterator of only class probabilities
         let mut prob_iter = row.clone().into_iter().skip(4);
         let max = prob_iter.clone().reduce(|a, b| a.max(b)).unwrap();
+        if max < conf_threshold {
+            continue;
+        }
         let index = prob_iter.position(|element| element == max).unwrap();
         let class = YOLO_CLASSES.get(index).unwrap().to_string();
+
+        let raw_w = row[2];
+        let raw_h = row[3];
+        let x = ((row[0] - 0.5 * raw_w) * scale.0).round() as u32;
+        let y = ((row[1] - 0.5 * raw_h) * scale.0).round() as u32;
+        let w = (raw_w * scale.0).round() as u32;
+        let h = (raw_h * scale.0).round() as u32;
 
         results.push(InferenceResult {
             x,
             y,
-            width,
-            height,
+            width: w,
+            height: h,
             probability: max,
             class,
         });
