@@ -11,7 +11,6 @@ openvino-mobilenet-raw/tensor-1x224x224x3-f32.bgr
 
 pytorch-yolo-image/*.pt
 pytorch-yolo-image/*.onnx
-pytorch-yolo-image/*.torchscript
 
 wasmedge-ggml-llama/llama-2-7b-chat.ggmlv3.q4_0.bin
 
