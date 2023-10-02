@@ -54,7 +54,7 @@ For the examples with different wasi-nn backends or using the WasmEdge-Tensorflo
 
 - [wasi-nn plug-in with OpenVINO backend](https://wasmedge.org/docs/start/install#wasi-nn-plug-in-with-openvino-backend)
 - [wasi-nn plug-in with PyTorch backend](https://wasmedge.org/docs/start/install#wasi-nn-plug-in-with-pytorch-backend)
-- [wasi-nn plug-in with PyTorch backend](https://wasmedge.org/docs/start/install#wasi-nn-plug-in-with-tensorflow-lite-backend)
+- [wasi-nn plug-in with TensorFlow-Lite backend](https://wasmedge.org/docs/start/install#wasi-nn-plug-in-with-tensorflow-lite-backend)
 - [WasmEdge-Image plug-in](https://wasmedge.org/docs/start/install#wasmedge-image-plug-in)
 - [WasmEdge-TensorFlow plug-in](https://wasmedge.org/docs/start/install#wasmedge-tensorflow-plug-in)
 - [WasmEdge-TensorFlow-Lite plug-in](https://wasmedge.org/docs/start/install#wasmedge-tensorflow-lite-plug-in)
