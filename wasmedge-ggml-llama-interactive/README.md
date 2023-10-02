@@ -119,6 +119,10 @@ The total cost of 3 apples would be 15 dollars. Each apple costs 5 dollars, so 3
 
 - After running the `wasmedge` command, you may received the following error:
   ```bash
+  [2023-10-02 14:30:31.227] [error] loading failed: invalid path, Code: 0x20
+  [2023-10-02 14:30:31.227] [error]     load library failed:libblas.so.3: cannot open shared object file: No such file or directory
+  [2023-10-02 14:30:31.227] [error] loading failed: invalid path, Code: 0x20
+  [2023-10-02 14:30:31.227] [error]     load library failed:libblas.so.3: cannot open shared object file: No such file or directory
   unknown option: nn-preload
   ```
   This suggests that your plugin installation was not successful. To resolve this issue, please attempt to install your desired plugin again.
