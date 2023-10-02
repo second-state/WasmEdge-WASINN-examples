@@ -105,6 +105,24 @@ Answer:
 The total cost of 3 apples would be 15 dollars. Each apple costs 5 dollars, so 3 apples would cost 3 x 5 = 15 dollars.
 ```
 
+## Errors
+- After running `apt update && apt install -y libopenblas-dev`, you may encountered the following error:
+  ```bash
+  ...
+  E: Could not open lock file /var/lib/dpkg/lock-frontend - open (13: Permission denied)
+  E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), are you root?
+  ```
+   This indicates that you are not logged in as `root`. Please try installing again using the `sudo` command:
+  ```bash
+  sudo apt update && sudo apt install -y libopenblas-dev
+  ```
+
+- After running the `wasmedge` command, you may received the following error:
+  ```bash
+  unknown option: nn-preload
+  ```
+  This suggests that your plugin installation was not successful. To resolve this issue, please attempt to install your desired plugin again.
+
 ## Credit
 
 The WASI-NN ggml plugin embedded [`llama.cpp`](git://github.com/ggerganov/llama.cpp.git@b1217) as its backend.
