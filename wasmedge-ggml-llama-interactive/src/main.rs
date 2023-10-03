@@ -54,8 +54,10 @@ fn main() {
         context.compute().unwrap();
 
         // Retrieve the output.
-        let mut output_buffer = vec![0u8; 1000];
-        let output_size = context.get_output(0, &mut output_buffer).unwrap();
+        let max_output_size = 4096*6;
+        let mut output_buffer = vec![0u8; max_output_size];
+        let mut output_size = context.get_output(0, &mut output_buffer).unwrap();
+        output_size = std::cmp::min(max_output_size, output_size);
         let output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
         println!("Answer:\n{}", output.trim());
 
