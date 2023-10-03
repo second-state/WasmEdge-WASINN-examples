@@ -19,7 +19,6 @@ source $HOME/.zshenv
 
 Because we enabled OpenBLAS on Ubuntu, you must install `libopenblas-dev` by `apt update && apt install -y libopenblas-dev`.
 
-
 Install WasmEdge 0.13.4+WASI-NN ggml plugin(OpenBLAS enabled) via installer
 
 ```bash
@@ -106,18 +105,23 @@ The total cost of 3 apples would be 15 dollars. Each apple costs 5 dollars, so 3
 ```
 
 ## Errors
+
 - After running `apt update && apt install -y libopenblas-dev`, you may encountered the following error:
+
   ```bash
   ...
   E: Could not open lock file /var/lib/dpkg/lock-frontend - open (13: Permission denied)
   E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), are you root?
   ```
+
    This indicates that you are not logged in as `root`. Please try installing again using the `sudo` command:
+
   ```bash
   sudo apt update && sudo apt install -y libopenblas-dev
   ```
 
 - After running the `wasmedge` command, you may received the following error:
+
   ```bash
   [2023-10-02 14:30:31.227] [error] loading failed: invalid path, Code: 0x20
   [2023-10-02 14:30:31.227] [error]     load library failed:libblas.so.3: cannot open shared object file: No such file or directory
@@ -125,7 +129,25 @@ The total cost of 3 apples would be 15 dollars. Each apple costs 5 dollars, so 3
   [2023-10-02 14:30:31.227] [error]     load library failed:libblas.so.3: cannot open shared object file: No such file or directory
   unknown option: nn-preload
   ```
+
   This suggests that your plugin installation was not successful. To resolve this issue, please attempt to install your desired plugin again.
+
+## Parameters
+
+Currently, we support the following parameters:
+
+- `LLAMA_LOG`: Set it to a non-empty value to enable logging.
+- `LLAMA_N_CTX`: Set the context size, the same as the `--ctx-size` parameter in llama.cpp (default: 512).
+- `LLAMA_N_PREDICT`: Set the number of tokens to predict, the same as the `--n-predict` parameter in llama.cpp (default: 512).
+
+These parameters can be set by adding the following environment variables before the `wasmedge` command:
+
+```bash
+LLAMA_LOG=1 LLAMA_N_CTX=1024 LLAMA_N_PREDICT=128 \
+wasmedge --dir .:. \
+  --nn-preload default:GGML:CPU:llama-2-7b-chat.Q5_K_M.gguf \
+  wasmedge-ggml-llama-interactive.wasm default
+```
 
 ## Credit
 
