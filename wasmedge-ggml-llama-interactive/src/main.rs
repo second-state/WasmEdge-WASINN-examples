@@ -28,6 +28,13 @@ fn main() {
     let system_prompt = String::from("<<SYS>>You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe. <</SYS>>");
     let mut saved_prompt = String::new();
 
+    // Ask a quick question to load the model
+    let initial_prompt = "Are you ready to answer questions? Answer yes or no.";
+    context
+        .set_input(0, wasi_nn::TensorType::U8, &[1], &initial_prompt.as_bytes().to_vec())
+        .unwrap();
+    context.compute().unwrap();
+
     loop {
         println!("Question:");
         let input = read_input();
