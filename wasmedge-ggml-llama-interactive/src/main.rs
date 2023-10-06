@@ -48,10 +48,10 @@ fn main() {
         let tensor_data = saved_prompt.as_bytes().to_vec();
         context
             .set_input(0, wasi_nn::TensorType::U8, &[1], &tensor_data)
-            .unwrap();
+            .expect("Failed to set saved prompt to the input tensor");
 
         // Execute the inference.
-        context.compute().unwrap();
+        context.compute().expect("Failed to infer");
 
         // Retrieve the output.
         let mut output_buffer = vec![0u8; 1000];
