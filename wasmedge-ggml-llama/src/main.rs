@@ -9,25 +9,27 @@ fn main() {
     let graph =
         wasi_nn::GraphBuilder::new(wasi_nn::GraphEncoding::Ggml, wasi_nn::ExecutionTarget::AUTO)
             .build_from_cache(model_name)
-            .unwrap();
+            .expect("Failed to load the model");
     println!("Loaded model into wasi-nn with ID: {:?}", graph);
 
-    let mut context = graph.init_execution_context().unwrap();
+    let mut context = graph.init_execution_context().expect("Failed to init context");
     println!("Created wasi-nn execution context with ID: {:?}", context);
 
     let tensor_data = prompt.as_bytes().to_vec();
     println!("Read input tensor, size in bytes: {}", tensor_data.len());
     context
         .set_input(0, wasi_nn::TensorType::U8, &[1], &tensor_data)
-        .unwrap();
+        .expect("Failed to set prompt as the input tensor");
 
     // Execute the inference.
-    context.compute().unwrap();
+    context.compute().expect("Failed to complete inference");
     println!("Executed model inference");
 
     // Retrieve the output.
-    let mut output_buffer = vec![0u8; 1000];
-    context.get_output(0, &mut output_buffer).unwrap();
-    let output = String::from_utf8(output_buffer.clone()).unwrap();
+    let max_output_size = 4096*6;
+    let mut output_buffer = vec![0u8; max_output_size];
+    let mut output_size = context.get_output(0, &mut output_buffer).expect("Failed to get inference output");
+    output_size = std::cmp::min(max_output_size, output_size);
+    let output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
     println!("Output: {}", output);
 }
