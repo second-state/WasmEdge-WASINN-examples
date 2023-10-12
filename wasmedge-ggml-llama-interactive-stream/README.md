@@ -79,7 +79,7 @@ Execute the WASM with the `wasmedge` using the named model feature to preload la
 
 ```bash
 STREAM_TO_STDOUT=1 wasmedge --dir .:. \
-  --nn-preload default:GGML:CPU:llama-2-7b-chat.Q5_K_M.gguf \
+  --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
   wasmedge-ggml-llama-interactive-stream.wasm default
 ```
 
