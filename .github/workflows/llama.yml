@@ -33,7 +33,7 @@ jobs:
         echo RESET grub-efi/install_devices | sudo debconf-communicate grub-pc
         sudo ACCEPT_EULA=Y apt-get update
         sudo ACCEPT_EULA=Y apt-get upgrade
-        sudo apt-get install wget git curl software-properties-common build-essential
+        sudo apt-get install wget git curl software-properties-common build-essential libopenblas-dev
 
     - name: Install Rust target for wasm
       run: |
