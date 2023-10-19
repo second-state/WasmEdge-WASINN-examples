@@ -28,10 +28,26 @@ fn main() {
     let system_prompt = String::from("<<SYS>>You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe. <</SYS>>");
     let mut saved_prompt = String::new();
 
+    // Set options to input with index 1
+    let options = r#"{"enable-log": true, "ctx-size": 1024}"#;
+    context
+        .set_input(
+            1,
+            wasi_nn::TensorType::U8,
+            &[1],
+            &options.as_bytes().to_vec(),
+        )
+        .unwrap();
+
     // Ask a quick question to load the model
     let initial_prompt = "Are you ready to answer questions? Answer yes or no.";
     context
-        .set_input(0, wasi_nn::TensorType::U8, &[1], &initial_prompt.as_bytes().to_vec())
+        .set_input(
+            0,
+            wasi_nn::TensorType::U8,
+            &[1],
+            &initial_prompt.as_bytes().to_vec(),
+        )
         .unwrap();
     context.compute().unwrap();
 
@@ -54,7 +70,7 @@ fn main() {
         context.compute().unwrap();
 
         // Retrieve the output.
-        let max_output_size = 4096*6;
+        let max_output_size = 4096 * 6;
         let mut output_buffer = vec![0u8; max_output_size];
         let mut output_size = context.get_output(0, &mut output_buffer).unwrap();
         output_size = std::cmp::min(max_output_size, output_size);
