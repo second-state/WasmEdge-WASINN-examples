@@ -4,4 +4,4 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-wasi-nn = { git = "https://github.com/second-state/wasmedge-wasi-nn", branch = "dm4/ggml" }
+wasi-nn = { git = "https://github.com/second-state/wasmedge-wasi-nn", branch = "ggml" }
