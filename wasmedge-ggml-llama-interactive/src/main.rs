@@ -1,3 +1,4 @@
+use serde_json::json;
 use std::env;
 use std::io;
 use wasi_nn;
@@ -29,13 +30,18 @@ fn main() {
     let mut saved_prompt = String::new();
 
     // Set options to input with index 1
-    let options = r#"{"enable-log": true, "ctx-size": 1024}"#;
+    let options = json!({
+        "enable-log": true,
+        "ctx-size": 1024,
+        "n-predict": 1024,
+        "n-gpu-layers": 0,
+    });
     context
         .set_input(
             1,
             wasi_nn::TensorType::U8,
             &[1],
-            &options.as_bytes().to_vec(),
+            &options.to_string().as_bytes().to_vec(),
         )
         .unwrap();
 
