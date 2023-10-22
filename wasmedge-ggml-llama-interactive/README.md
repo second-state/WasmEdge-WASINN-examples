@@ -78,7 +78,7 @@ Execute the WASM with the `wasmedge` using the named model feature to preload la
 
 ```bash
 wasmedge --dir .:. \
-  --nn-preload default:GGML:CPU:llama-2-7b-chat.Q5_K_M.gguf \
+  --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
   wasmedge-ggml-llama-interactive.wasm default
 ```
 
@@ -134,21 +134,27 @@ The total cost of 3 apples would be 15 dollars. Each apple costs 5 dollars, so 3
 
 ## Parameters
 
-Currently, we support the following parameters:
+Currently, we support setting llama options using `set_input` with index 1.
+You can pass the JSON string as a `Vec<u8>` type to `set_input`.
 
-- `LLAMA_LOG`: Set it to a non-empty value to enable logging.
-- `LLAMA_N_CTX`: Set the context size, the same as the `--ctx-size` parameter in llama.cpp (default: 512).
-- `LLAMA_N_PREDICT`: Set the number of tokens to predict, the same as the `--n-predict` parameter in llama.cpp (default: 512).
+Supported parameters include:
+
+- `enable-log`: Set it to true to enable logging.
+- `stream-stdout`: Set it to true to print the inferred tokens to standard output.
+- `ctx-size`: Set the context size, the same as the `--ctx-size` parameter in llama.cpp.
+- `n-predict`: Set the number of tokens to predict, the same as the `--n-predict` parameter in llama.cpp.
+- `n-gpu-layers`: Set the number of layers to store in VRAM, the same as the `--n-gpu-layers` parameter in llama.cpp.
+- `reverse-prompt`: Set it to the token at which you want to halt the generation. Similar to the `--reverse-prompt` parameter in llama.cpp.
+- `batch-size`: Set the number of batch size for prompt processing, the same as the `--batch-size` parameter in llama.cpp.
 
 These parameters can be set by adding the following environment variables before the `wasmedge` command:
 
 ```bash
-LLAMA_LOG=1 LLAMA_N_CTX=1024 LLAMA_N_PREDICT=128 \
 wasmedge --dir .:. \
-  --nn-preload default:GGML:CPU:llama-2-7b-chat.Q5_K_M.gguf \
+  --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
   wasmedge-ggml-llama-interactive.wasm default
 ```
 
 ## Credit
 
-The WASI-NN ggml plugin embedded [`llama.cpp`](git://github.com/ggerganov/llama.cpp.git@b1217) as its backend.
+The WASI-NN ggml plugin embedded [`llama.cpp`](git://github.com/ggerganov/llama.cpp.git@b1309) as its backend.
