@@ -49,10 +49,10 @@ jobs:
         cd wasmedge-ggml-llama-interactive
         curl -LO https://huggingface.co/juanjgit/orca_mini_3B-GGUF/resolve/main/orca-mini-3b.q4_0.gguf
         cargo build --target wasm32-wasi --release
-        wasmedge compile target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm wasmedge-ggml-llama-interactive.wasm
         wasmedge --dir .:. \
           --env enable_log=false \
           --env stream_stdout=false \
           --nn-preload default:GGML:CPU:orca-mini-3b.q4_0.gguf \
-          wasmedge-ggml-llama-interactive.wasm default \
+          target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm \
+          default \
           '### System:\nYou are an AI assistant\n\n### User:\nWhere is the capital of Japan?\n\n### Response:\n'
