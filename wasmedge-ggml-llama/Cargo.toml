@@ -1,7 +1,0 @@
-[package]
-name = "wasmedge-ggml-llama"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-wasi-nn = { git = "https://github.com/second-state/wasmedge-wasi-nn", branch = "ggml" }
