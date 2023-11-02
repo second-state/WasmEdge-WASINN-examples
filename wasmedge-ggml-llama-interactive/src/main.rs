@@ -20,22 +20,22 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     let stream_stdout: bool = env::var("stream_stdout")
-        .unwrap_or("true".to_string())
+        .unwrap_or("false".to_string())
         .trim()
         .parse()
         .unwrap();
     let enable_log: bool = env::var("enable_log")
-        .unwrap_or("true".to_string())
+        .unwrap_or("false".to_string())
         .trim()
         .parse()
         .unwrap();
     let ctx_size: i32 = env::var("ctx_size")
-        .unwrap_or("1024".to_string())
+        .unwrap_or("512".to_string())
         .trim()
         .parse()
         .unwrap();
     let n_predict: i32 = env::var("n_predict")
-        .unwrap_or("1024".to_string())
+        .unwrap_or("512".to_string())
         .trim()
         .parse()
         .unwrap();
