@@ -53,7 +53,6 @@ jobs:
         wasmedge --dir .:. \
           --env enable_log=false \
           --env stream_stdout=false \
-          --env is_interactive=false \
-          --nn-preload default:GGML:AUTO:orca-mini-3b.q4_0.gguf \
-          wasmedge-ggml-llama.wasm default \
+          --nn-preload default:GGML:CPU:orca-mini-3b.q4_0.gguf \
+          wasmedge-ggml-llama-interactive.wasm default \
           '### System:\nYou are an AI assistant\n\n### User:\nWhere is the capital of Japan?\n\n### Response:\n'

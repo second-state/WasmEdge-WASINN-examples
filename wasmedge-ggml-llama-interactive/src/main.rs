@@ -44,11 +44,6 @@ fn main() {
         .trim()
         .parse()
         .unwrap();
-    let is_interactive: bool = env::var("is_interactive")
-        .unwrap_or("true".to_string())
-        .trim()
-        .parse()
-        .unwrap();
 
     let model_name: &str = &args[1];
 
@@ -78,7 +73,9 @@ fn main() {
         )
         .unwrap();
 
-    if !is_interactive {
+    // If there is a third argument, use it as the prompt and enter non-interactive mode.
+    // Otherwise, enter interactive mode.
+    if args.len() >= 3 {
         let prompt = &args[2];
         println!("Prompt:\n{}", prompt);
         let tensor_data = prompt.as_bytes().to_vec();
