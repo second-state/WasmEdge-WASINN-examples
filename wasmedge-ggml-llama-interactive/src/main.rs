@@ -89,6 +89,7 @@ fn main() {
             .unwrap();
 
         // Execute the inference.
+        println!("Answer:");
         context.compute().unwrap();
 
         // Retrieve the output.
@@ -97,7 +98,10 @@ fn main() {
         let mut output_size = context.get_output(0, &mut output_buffer).unwrap();
         output_size = std::cmp::min(max_output_size, output_size);
         let output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
-        println!("Answer:\n{}", output.trim());
+        if !stream_stdout {
+            print!("{}", output.trim());
+        }
+        println!("");
 
         saved_prompt = format!("{} {} ", saved_prompt, output.trim());
     }
