@@ -139,13 +139,15 @@ You can pass the JSON string as a `Vec<u8>` type to `set_input`.
 
 Supported parameters include:
 
-- `enable-log`: Set it to true to enable logging.
-- `stream-stdout`: Set it to true to print the inferred tokens to standard output.
-- `ctx-size`: Set the context size, the same as the `--ctx-size` parameter in llama.cpp.
-- `n-predict`: Set the number of tokens to predict, the same as the `--n-predict` parameter in llama.cpp.
-- `n-gpu-layers`: Set the number of layers to store in VRAM, the same as the `--n-gpu-layers` parameter in llama.cpp.
-- `reverse-prompt`: Set it to the token at which you want to halt the generation. Similar to the `--reverse-prompt` parameter in llama.cpp.
-- `batch-size`: Set the number of batch size for prompt processing, the same as the `--batch-size` parameter in llama.cpp.
+- `enable-log`: Set it to true to enable logging. (default: `false`)
+- `stream-stdout`: Set it to true to print the inferred tokens to standard output. (default: `false`)
+- `ctx-size`: Set the context size, the same as the `--ctx-size` parameter in llama.cpp. (default: `512`)
+- `n-predict`: Set the number of tokens to predict, the same as the `--n-predict` parameter in llama.cpp. (default: `512`)
+- `n-gpu-layers`: Set the number of layers to store in VRAM, the same as the `--n-gpu-layers` parameter in llama.cpp. (default: `0`)
+- `reverse-prompt`: Set it to the token at which you want to halt the generation. Similar to the `--reverse-prompt` parameter in llama.cpp.  (default: `""`)
+- `batch-size`: Set the number of batch size for prompt processing, the same as the `--batch-size` parameter in llama.cpp.  (default: `512`)
+
+(For more detailed usage instructions regarding the parameters, please refer to [WasmEdge](https://github.com/WasmEdge/WasmEdge/blob/master/plugins/wasi_nn/ggml.cpp).)
 
 For convenience, these parameters could be set by adding the environmental variables in this example.
 The environmental variables are handled by Rust. (Due to the limitation of environmental variables, beware of the `-` and `_` in the variable name.)
