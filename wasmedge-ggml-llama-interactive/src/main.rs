@@ -18,6 +18,33 @@ fn read_input() -> String {
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+
+    let stream_stdout: bool = env::var("stream_stdout")
+        .unwrap_or("true".to_string())
+        .trim()
+        .parse()
+        .unwrap();
+    let enable_log: bool = env::var("enable_log")
+        .unwrap_or("true".to_string())
+        .trim()
+        .parse()
+        .unwrap();
+    let ctx_size: i32 = env::var("ctx_size")
+        .unwrap_or("1024".to_string())
+        .trim()
+        .parse()
+        .unwrap();
+    let n_predict: i32 = env::var("n_predict")
+        .unwrap_or("1024".to_string())
+        .trim()
+        .parse()
+        .unwrap();
+    let n_gpu_layers: i32 = env::var("n_gpu_layers")
+        .unwrap_or("0".to_string())
+        .trim()
+        .parse()
+        .unwrap();
+
     let model_name: &str = &args[1];
 
     let graph =
@@ -31,10 +58,11 @@ fn main() {
 
     // Set options to input with index 1
     let options = json!({
-        "enable-log": true,
-        "ctx-size": 1024,
-        "n-predict": 1024,
-        "n-gpu-layers": 0,
+        "stream-stdout": stream_stdout,
+        "enable-log": enable_log,
+        "ctx-size": ctx_size,
+        "n-predict": n_predict,
+        "n-gpu-layers": n_gpu_layers,
     });
     context
         .set_input(
@@ -44,18 +72,6 @@ fn main() {
             &options.to_string().as_bytes().to_vec(),
         )
         .unwrap();
-
-    // Ask a quick question to load the model
-    let initial_prompt = "Are you ready to answer questions? Answer yes or no.";
-    context
-        .set_input(
-            0,
-            wasi_nn::TensorType::U8,
-            &[1],
-            &initial_prompt.as_bytes().to_vec(),
-        )
-        .unwrap();
-    context.compute().unwrap();
 
     loop {
         println!("Question:");
