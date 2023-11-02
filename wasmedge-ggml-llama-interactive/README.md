@@ -147,10 +147,16 @@ Supported parameters include:
 - `reverse-prompt`: Set it to the token at which you want to halt the generation. Similar to the `--reverse-prompt` parameter in llama.cpp.
 - `batch-size`: Set the number of batch size for prompt processing, the same as the `--batch-size` parameter in llama.cpp.
 
-These parameters can be set by adding the following environment variables before the `wasmedge` command:
+For convenience, these parameters could be set by adding the environmental variables in this example.
+The environmental variables are handled by Rust. (Due to the limitation of environmental variables, beware of the `-` and `_` in the variable name.)
 
 ```bash
 wasmedge --dir .:. \
+  --env stream_stdout=false \
+  --env enable_log=false \
+  --env ctx_size=512 \
+  --env n_predict=512 \
+  --env n_gpu_layers=0 \
   --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
   wasmedge-ggml-llama-interactive.wasm default
 ```
