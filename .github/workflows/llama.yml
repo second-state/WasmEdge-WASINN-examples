@@ -49,7 +49,7 @@ jobs:
         cd wasmedge-ggml-llama-interactive
         curl -LO https://huggingface.co/juanjgit/orca_mini_3B-GGUF/resolve/main/orca-mini-3b.q4_0.gguf
         cargo build --target wasm32-wasi --release
-        wasmedge compile target/wasm32-wasi/release/wasmedge-ggml-llama.wasm wasmedge-ggml-llama.wasm
+        wasmedge compile target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm wasmedge-ggml-llama-interactive.wasm
         wasmedge --dir .:. \
           --env enable_log=false \
           --env stream_stdout=false \
