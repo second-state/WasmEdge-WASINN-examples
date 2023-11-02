@@ -44,6 +44,11 @@ fn main() {
         .trim()
         .parse()
         .unwrap();
+    let is_interactive: bool = env::var("is_interactive")
+        .unwrap_or("true".to_string())
+        .trim()
+        .parse()
+        .unwrap();
 
     let model_name: &str = &args[1];
 
@@ -73,36 +78,53 @@ fn main() {
         )
         .unwrap();
 
-    loop {
-        println!("Question:");
-        let input = read_input();
-        if saved_prompt == "" {
-            saved_prompt = format!("[INST] {} {} [/INST]", system_prompt, input.trim());
-        } else {
-            saved_prompt = format!("{} [INST] {} [/INST]", saved_prompt, input.trim());
-        }
-
-        // Set prompt to the input tensor.
-        let tensor_data = saved_prompt.as_bytes().to_vec();
+    if !is_interactive {
+        let prompt = &args[2];
+        println!("Prompt:\n{}", prompt);
+        let tensor_data = prompt.as_bytes().to_vec();
         context
             .set_input(0, wasi_nn::TensorType::U8, &[1], &tensor_data)
             .unwrap();
-
-        // Execute the inference.
-        println!("Answer:");
+        println!("Response:");
         context.compute().unwrap();
-
-        // Retrieve the output.
         let max_output_size = 4096 * 6;
         let mut output_buffer = vec![0u8; max_output_size];
         let mut output_size = context.get_output(0, &mut output_buffer).unwrap();
         output_size = std::cmp::min(max_output_size, output_size);
         let output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
-        if !stream_stdout {
-            print!("{}", output.trim());
-        }
-        println!("");
+        println!("{}", output.trim());
+    } else {
+        loop {
+            println!("Question:");
+            let input = read_input();
+            if saved_prompt == "" {
+                saved_prompt = format!("[INST] {} {} [/INST]", system_prompt, input.trim());
+            } else {
+                saved_prompt = format!("{} [INST] {} [/INST]", saved_prompt, input.trim());
+            }
 
-        saved_prompt = format!("{} {} ", saved_prompt, output.trim());
+            // Set prompt to the input tensor.
+            let tensor_data = saved_prompt.as_bytes().to_vec();
+            context
+                .set_input(0, wasi_nn::TensorType::U8, &[1], &tensor_data)
+                .unwrap();
+
+            // Execute the inference.
+            println!("Answer:");
+            context.compute().unwrap();
+
+            // Retrieve the output.
+            let max_output_size = 4096 * 6;
+            let mut output_buffer = vec![0u8; max_output_size];
+            let mut output_size = context.get_output(0, &mut output_buffer).unwrap();
+            output_size = std::cmp::min(max_output_size, output_size);
+            let output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
+            if !stream_stdout {
+                print!("{}", output.trim());
+            }
+            println!("");
+
+            saved_prompt = format!("{} {} ", saved_prompt, output.trim());
+        }
     }
 }
