@@ -165,4 +165,5 @@ wasmedge --dir .:. \
 
 ## Credit
 
-The WASI-NN ggml plugin embedded [`llama.cpp`](git://github.com/ggerganov/llama.cpp.git@b1309) as its backend.
+The WASI-NN ggml plugin embedded [`llama.cpp`](git://github.com/ggerganov/llama.cpp.git) as its backend.
+For details about the version used, please refer to [WasmEdge/LICENSE.spdx](https://github.com/WasmEdge/WasmEdge/blob/master/LICENSE.spdx).
