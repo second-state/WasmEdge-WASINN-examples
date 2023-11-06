@@ -149,34 +149,6 @@ Answer:
 The total cost of 3 apples would be 15 dollars. Each apple costs 5 dollars, so 3 apples would cost 3 x 5 = 15 dollars.
 ```
 
-## Errors
-
-- After running `apt update && apt install -y libopenblas-dev`, you may encounter the following error:
-
-  ```bash
-  ...
-  E: Could not open lock file /var/lib/dpkg/lock-frontend - open (13: Permission denied)
-  E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), are you root?
-  ```
-
-   This indicates that you are not logged in as `root`. Please try installing again using the `sudo` command:
-
-  ```bash
-  sudo apt update && sudo apt install -y libopenblas-dev
-  ```
-
-- After running the `wasmedge` command, you may receive the following error:
-
-  ```bash
-  [2023-10-02 14:30:31.227] [error] loading failed: invalid path, Code: 0x20
-  [2023-10-02 14:30:31.227] [error]     load library failed:libblas.so.3: cannot open shared object file: No such file or directory
-  [2023-10-02 14:30:31.227] [error] loading failed: invalid path, Code: 0x20
-  [2023-10-02 14:30:31.227] [error]     load library failed:libblas.so.3: cannot open shared object file: No such file or directory
-  unknown option: nn-preload
-  ```
-
-  This suggests that your plugin installation was not successful. To resolve this issue, please attempt to install your desired plugin again.
-
 ## Parameters
 
 Currently, we support setting llama options using `set_input` with index 1.
@@ -207,6 +179,44 @@ wasmedge --dir .:. \
   --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
   wasmedge-ggml-llama-interactive.wasm default
 ```
+
+## Performance
+
+Welcome to submit PR to upload the TPS <3
+
+| WasmEdge | Hardware                      | OS                                     | Model                    | TPS   |
+| -        | -                             | -                                      | -                        | -     |
+| 0.13.5   | M2 Max 64GB                   | macOS 13.6                             | llama-2-7b-chat.Q5\_K\_M | 12.68 |
+| 0.13.5   | i7-10700 + NVIDIA GTX 1080 8G | Ubuntu 22.04                           | llama-2-7b-chat.Q5\_K\_M | 31.73 |
+| 0.13.5   | AWS g5.xlarge A10G 24G        | Amazon Deep Learning base Ubuntu 20.04 | llama-2-7b-chat.Q5\_K\_M | 71.48 |
+
+## Errors
+
+- After running `apt update && apt install -y libopenblas-dev`, you may encounter the following error:
+
+  ```bash
+  ...
+  E: Could not open lock file /var/lib/dpkg/lock-frontend - open (13: Permission denied)
+  E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), are you root?
+  ```
+
+   This indicates that you are not logged in as `root`. Please try installing again using the `sudo` command:
+
+  ```bash
+  sudo apt update && sudo apt install -y libopenblas-dev
+  ```
+
+- After running the `wasmedge` command, you may receive the following error:
+
+  ```bash
+  [2023-10-02 14:30:31.227] [error] loading failed: invalid path, Code: 0x20
+  [2023-10-02 14:30:31.227] [error]     load library failed:libblas.so.3: cannot open shared object file: No such file or directory
+  [2023-10-02 14:30:31.227] [error] loading failed: invalid path, Code: 0x20
+  [2023-10-02 14:30:31.227] [error]     load library failed:libblas.so.3: cannot open shared object file: No such file or directory
+  unknown option: nn-preload
+  ```
+
+  This suggests that your plugin installation was not successful. To resolve this issue, please attempt to install your desired plugin again.
 
 ## Credit
 
