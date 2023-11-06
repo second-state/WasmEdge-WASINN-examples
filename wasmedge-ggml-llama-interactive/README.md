@@ -6,11 +6,11 @@
 
 ### For macOS (apple silicon)
 
-Install WasmEdge 0.13.4+WASI-NN ggml plugin(Metal enabled on apple silicon) via installer
+Install WasmEdge 0.13.5+WASI-NN ggml plugin(Metal enabled on Apple silicon) via the installer.
 
 ```bash
 curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- --plugin wasi_nn-ggml
-# After install the wasmedge, you have to activate the environment.
+# After installing the wasmedge, you have to activate the environment.
 # Assuming you use zsh (the default shell on macOS), you will need to run the following command
 source $HOME/.zshenv
 ```
@@ -23,11 +23,11 @@ The installer from WasmEdge 0.13.5 will detect cuda automatically.
 
 If CUDA is detected, the installer will always attempt to install a CUDA-enabled version of the plugin.
 
-Install WasmEdge 0.13.4+WASI-NN ggml plugin via installer
+Install WasmEdge 0.13.5+WASI-NN ggml plugin via installer
 
 ```bash
 curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- --plugin wasi_nn-ggml
-# After install the wasmedge, you have to activate the environment.
+# After installing the wasmedge, you have to activate the environment.
 # Assuming you use bash (the default shell on Ubuntu), you will need to run the following command
 source $HOME/.bashrc
 ```
@@ -35,30 +35,31 @@ source $HOME/.bashrc
 This version is verified on the following platforms:
 1. Nvidia Jetson AGX Orin 64GB developer kit
 2. Intel i7-10700 + Nvidia GTX 1080 8G GPU
+2. AWS EC2 `g5.xlarge` + Nvidia A10G 24G GPU + Amazon deep learning base Ubuntu 20.04
 
 #### CPU only
 
-If CPU is the only available hardware on your machine, the installer will install OpenBLAS version of plugin instead.
+If the CPU is the only available hardware on your machine, the installer will install the OpenBLAS version of the plugin instead.
 
 You may need to install `libopenblas-dev` by `apt update && apt install -y libopenblas-dev`.
 
-Install WasmEdge 0.13.4+WASI-NN ggml plugin via installer
+Install WasmEdge 0.13.5+WASI-NN ggml plugin via installer
 
 ```bash
 apt update && apt install -y libopenblas-dev # You may need sudo if the user is not root.
 curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- --plugin wasi_nn-ggml
-# After install the wasmedge, you have to activate the environment.
+# After installing the wasmedge, you have to activate the environment.
 # Assuming you use bash (the default shell on Ubuntu), you will need to run the following command
 source $HOME/.bashrc
 ```
 
 ### For General Linux
 
-Install WasmEdge 0.13.4+WASI-NN ggml plugin via installer
+Install WasmEdge 0.13.5+WASI-NN ggml plugin via installer
 
 ```bash
 curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- --plugin wasi_nn-ggml
-# After install the wasmedge, you have to activate the environment.
+# After installing the wasmedge, you have to activate the environment.
 # Assuming you use bash (the default shell on Linux), you will need to run the following command
 source $HOME/.bashrc
 ```
@@ -97,10 +98,31 @@ curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama
 
 ## Execute
 
-Execute the WASM with the `wasmedge` using the named model feature to preload large model:
+Execute the WASM with the `wasmedge` using the named model feature to preload a large model:
 
 ```bash
 wasmedge --dir .:. \
+  --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
+  wasmedge-ggml-llama-interactive.wasm default
+```
+
+### GPU acceleration
+
+#### macOS
+
+macOS will use the Metal framework by default. You don't have to specify the `n_gpu_layers` parameter.
+
+#### Linux + CUDA
+
+Due to the various GPU hardware, it's hard to set a default value of `n_gpu_layers`.
+
+Please use the following command to ensure the tensor layers of the model is offloaded into GPU:
+
+```
+# llama2-7b-chat provides 35 GPU layers. So, we have to set a value that is large or equal to 35.
+# If you use a larger model, this value may change.
+wasmedge --dir .:. \
+  --env n_gpu_layers=35 \
   --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
   wasmedge-ggml-llama-interactive.wasm default
 ```
@@ -129,7 +151,7 @@ The total cost of 3 apples would be 15 dollars. Each apple costs 5 dollars, so 3
 
 ## Errors
 
-- After running `apt update && apt install -y libopenblas-dev`, you may encountered the following error:
+- After running `apt update && apt install -y libopenblas-dev`, you may encounter the following error:
 
   ```bash
   ...
@@ -143,7 +165,7 @@ The total cost of 3 apples would be 15 dollars. Each apple costs 5 dollars, so 3
   sudo apt update && sudo apt install -y libopenblas-dev
   ```
 
-- After running the `wasmedge` command, you may received the following error:
+- After running the `wasmedge` command, you may receive the following error:
 
   ```bash
   [2023-10-02 14:30:31.227] [error] loading failed: invalid path, Code: 0x20
@@ -167,8 +189,8 @@ Supported parameters include:
 - `ctx-size`: Set the context size, the same as the `--ctx-size` parameter in llama.cpp. (default: `512`)
 - `n-predict`: Set the number of tokens to predict, the same as the `--n-predict` parameter in llama.cpp. (default: `512`)
 - `n-gpu-layers`: Set the number of layers to store in VRAM, the same as the `--n-gpu-layers` parameter in llama.cpp. When using Metal support in macOS, please set `n-gpu-layers` to `0` or do not set it for the default value. (default: `0`)
-- `reverse-prompt`: Set it to the token at which you want to halt the generation. Similar to the `--reverse-prompt` parameter in llama.cpp.  (default: `""`)
-- `batch-size`: Set the number of batch size for prompt processing, the same as the `--batch-size` parameter in llama.cpp.  (default: `512`)
+- `reverse-prompt`: Set it to the token at which you want to halt the generation. Similar to the `--reverse-prompt` parameter in llama.cpp. (default: `""`)
+- `batch-size`: Set the batch size number for prompt processing, the same as the `--batch-size` parameter in llama.cpp. (default: `512`)
 
 (For more detailed usage instructions regarding the parameters, please refer to [WasmEdge](https://github.com/WasmEdge/WasmEdge/blob/master/plugins/wasi_nn/ggml.cpp).)
 
