@@ -52,22 +52,13 @@ fn main() {
 
     let graph =
         wasi_nn::GraphBuilder::new(wasi_nn::GraphEncoding::Ggml, wasi_nn::ExecutionTarget::AUTO)
+            .config(options.to_string())
             .build_from_cache(model_name)
             .unwrap();
     let mut context = graph.init_execution_context().unwrap();
 
     let system_prompt = String::from("<<SYS>>You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe. <</SYS>>");
     let mut saved_prompt = String::new();
-
-    // Set options to input with index 1
-    context
-        .set_input(
-            1,
-            wasi_nn::TensorType::U8,
-            &[1],
-            &options.to_string().as_bytes().to_vec(),
-        )
-        .unwrap();
 
     // If there is a third argument, use it as the prompt and enter non-interactive mode.
     // Otherwise, enter interactive mode.
