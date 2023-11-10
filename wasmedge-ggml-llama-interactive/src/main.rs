@@ -18,34 +18,37 @@ fn read_input() -> String {
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-
-    let stream_stdout: bool = env::var("stream_stdout")
-        .unwrap_or("false".to_string())
-        .trim()
-        .parse()
-        .unwrap();
-    let enable_log: bool = env::var("enable_log")
-        .unwrap_or("false".to_string())
-        .trim()
-        .parse()
-        .unwrap();
-    let ctx_size: i32 = env::var("ctx_size")
-        .unwrap_or("512".to_string())
-        .trim()
-        .parse()
-        .unwrap();
-    let n_predict: i32 = env::var("n_predict")
-        .unwrap_or("512".to_string())
-        .trim()
-        .parse()
-        .unwrap();
-    let n_gpu_layers: i32 = env::var("n_gpu_layers")
-        .unwrap_or("0".to_string())
-        .trim()
-        .parse()
-        .unwrap();
-
     let model_name: &str = &args[1];
+
+    let mut options = json!({});
+    match env::var("enable_log") {
+        Ok(val) => options["enable-log"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    };
+    match env::var("stream_stdout") {
+        Ok(val) => options["stream-stdout"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    };
+    match env::var("n_predict") {
+        Ok(val) => options["n-preidct"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    }
+    match env::var("reverse_prompt") {
+        Ok(val) => options["reverse-prompt"] = json!(val),
+        _ => (),
+    }
+    match env::var("n_gpu_layers") {
+        Ok(val) => options["n-gpu-layers"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    }
+    match env::var("ctx_size") {
+        Ok(val) => options["ctx-size"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    }
+    match env::var("batch_size") {
+        Ok(val) => options["batch-size"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    }
 
     let graph =
         wasi_nn::GraphBuilder::new(wasi_nn::GraphEncoding::Ggml, wasi_nn::ExecutionTarget::AUTO)
@@ -57,13 +60,6 @@ fn main() {
     let mut saved_prompt = String::new();
 
     // Set options to input with index 1
-    let options = json!({
-        "stream-stdout": stream_stdout,
-        "enable-log": enable_log,
-        "ctx-size": ctx_size,
-        "n-predict": n_predict,
-        "n-gpu-layers": n_gpu_layers,
-    });
     context
         .set_input(
             1,
@@ -116,7 +112,11 @@ fn main() {
             let mut output_size = context.get_output(0, &mut output_buffer).unwrap();
             output_size = std::cmp::min(max_output_size, output_size);
             let output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
-            if !stream_stdout {
+            if let Some(is_stream) = options["stream-stdout"].as_bool() {
+                if !is_stream {
+                    print!("{}", output.trim());
+                }
+            } else {
                 print!("{}", output.trim());
             }
             println!("");
