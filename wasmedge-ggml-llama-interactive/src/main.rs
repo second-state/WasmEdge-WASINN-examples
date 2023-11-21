@@ -60,6 +60,18 @@ fn main() {
     let system_prompt = String::from("<<SYS>>You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe. <</SYS>>");
     let mut saved_prompt = String::new();
 
+    // We also support setting the options via input tensor with index 1.
+    // Check our README for more details.
+    //
+    // context
+    //     .set_input(
+    //         1,
+    //         wasi_nn::TensorType::U8,
+    //         &[1],
+    //         &options.to_string().as_bytes().to_vec(),
+    //     )
+    //     .unwrap();
+
     // If there is a third argument, use it as the prompt and enter non-interactive mode.
     // Otherwise, enter interactive mode.
     if args.len() >= 3 {
