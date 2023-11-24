@@ -1,4 +1,4 @@
-use serde_json::json;
+use serde_json::{json, Value};
 use std::env;
 use std::io;
 use wasi_nn;
@@ -125,6 +125,20 @@ fn main() {
             println!("");
 
             saved_prompt = format!("{} {} ", saved_prompt, output.trim());
+
+            // Retrieve the output metadata.
+            let max_metadata_size = 4096 * 6;
+            let mut metadata_buffer = vec![0u8; max_metadata_size];
+            let mut metadata_size = context.get_output(1, &mut metadata_buffer).unwrap();
+            metadata_size = std::cmp::min(max_metadata_size, metadata_size);
+            let metadata_str = String::from_utf8_lossy(&metadata_buffer[..metadata_size]).to_string();
+            let metadata: Value = serde_json::from_str(&metadata_str).unwrap();
+            if let Some(enable_log) = options["enable-log"].as_bool() {
+                if enable_log {
+                    println!("Number of input tokens: {}", metadata["input_tokens"]);
+                    println!("Number of output tokens: {}", metadata["output_tokens"]);
+                }
+            }
         }
     }
 }
