@@ -186,8 +186,9 @@ Welcome to submit PR to upload the TPS <3
 
 | WasmEdge | Hardware                        | OS                                     | Model                    | TPS    |
 | -        | -                               | -                                      | -                        | -      |
-| 0.13.5   | M2 Max 64GB                     | macOS 13.6                             | llama-2-7b-chat.Q5\_K\_M |  42.08 |
 | 0.13.5   | i7-10700 + NVIDIA GTX 1080 8G   | Ubuntu 22.04                           | llama-2-7b-chat.Q5\_K\_M |  31.73 |
+| 0.13.5   | M2 Max 64GB                     | macOS 13.6                             | llama-2-7b-chat.Q5\_K\_M |  42.08 |
+| 0.13.5   | M3 Max 64GB                     | macOS 14.1.1                           | llama-2-7b-chat.Q5\_K\_M |  49.39 |
 | 0.13.5   | AWS g5.xlarge A10G 24G          | Amazon Deep Learning base Ubuntu 20.04 | llama-2-7b-chat.Q5\_K\_M |  71.48 |
 | 0.13.5   | i7-13700K + NVIDIA RTX 4090 24G | Windows 11 WSL2 Ubuntu 22.04           | llama-2-7b-chat.Q5\_K\_M | 111.90 |
 
