@@ -49,6 +49,14 @@ fn main() {
         Ok(val) => options["batch-size"] = serde_json::from_str(val.as_str()).unwrap(),
         _ => (),
     }
+    match env::var("temp") {
+        Ok(val) => options["temp"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    }
+    match env::var("repeat_penalty") {
+        Ok(val) => options["repeat-penalty"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    }
 
     let graph =
         wasi_nn::GraphBuilder::new(wasi_nn::GraphEncoding::Ggml, wasi_nn::ExecutionTarget::AUTO)
