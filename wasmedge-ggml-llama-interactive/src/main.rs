@@ -32,13 +32,13 @@ fn main() {
     let initial_prompt = "Are you ready to answer questions? Answer yes or no.";
     context
         .set_input(0, wasi_nn::TensorType::U8, &[1], &initial_prompt.as_bytes().to_vec())
-        .unwrap();
-    context.compute().unwrap();
+        .expect("Failed to set input");
+    context.compute().expect("Failed to compute context");
 
     loop {
         println!("Question:");
         let input = read_input();
-        if saved_prompt == "" {
+        if saved_prompt.is_empty() {
             saved_prompt = format!("[INST] {} {} [/INST]", system_prompt, input.trim());
         } else {
             saved_prompt = format!("{} [INST] {} [/INST]", saved_prompt, input.trim());
