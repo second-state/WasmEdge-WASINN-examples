@@ -1,6 +1,6 @@
 use serde_json::{json, Value};
 use std::env;
-use std::io;
+use std::io::{self, Write};
 use wasi_nn;
 
 fn read_input() -> String {
@@ -8,7 +8,6 @@ fn read_input() -> String {
         let mut answer = String::new();
         io::stdin()
             .read_line(&mut answer)
-            .ok()
             .expect("Failed to read line");
         if !answer.is_empty() && answer != "\n" && answer != "\r\n" {
             return answer;
@@ -113,24 +112,58 @@ fn main() {
                 .set_input(0, wasi_nn::TensorType::U8, &[1], &tensor_data)
                 .unwrap();
 
-            // Execute the inference.
             println!("Answer:");
-            context.compute().unwrap();
 
-            // Retrieve the output.
-            let max_output_size = 4096 * 6;
-            let mut output_buffer = vec![0u8; max_output_size];
-            let mut output_size = context.get_output(0, &mut output_buffer).unwrap();
-            output_size = std::cmp::min(max_output_size, output_size);
-            let output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
-            if let Some(is_stream) = options["stream-stdout"].as_bool() {
-                if !is_stream {
+            // We suuport both compute() and compute_single().
+            // compute() will compute the entire paragraph until the end of sequence, and return the entire output.
+            // compute_single() will compute one token at a time, and return the output of the last token.
+            let try_single_token_inference = false;
+            let mut output = String::new();
+
+            if try_single_token_inference {
+                // Compute one token at a time, and get the token using the get_output_single().
+                loop {
+                    let result = context.compute_single();
+                    match result {
+                        Ok(_) => (),
+                        Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::EndOfSequence)) => {
+                            break;
+                        }
+                        Err(err) => {
+                            println!("Error: {}", err);
+                            break;
+                        }
+                    }
+                    // Retrieve the output.
+                    let max_output_size = 4096 * 6;
+                    let mut output_buffer = vec![0u8; max_output_size];
+                    let mut output_size = context.get_output_single(0, &mut output_buffer).unwrap();
+                    output_size = std::cmp::min(max_output_size, output_size);
+                    let token = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
+                    print!("{}", token);
+                    io::stdout().flush().unwrap();
+                    output += &token;
+                }
+                println!("");
+            } else {
+                // Execute the inference.
+                context.compute().unwrap();
+
+                // Retrieve the output.
+                let max_output_size = 4096 * 6;
+                let mut output_buffer = vec![0u8; max_output_size];
+                let mut output_size = context.get_output(0, &mut output_buffer).unwrap();
+                output_size = std::cmp::min(max_output_size, output_size);
+                output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
+                if let Some(is_stream) = options["stream-stdout"].as_bool() {
+                    if !is_stream {
+                        print!("{}", output.trim());
+                    }
+                } else {
                     print!("{}", output.trim());
                 }
-            } else {
-                print!("{}", output.trim());
+                println!("");
             }
-            println!("");
 
             saved_prompt = format!("{} {} ", saved_prompt, output.trim());
 
@@ -139,7 +172,8 @@ fn main() {
             let mut metadata_buffer = vec![0u8; max_metadata_size];
             let mut metadata_size = context.get_output(1, &mut metadata_buffer).unwrap();
             metadata_size = std::cmp::min(max_metadata_size, metadata_size);
-            let metadata_str = String::from_utf8_lossy(&metadata_buffer[..metadata_size]).to_string();
+            let metadata_str =
+                String::from_utf8_lossy(&metadata_buffer[..metadata_size]).to_string();
             let metadata: Value = serde_json::from_str(&metadata_str).unwrap();
             if let Some(enable_log) = options["enable-log"].as_bool() {
                 if enable_log {
