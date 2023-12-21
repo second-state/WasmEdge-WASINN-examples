@@ -234,6 +234,8 @@ When constructing the graph, you can set the metadata by using the `config` meth
 2. From the input tensor
 
 When setting input to the context, specify the index with 1 for the metadata.
+This setting will overwrite the metadata set in the graph builder.
+If you modify the `n-gpu-layers` parameter, the model will be reloaded.
 
 ```rust
 context
@@ -247,6 +249,21 @@ context
 ```
 
 (For more detailed instructions on usage or default values for the parameters, please refer to [WasmEdge](https://github.com/WasmEdge/WasmEdge/blob/master/plugins/wasi_nn/ggml.cpp).)
+
+### Token Usage
+
+You can use `get_output()` with index 1 to get the token usage of input and output text.
+The token usage is a JSON string with the following format:
+
+```json
+{
+  "input_tokens": 78,
+  "output_tokens": 31
+}
+```
+
+Users should be aware of the context size as well as the number of tokens used to avoid exceeding the limit.
+If the number of tokens exceeds the context size, the WASI-NN ggml plugin will return a RuntimeError.
 
 ## Credit
 
