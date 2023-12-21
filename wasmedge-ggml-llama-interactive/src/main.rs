@@ -57,6 +57,15 @@ fn main() {
         _ => (),
     }
 
+    // We suuport both compute() and compute_single().
+    // compute() will compute the entire paragraph until the end of sequence, and return the entire output.
+    // compute_single() will compute one token at a time, and return the output of the last token.
+    let mut is_compute_single = false;
+    match env::var("compute_single") {
+        Ok(val) => is_compute_single = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    }
+
     let graph =
         wasi_nn::GraphBuilder::new(wasi_nn::GraphEncoding::Ggml, wasi_nn::ExecutionTarget::AUTO)
             .config(options.to_string())
@@ -114,13 +123,8 @@ fn main() {
 
             println!("Answer:");
 
-            // We suuport both compute() and compute_single().
-            // compute() will compute the entire paragraph until the end of sequence, and return the entire output.
-            // compute_single() will compute one token at a time, and return the output of the last token.
-            let try_single_token_inference = false;
             let mut output = String::new();
-
-            if try_single_token_inference {
+            if is_compute_single {
                 // Compute one token at a time, and get the token using the get_output_single().
                 loop {
                     let result = context.compute_single();
