@@ -19,6 +19,9 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let model_name: &str = &args[1];
 
+    // Preserve for 4096 tokens with average token length 6
+    const MAX_OUTPUT_BUFFER_SIZE: usize = 4096 * 6;
+
     let mut options = json!({});
     match env::var("enable_log") {
         Ok(val) => options["enable-log"] = serde_json::from_str(val.as_str()).unwrap(),
@@ -99,10 +102,9 @@ fn main() {
             .unwrap();
         println!("Response:");
         context.compute().unwrap();
-        let max_output_size = 4096 * 6;
-        let mut output_buffer = vec![0u8; max_output_size];
+        let mut output_buffer = vec![0u8; MAX_OUTPUT_BUFFER_SIZE];
         let mut output_size = context.get_output(0, &mut output_buffer).unwrap();
-        output_size = std::cmp::min(max_output_size, output_size);
+        output_size = std::cmp::min(MAX_OUTPUT_BUFFER_SIZE, output_size);
         let output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
         println!("{}", output.trim());
     } else {
@@ -120,6 +122,20 @@ fn main() {
             context
                 .set_input(0, wasi_nn::TensorType::U8, &[1], &tensor_data)
                 .unwrap();
+
+            // Get the number of input tokens.
+            let mut input_metadata_buffer = vec![0u8; MAX_OUTPUT_BUFFER_SIZE];
+            let mut input_metadata_size =
+                context.get_output(1, &mut input_metadata_buffer).unwrap();
+            input_metadata_size = std::cmp::min(MAX_OUTPUT_BUFFER_SIZE, input_metadata_size);
+            let input_metadata_str =
+                String::from_utf8_lossy(&input_metadata_buffer[..input_metadata_size]).to_string();
+            let input_metadata: Value = serde_json::from_str(&input_metadata_str).unwrap();
+            if let Some(enable_log) = options["enable-log"].as_bool() {
+                if enable_log {
+                    println!("Number of input tokens: {}", input_metadata["input_tokens"]);
+                }
+            }
 
             println!("Answer:");
 
@@ -139,10 +155,9 @@ fn main() {
                         }
                     }
                     // Retrieve the output.
-                    let max_output_size = 4096 * 6;
-                    let mut output_buffer = vec![0u8; max_output_size];
+                    let mut output_buffer = vec![0u8; MAX_OUTPUT_BUFFER_SIZE];
                     let mut output_size = context.get_output_single(0, &mut output_buffer).unwrap();
-                    output_size = std::cmp::min(max_output_size, output_size);
+                    output_size = std::cmp::min(MAX_OUTPUT_BUFFER_SIZE, output_size);
                     let token = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
                     print!("{}", token);
                     io::stdout().flush().unwrap();
@@ -154,10 +169,9 @@ fn main() {
                 context.compute().unwrap();
 
                 // Retrieve the output.
-                let max_output_size = 4096 * 6;
-                let mut output_buffer = vec![0u8; max_output_size];
+                let mut output_buffer = vec![0u8; MAX_OUTPUT_BUFFER_SIZE];
                 let mut output_size = context.get_output(0, &mut output_buffer).unwrap();
-                output_size = std::cmp::min(max_output_size, output_size);
+                output_size = std::cmp::min(MAX_OUTPUT_BUFFER_SIZE, output_size);
                 output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
                 if let Some(is_stream) = options["stream-stdout"].as_bool() {
                     if !is_stream {
@@ -172,10 +186,9 @@ fn main() {
             saved_prompt = format!("{} {} ", saved_prompt, output.trim());
 
             // Retrieve the output metadata.
-            let max_metadata_size = 4096 * 6;
-            let mut metadata_buffer = vec![0u8; max_metadata_size];
+            let mut metadata_buffer = vec![0u8; MAX_OUTPUT_BUFFER_SIZE];
             let mut metadata_size = context.get_output(1, &mut metadata_buffer).unwrap();
-            metadata_size = std::cmp::min(max_metadata_size, metadata_size);
+            metadata_size = std::cmp::min(MAX_OUTPUT_BUFFER_SIZE, metadata_size);
             let metadata_str =
                 String::from_utf8_lossy(&metadata_buffer[..metadata_size]).to_string();
             let metadata: Value = serde_json::from_str(&metadata_str).unwrap();
