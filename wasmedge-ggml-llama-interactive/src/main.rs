@@ -135,10 +135,8 @@ fn main() {
             let input_metadata_str =
                 String::from_utf8_lossy(&input_metadata_buffer[..input_metadata_size]).to_string();
             let input_metadata: Value = serde_json::from_str(&input_metadata_str).unwrap();
-            if let Some(enable_log) = options["enable-log"].as_bool() {
-                if enable_log {
-                    println!("Number of input tokens: {}", input_metadata["input_tokens"]);
-                }
+            if let Some(true) = options["enable-log"].as_bool() {
+                println!("Number of input tokens: {}", input_metadata["input_tokens"]);
             }
 
             println!("Answer:");
@@ -153,8 +151,16 @@ fn main() {
                         Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::EndOfSequence)) => {
                             break;
                         }
+                        Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::ContextFull)) => {
+                            println!("[INFO] Context full");
+                            break;
+                        }
+                        Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::PromptTooLong)) => {
+                            println!("[INFO] Prompt too long");
+                            break;
+                        }
                         Err(err) => {
-                            println!("Error: {}", err);
+                            println!("[ERROR] {}", err);
                             break;
                         }
                     }
@@ -177,14 +183,7 @@ fn main() {
                 let mut output_size = context.get_output(0, &mut output_buffer).unwrap();
                 output_size = std::cmp::min(MAX_OUTPUT_BUFFER_SIZE, output_size);
                 output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
-                if let Some(is_stream) = options["stream-stdout"].as_bool() {
-                    if !is_stream {
-                        print!("{}", output.trim());
-                    }
-                } else {
-                    print!("{}", output.trim());
-                }
-                println!("");
+                println!("{}", output.trim());
             }
 
             saved_prompt = format!("{} {} ", saved_prompt, output.trim());
@@ -196,11 +195,9 @@ fn main() {
             let metadata_str =
                 String::from_utf8_lossy(&metadata_buffer[..metadata_size]).to_string();
             let metadata: Value = serde_json::from_str(&metadata_str).unwrap();
-            if let Some(enable_log) = options["enable-log"].as_bool() {
-                if enable_log {
-                    println!("Number of input tokens: {}", metadata["input_tokens"]);
-                    println!("Number of output tokens: {}", metadata["output_tokens"]);
-                }
+            if let Some(true) = options["enable-log"].as_bool() {
+                println!("Number of input tokens: {}", metadata["input_tokens"]);
+                println!("Number of output tokens: {}", metadata["output_tokens"]);
             }
 
             // Delete context.
