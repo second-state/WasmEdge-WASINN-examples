@@ -27,6 +27,10 @@ fn main() {
         Ok(val) => options["enable-log"] = serde_json::from_str(val.as_str()).unwrap(),
         _ => (),
     };
+    match env::var("enable_debug_log") {
+        Ok(val) => options["enable-debug-log"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    };
     match env::var("stream_stdout") {
         Ok(val) => options["stream-stdout"] = serde_json::from_str(val.as_str()).unwrap(),
         _ => (),
@@ -197,6 +201,11 @@ fn main() {
                     println!("Number of input tokens: {}", metadata["input_tokens"]);
                     println!("Number of output tokens: {}", metadata["output_tokens"]);
                 }
+            }
+
+            // Delete context.
+            if is_compute_single {
+                context.fini_single().unwrap();
             }
         }
     }
