@@ -67,6 +67,10 @@ fn main() {
         Ok(val) => options["repeat-penalty"] = serde_json::from_str(val.as_str()).unwrap(),
         _ => (),
     }
+    match env::var("threads") {
+        Ok(val) => options["threads"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    }
 
     // We suuport both compute() and compute_single().
     // compute() will compute the entire paragraph until the end of sequence, and return the entire output.
