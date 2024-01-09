@@ -22,6 +22,7 @@ fn main() {
     // Preserve for 4096 tokens with average token length 6
     const MAX_OUTPUT_BUFFER_SIZE: usize = 4096 * 6;
 
+    let mut stream_stdout = false;
     let mut options = json!({});
     match env::var("enable_log") {
         Ok(val) => options["enable-log"] = serde_json::from_str(val.as_str()).unwrap(),
@@ -32,7 +33,10 @@ fn main() {
         _ => (),
     };
     match env::var("stream_stdout") {
-        Ok(val) => options["stream-stdout"] = serde_json::from_str(val.as_str()).unwrap(),
+        Ok(val) => {
+            options["stream-stdout"] = serde_json::from_str(val.as_str()).unwrap();
+            stream_stdout = options["stream-stdout"].as_bool().unwrap();
+        },
         _ => (),
     };
     match env::var("n_predict") {
@@ -183,7 +187,11 @@ fn main() {
                 let mut output_size = context.get_output(0, &mut output_buffer).unwrap();
                 output_size = std::cmp::min(MAX_OUTPUT_BUFFER_SIZE, output_size);
                 output = String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
-                println!("{}", output.trim());
+                if !stream_stdout {
+                    println!("{}", output.trim());
+                } else {
+                    println!("");
+                }
             }
 
             saved_prompt = format!("{} {} ", saved_prompt, output.trim());
