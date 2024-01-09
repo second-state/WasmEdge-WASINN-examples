@@ -31,6 +31,10 @@ fn main() {
         Ok(val) => options["enable-debug-log"] = serde_json::from_str(val.as_str()).unwrap(),
         _ => (),
     };
+    match env::var("stream_stdout") {
+        Ok(val) => options["stream-stdout"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    };
     match env::var("n_predict") {
         Ok(val) => options["n-preidct"] = serde_json::from_str(val.as_str()).unwrap(),
         _ => (),
