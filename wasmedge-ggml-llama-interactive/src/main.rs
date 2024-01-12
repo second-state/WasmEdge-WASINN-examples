@@ -122,6 +122,13 @@ fn main() {
         _ => (),
     }
 
+    // Check options.
+    if is_compute_single && options["stream-stdout"].as_bool().unwrap() {
+        println!("[ERROR] compute_single and stream_stdout cannot be enabled at the same time.");
+        std::process::exit(1);
+    }
+
+    // Create graph and initialize context.
     let graph =
         wasi_nn::GraphBuilder::new(wasi_nn::GraphEncoding::Ggml, wasi_nn::ExecutionTarget::AUTO)
             .config(options.to_string())
@@ -168,14 +175,18 @@ fn main() {
         // Get the number of input tokens.
         let input_metadata = get_metadata_from_context(&context);
         if let Some(true) = options["enable-log"].as_bool() {
-            println!("Number of input tokens: {}", input_metadata["input_tokens"]);
+            println!(
+                "[INFO] Number of input tokens: {}",
+                input_metadata["input_tokens"]
+            );
         }
 
         println!("Answer:");
 
         let mut output = String::new();
+        let mut reset_prompt = false;
         if is_compute_single {
-            // Compute one token at a time, and get the token using the get_output_single().
+            // Streaming: compute one token at a time, and get the token using the get_output_single().
             loop {
                 match context.compute_single() {
                     Ok(_) => (),
@@ -183,19 +194,22 @@ fn main() {
                         break;
                     }
                     Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::ContextFull)) => {
-                        println!("[INFO] Context full");
+                        println!("\n[INFO] Context full, we'll reset the context and continue.");
+                        reset_prompt = true;
                         break;
                     }
                     Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::PromptTooLong)) => {
-                        println!("[INFO] Prompt too long");
+                        println!("\n[INFO] Prompt too long, we'll reset the context and continue.");
+                        reset_prompt = true;
                         break;
                     }
                     Err(err) => {
-                        println!("[ERROR] {}", err);
+                        println!("\n[ERROR] {}", err);
                         break;
                     }
                 }
-                // Retrieve the output.
+
+                // Retrieve the single output token and print it.
                 let token = get_output_from_context(&context, is_compute_single);
                 print!("{}", token);
                 io::stdout().flush().unwrap();
@@ -204,7 +218,20 @@ fn main() {
             println!("");
         } else {
             // Blocking: execute the inference.
-            context.compute().unwrap();
+            match context.compute() {
+                Ok(_) => (),
+                Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::ContextFull)) => {
+                    println!("\n[INFO] Context full, we'll reset the context and continue.");
+                    reset_prompt = true;
+                }
+                Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::PromptTooLong)) => {
+                    println!("\n[INFO] Prompt too long, we'll reset the context and continue.");
+                    reset_prompt = true;
+                }
+                Err(err) => {
+                    println!("\n[ERROR] {}", err);
+                }
+            }
 
             // Retrieve the output.
             output = get_output_from_context(&context, is_compute_single);
@@ -216,16 +243,27 @@ fn main() {
             println!("");
         }
 
-        saved_prompt = format!("{} {} ", saved_prompt, output.trim());
+        // Update the saved prompt.
+        if reset_prompt {
+            saved_prompt.clear();
+        } else {
+            saved_prompt = format!("{} {} ", saved_prompt, output.trim());
+        }
 
         // Retrieve the output metadata.
         let metadata = get_metadata_from_context(&context);
         if let Some(true) = options["enable-log"].as_bool() {
-            println!("Number of input tokens: {}", metadata["input_tokens"]);
-            println!("Number of output tokens: {}", metadata["output_tokens"]);
+            println!(
+                "[INFO] Number of input tokens: {}",
+                metadata["input_tokens"]
+            );
+            println!(
+                "[INFO] Number of output tokens: {}",
+                metadata["output_tokens"]
+            );
         }
 
-        // Delete context.
+        // Delete the context in compute_single mode.
         if is_compute_single {
             context.fini_single().unwrap();
         }
