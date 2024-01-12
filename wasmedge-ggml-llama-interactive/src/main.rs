@@ -10,7 +10,7 @@ fn read_input() -> String {
             .read_line(&mut answer)
             .expect("Failed to read line");
         if !answer.is_empty() && answer != "\n" && answer != "\r\n" {
-            return answer;
+            return answer.trim().to_string();
         }
     }
 }
@@ -108,6 +108,52 @@ fn get_metadata_from_context(context: &GraphExecutionContext) -> Value {
     return serde_json::from_str(&get_data_from_context(context, 1, false)).unwrap();
 }
 
+fn update_saved_prompt(
+    saved_prompt: String,
+    input: &String,
+    output: &String,
+    prompt_format: &String,
+) -> String {
+    let system_prompt = String::from("You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe." );
+    let new_prompt: String;
+
+    if prompt_format == "llama" {
+        if saved_prompt == "" {
+            new_prompt = format!(
+                "[INST] <<SYS>> {} <</SYS>> {} [/INST]",
+                system_prompt, input
+            );
+        } else {
+            if output == "" {
+                new_prompt = format!("{} [INST] {} [/INST]", saved_prompt, input);
+            } else {
+                new_prompt = format!("{} {}", saved_prompt, output);
+            }
+        }
+    } else if prompt_format == "chatml" {
+        if saved_prompt == "" {
+            new_prompt = format!("<|im_start|>system\n{}<|im_end|>\n<|im_start|>user\n{}<|im_end|>\n<|im_start|>assistant\n", system_prompt, input);
+        } else {
+            if output == "" {
+                new_prompt = format!(
+                    "{}<|im_start|>user\n{}<|im_end|>\n<|im_start|>assistant\n",
+                    saved_prompt, input
+                );
+            } else {
+                new_prompt = format!("{}{}<|im_end|>\n", saved_prompt, output);
+            }
+        }
+    } else {
+        println!(
+            "[ERROR] prompt_format must be either `llama` or `chatml` (`{}` is invalid).",
+            prompt_format
+        );
+        std::process::exit(1);
+    }
+
+    return new_prompt;
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let model_name: &str = &args[1];
@@ -122,9 +168,24 @@ fn main() {
         _ => (),
     }
 
-    // Check options.
+    // Check streaming related options.
     if is_compute_single && options["stream-stdout"].as_bool().unwrap() {
         println!("[ERROR] compute_single and stream_stdout cannot be enabled at the same time.");
+        std::process::exit(1);
+    }
+
+    // We support both llama and chatml prompt format.
+    let mut prompt_format = String::from("llama");
+    match env::var("prompt_format") {
+        Ok(val) => prompt_format = val,
+        _ => (),
+    }
+    prompt_format.make_ascii_lowercase();
+    if prompt_format != "llama" && prompt_format != "chatml" {
+        println!(
+            "[ERROR] prompt_format must be either `llama` or `chatml` (`{}` is invalid).",
+            prompt_format
+        );
         std::process::exit(1);
     }
 
@@ -157,17 +218,12 @@ fn main() {
         std::process::exit(0);
     }
 
-    let system_prompt = String::from("<<SYS>>You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe. <</SYS>>");
     let mut saved_prompt = String::new();
 
     loop {
         println!("Question:");
         let input = read_input();
-        if saved_prompt == "" {
-            saved_prompt = format!("[INST] {} {} [/INST]", system_prompt, input.trim());
-        } else {
-            saved_prompt = format!("{} [INST] {} [/INST]", saved_prompt, input.trim());
-        }
+        saved_prompt = update_saved_prompt(saved_prompt, &input, &String::new(), &prompt_format);
 
         // Set prompt to the input tensor.
         set_data_to_context(&mut context, saved_prompt.as_bytes().to_vec()).unwrap();
@@ -247,7 +303,8 @@ fn main() {
         if reset_prompt {
             saved_prompt.clear();
         } else {
-            saved_prompt = format!("{} {} ", saved_prompt, output.trim());
+            output = output.trim().to_string();
+            saved_prompt = update_saved_prompt(saved_prompt, &input, &output, &prompt_format);
         }
 
         // Retrieve the output metadata.
