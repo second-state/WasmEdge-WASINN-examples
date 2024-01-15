@@ -154,12 +154,16 @@ The total cost of 3 apples would be 15 dollars. Each apple costs 5 dollars, so 3
 Supported parameters include:
 
 - `enable-log`: Set it to true to enable logging.
+- `enable-debug-log`: Set it to true to enable debug log.
 - `stream-stdout`: Set it to true to print the inferred tokens to standard output.
 - `ctx-size`: Set the context size, the same as the `--ctx-size` parameter in llama.cpp.
 - `n-predict`: Set the number of tokens to predict, the same as the `--n-predict` parameter in llama.cpp.
 - `n-gpu-layers`: Set the number of layers to store in VRAM, the same as the `--n-gpu-layers` parameter in llama.cpp. When using Metal support in macOS, please set `n-gpu-layers` to `0` or do not set it for the default value.
 - `reverse-prompt`: Set it to the token at which you want to halt the generation. Similar to the `--reverse-prompt` parameter in llama.cpp.
 - `batch-size`: Set the batch size number for prompt processing, the same as the `--batch-size` parameter in llama.cpp.
+- `temp`: Set the temperature for the generation, the same as the `--temp` parameter in llama.cpp.
+- `repeat-penalty`: Set the repeat penalty for the generation, the same as the `--repeat-penalty` parameter in llama.cpp.
+- `threads`: Set the number of threads for the inference, the same as the `--threads` parameter in llama.cpp.
 
 (For more detailed instructions on usage or default values for the parameters, please refer to [WasmEdge](https://github.com/WasmEdge/WasmEdge/blob/master/plugins/wasi_nn/ggml.cpp).)
 
