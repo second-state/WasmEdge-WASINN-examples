@@ -228,9 +228,14 @@ fn main() {
         // Set prompt to the input tensor.
         set_data_to_context(&mut context, saved_prompt.as_bytes().to_vec()).unwrap();
 
-        // Get the number of input tokens.
+        // Get the number of input tokens and llama.cpp versions.
         let input_metadata = get_metadata_from_context(&context);
         if let Some(true) = options["enable-log"].as_bool() {
+            println!("[INFO] llama_commit: {}", input_metadata["llama_commit"]);
+            println!(
+                "[INFO] llama_build_number: {}",
+                input_metadata["llama_build_number"]
+            );
             println!(
                 "[INFO] Number of input tokens: {}",
                 input_metadata["input_tokens"]
