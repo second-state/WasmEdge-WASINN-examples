@@ -30,7 +30,7 @@ fn get_options_from_env() -> Value {
         _ => (),
     };
     match env::var("n_predict") {
-        Ok(val) => options["n-preidct"] = serde_json::from_str(val.as_str()).unwrap(),
+        Ok(val) => options["n-predict"] = serde_json::from_str(val.as_str()).unwrap(),
         _ => (),
     }
     match env::var("reverse_prompt") {
