@@ -297,11 +297,12 @@ fn main() {
             // Retrieve the output.
             output = get_output_from_context(&context, is_compute_single);
 
-            // Print the output if not streaming.
-            if !options["stream-stdout"].as_bool().unwrap() {
-                print!("{}", output.trim());
+            // Skip the output if is streaming.
+            if let Some(true) = options["stream-stdout"].as_bool() {
+                println!("");
+            } else {
+                println!("{}", output.trim());
             }
-            println!("");
         }
 
         // Update the saved prompt.
