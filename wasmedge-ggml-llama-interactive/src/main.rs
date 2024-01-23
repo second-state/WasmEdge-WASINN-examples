@@ -53,8 +53,16 @@ fn get_options_from_env() -> Value {
         Ok(val) => options["temp"] = serde_json::from_str(val.as_str()).unwrap(),
         _ => (),
     }
+    match env::var("top_p") {
+        Ok(val) => options["top-p"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    }
     match env::var("repeat_penalty") {
         Ok(val) => options["repeat-penalty"] = serde_json::from_str(val.as_str()).unwrap(),
+        _ => (),
+    }
+    match env::var("presence_penalty") {
+        Ok(val) => options["presence-penalty"] = serde_json::from_str(val.as_str()).unwrap(),
         _ => (),
     }
     match env::var("threads") {
