@@ -110,7 +110,18 @@ wasmedge --dir .:. \
 
 #### macOS
 
-macOS will use the Metal framework by default. You don't have to specify the `n_gpu_layers` parameter.
+macOS will use the Metal framework by default. llama.cpp supports `n_gpu_layers` now, please make sure you set the `n_gpu_layers` to offload the tensor layers into GPU.
+
+Please use the following command to ensure the tensor layers of the model is offloaded into GPU:
+
+```
+# llama2-7b-chat provides 35 GPU layers. So, we have to set a value that is large or equal to 35.
+# If you use a larger model, this value may change.
+wasmedge --dir .:. \
+  --env n_gpu_layers=35 \
+  --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
+  wasmedge-ggml-llama-interactive.wasm default
+```
 
 #### Linux + CUDA
 

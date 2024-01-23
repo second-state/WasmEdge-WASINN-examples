@@ -169,9 +169,11 @@ fn main() {
     }
 
     // Check streaming related options.
-    if is_compute_single && options["stream-stdout"].as_bool().unwrap() {
-        println!("[ERROR] compute_single and stream_stdout cannot be enabled at the same time.");
-        std::process::exit(1);
+    if is_compute_single {
+        if let Some(true) = options["stream-stdout"].as_bool() {
+            println!("[ERROR] compute_single and stream_stdout cannot be enabled at the same time.");
+            std::process::exit(1);
+        }
     }
 
     // We support both llama and chatml prompt format.
