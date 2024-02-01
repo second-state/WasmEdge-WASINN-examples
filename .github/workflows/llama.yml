@@ -42,7 +42,7 @@ jobs:
         VERSION=0.13.5
         curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -v $VERSION --plugins wasi_nn-ggml -p /usr/local
 
-    - name: Example
+    - name: Tiny Llama
       run: |
         cd wasmedge-ggml-llama-interactive
         curl -LO https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf
@@ -56,8 +56,33 @@ jobs:
           target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm \
           default \
           '<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
+
+    - name: llama2 7b
+      run: |
+        cd wasmedge-ggml-llama-interactive
+        curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
+
+        cargo build --target wasm32-wasi --release
+        wasmedge --dir .:. \
+          --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
+          --env enable_log=true \
+          --env ctx_size=4096 \
+          --env stream_stdout=true \
+          --env n_gpu_layers=0 \
+          target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm \
+          default \
+          '[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
+
   macos:
-    runs-on: macos-14
+    strategy:
+      matrix:
+        include:
+          - name: MacOS-13
+            host_runner: macos-13
+          - name: MacOS-14
+            host_runner: macos-14
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.host_runner }}
     steps:
     - uses: actions/checkout@v4
 
@@ -71,7 +96,7 @@ jobs:
         VERSION=0.13.5
         curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -v $VERSION --plugins wasi_nn-ggml -p /usr/local
 
-    - name: Example
+    - name: Tiny Llama
       run: |
         cd wasmedge-ggml-llama-interactive
         curl -LO https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf
@@ -85,3 +110,19 @@ jobs:
           target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm \
           default \
           '<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
+
+    - name: llama2 7b
+      run: |
+        cd wasmedge-ggml-llama-interactive
+        curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
+
+        cargo build --target wasm32-wasi --release
+        wasmedge --dir .:. \
+          --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
+          --env enable_log=true \
+          --env ctx_size=4096 \
+          --env stream_stdout=true \
+          --env n_gpu_layers=0 \
+          target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm \
+          default \
+          '[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
