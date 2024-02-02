@@ -13,12 +13,12 @@ on:
     branches: [ '*' ]
     paths:
       - ".github/workflows/llama.yml"
-      - "wasmedge-ggml-llama-interactive/**"
+      - "wasmedge-ggml/**"
   pull_request:
     branches: [ '*' ]
     paths:
       - ".github/workflows/llama.yml"
-      - "wasmedge-ggml-llama-interactive/**"
+      - "wasmedge-ggml/**"
 
 jobs:
   ubuntu:
@@ -44,32 +44,24 @@ jobs:
 
     - name: Tiny Llama
       run: |
-        cd wasmedge-ggml-llama-interactive
+        cd wasmedge-ggml/llama
         curl -LO https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf
         cargo build --target wasm32-wasi --release
         wasmedge --dir .:. \
           --nn-preload default:GGML:AUTO:tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf \
-          --env enable_log=true \
-          --env ctx_size=4096 \
-          --env stream_stdout=true \
-          --env n_gpu_layers=0 \
-          target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm \
+          target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
           default \
           '<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
 
     - name: llama2 7b
       run: |
-        cd wasmedge-ggml-llama-interactive
+        cd wasmedge-ggml/llama
         curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
 
         cargo build --target wasm32-wasi --release
         wasmedge --dir .:. \
           --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-          --env enable_log=true \
-          --env ctx_size=4096 \
-          --env stream_stdout=true \
-          --env n_gpu_layers=0 \
-          target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm \
+          target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
           default \
           '[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
 
@@ -98,31 +90,23 @@ jobs:
 
     - name: Tiny Llama
       run: |
-        cd wasmedge-ggml-llama-interactive
+        cd wasmedge-ggml/llama
         curl -LO https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf
         cargo build --target wasm32-wasi --release
         wasmedge --dir .:. \
           --nn-preload default:GGML:AUTO:tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf \
-          --env enable_log=true \
-          --env ctx_size=4096 \
-          --env stream_stdout=true \
-          --env n_gpu_layers=0 \
-          target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm \
+          target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
           default \
           '<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
 
     - name: llama2 7b
       run: |
-        cd wasmedge-ggml-llama-interactive
+        cd wasmedge-ggml/llama
         curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
 
         cargo build --target wasm32-wasi --release
         wasmedge --dir .:. \
           --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-          --env enable_log=true \
-          --env ctx_size=4096 \
-          --env stream_stdout=true \
-          --env n_gpu_layers=0 \
-          target/wasm32-wasi/release/wasmedge-ggml-llama-interactive.wasm \
+          target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
           default \
           '[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
