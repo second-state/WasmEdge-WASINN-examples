@@ -18,10 +18,28 @@ source $HOME/.zshenv
 source $HOME/.bashrc
 ```
 
+The supported matrix:
+
+| OS    | Arch          | GPU        | Framework | Comments                                                                  |
+| -     | -             | -          | -         | -                                                                         |
+| Linux | amd64         | NVIDIA GPU | cuda 12.x | When CUDA is detected, we will install the cuda enabled plugin by default |
+| Linux | amd64         | -          | -         | -                                                                         |
+| Linux | arm64         | NVIDIA GPU | cuda 11.x | This is built on Jetson AGX Orin                                          |
+| Linux | arm64         | -          | -         | -                                                                         |
+| macOS | Intel         | -          | -         | Metal is not working very well on AMD GPU                                 |
+| macOS | Apple Silicon | Mx         | Metal     | -                                                                         |
+
+We are planing to support in the near future:
+
+| OS    | Arch  | GPU     | Framework | Comments         |
+| -     | -     | -       | -         | -                |
+| Linux | amd64 | AMD GPU | OpenCL    | Work in progress |
+
 This version is verified on the following platforms:
 1. Nvidia Jetson AGX Orin 64GB developer kit
 2. Intel i7-10700 + Nvidia GTX 1080 8G GPU
 2. AWS EC2 `g5.xlarge` + Nvidia A10G 24G GPU + Amazon deep learning base Ubuntu 20.04
+
 
 ## Prepare WASM application
 
