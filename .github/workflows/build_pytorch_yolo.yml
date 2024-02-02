@@ -1,0 +1,63 @@
+name: Pytorch Yolo Detection
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    branches: ['*']
+    paths:
+      - ".github/workflows/build_pytorch_yolo.yml"
+      - "pytorch-yolo-image/**"
+      - "scripts/install_libtorch.sh"
+  pull_request:
+    branches: ['*']
+    paths:
+      - ".github/workflows/build_pytorch_yolo.yml"
+      - "pytorch-yolo-image/**"
+      - "scripts/install_libtorch.sh"
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_pytorch_examples:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [1.71]
+    container:
+      image: wasmedge/wasmedge:ubuntu-build-clang
+    steps:
+      - name: Checkout Wasi-NN examples
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Rust-stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust }}
+          target: wasm32-wasi
+
+      - name: Install LibTorch
+        working-directory: scripts
+        run: |
+          set -e
+          bash install_libtorch.sh
+          cp ./libtorch/lib/* /lib/
+
+      - name: Install WasmEdge
+        env:
+          CMAKE_BUILD_TYPE: "Release"
+          VERSION: "0.13.4"
+        run: |
+          curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION --plugins wasi_nn-pytorch -p /usr/local
+
+      - name: Build and run pytorch-yolo-detection
+        run: |
+          cd pytorch-yolo-image
+          cd rust
+          cargo build --target=wasm32-wasi --release
+          cp target/wasm32-wasi/release/wasmedge-wasinn-example-yolo-image.wasm ..
+          cd ..
+          wasmedge --dir .:. wasmedge-wasinn-example-yolo-image.wasm ./yolov8n.torchscript ./input.jpg

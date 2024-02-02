@@ -6,10 +6,16 @@ if [[ ! -n ${PYTORCH_VERSION} ]]; then
   PYTORCH_VERSION="1.8.2"
 fi
 
+
 DOWNLOAD_TO=$1
 if [ ! -d $1/libtorch ]; then
-    curl -s -L -O --remote-name-all https://download.pytorch.org/libtorch/lts/1.8/cpu/libtorch-cxx11-abi-shared-with-deps-${PYTORCH_VERSION}%2Bcpu.zip
-    echo "b76d6dd4380e2233ce6f7654e672e13aae7c871231d223a4267ef018dcbfb616 libtorch-cxx11-abi-shared-with-deps-${PYTORCH_VERSION}%2Bcpu.zip" | sha256sum -c
-    unzip -q "libtorch-cxx11-abi-shared-with-deps-${PYTORCH_VERSION}%2Bcpu.zip"
-    rm -f "libtorch-cxx11-abi-shared-with-deps-${PYTORCH_VERSION}%2Bcpu.zip"
+  apt update
+  apt upgrade -y
+  apt-get install unzip wget -y
+  curl -L -O https://download.pytorch.org/libtorch/lts/1.8/cpu/libtorch-cxx11-abi-shared-with-deps-${PYTORCH_VERSION}%2Bcpu.zip
+  echo "Run Checksum..."
+  echo "b76d6dd4380e2233ce6f7654e672e13aae7c871231d223a4267ef018dcbfb616 libtorch-cxx11-abi-shared-with-deps-${PYTORCH_VERSION}%2Bcpu.zip" | sha256sum -c
+  unzip -q "libtorch-cxx11-abi-shared-with-deps-${PYTORCH_VERSION}%2Bcpu.zip"
+  rm -f "libtorch-cxx11-abi-shared-with-deps-${PYTORCH_VERSION}%2Bcpu.zip"
+  echo "Complete install"
 fi
