@@ -1,5 +1,5 @@
 [package]
-name = "wasmedge-ggml-llama-interactive"
+name = "wasmedge-ggml-llama"
 version = "0.1.0"
 edition = "2021"
 
