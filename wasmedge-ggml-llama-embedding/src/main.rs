@@ -17,24 +17,20 @@ fn read_input() -> String {
 
 fn get_options_from_env() -> Value {
     let mut options = json!({});
-    match env::var("enable_log") {
-        Ok(val) => options["enable-log"] = serde_json::from_str(val.as_str()).unwrap(),
-        _ => (),
-    };
-    match env::var("ctx_size") {
-        Ok(val) => options["ctx-size"] = serde_json::from_str(val.as_str()).unwrap(),
-        _ => (),
+    if let Ok(val) = env::var("enable_log") {
+        options["enable-log"] = serde_json::from_str(val.as_str()).unwrap()
     }
-    match env::var("batch_size") {
-        Ok(val) => options["batch-size"] = serde_json::from_str(val.as_str()).unwrap(),
-        _ => (),
+    if let Ok(val) = env::var("ctx_size") {
+        options["ctx-size"] = serde_json::from_str(val.as_str()).unwrap()
     }
-    match env::var("threads") {
-        Ok(val) => options["threads"] = serde_json::from_str(val.as_str()).unwrap(),
-        _ => (),
+    if let Ok(val) = env::var("batch_size") {
+        options["batch-size"] = serde_json::from_str(val.as_str()).unwrap()
+    }
+    if let Ok(val) = env::var("threads") {
+        options["threads"] = serde_json::from_str(val.as_str()).unwrap()
     }
 
-    return options;
+    options
 }
 
 fn set_data_to_context(
@@ -52,29 +48,26 @@ fn set_metadata_to_context(
     context.set_input(1, wasi_nn::TensorType::U8, &[1], &data)
 }
 
-fn get_data_from_context(
-    context: &GraphExecutionContext,
-    index: usize,
-) -> String {
+fn get_data_from_context(context: &GraphExecutionContext, index: usize) -> String {
     // Preserve for 4096 tokens with average token length 15
     const MAX_OUTPUT_BUFFER_SIZE: usize = 4096 * 15 + 128;
     let mut output_buffer = vec![0u8; MAX_OUTPUT_BUFFER_SIZE];
     let mut output_size = context.get_output(index, &mut output_buffer).unwrap();
     output_size = std::cmp::min(MAX_OUTPUT_BUFFER_SIZE, output_size);
 
-    return String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
+    String::from_utf8_lossy(&output_buffer[..output_size]).to_string()
 }
 
 fn get_output_from_context(context: &GraphExecutionContext) -> String {
-    return get_data_from_context(context, 0);
+    get_data_from_context(context, 0)
 }
 
 fn get_metadata_from_context(context: &GraphExecutionContext) -> Value {
-    return serde_json::from_str(&get_data_from_context(context, 1)).unwrap();
+    serde_json::from_str(&get_data_from_context(context, 1)).unwrap()
 }
 
 fn get_embd_from_context(context: &GraphExecutionContext) -> Value {
-    return serde_json::from_str(&get_data_from_context(context, 0)).unwrap();
+    serde_json::from_str(&get_data_from_context(context, 0)).unwrap()
 }
 
 fn main() {
@@ -89,7 +82,9 @@ fn main() {
             .config(options.to_string())
             .build_from_cache(model_name)
             .expect("Create GraphBuilder Failed, please check the model name or options");
-    let mut context = graph.init_execution_context().expect("Init Context Failed, please check the model");
+    let mut context = graph
+        .init_execution_context()
+        .expect("Init Context Failed, please check the model");
 
     // We also support setting the options via input tensor with index 1.
     // Uncomment the line below to run the example, Check our README for more details.
