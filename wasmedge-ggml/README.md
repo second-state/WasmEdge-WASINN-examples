@@ -4,60 +4,50 @@
 
 ## Requirement
 
-### For macOS (apple silicon)
+### Install WasmEdge + WASI-NN ggml plugin
 
-Install WasmEdge 0.13.5+WASI-NN ggml plugin(Metal enabled on Apple silicon) via the installer.
+WASI-NN ggml plugin only supports Linux and macOS.
 
 ```bash
 curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- --plugin wasi_nn-ggml
 # After installing the wasmedge, you have to activate the environment.
+
 # Assuming you use zsh (the default shell on macOS), you will need to run the following command
 source $HOME/.zshenv
-```
-
-### For Linux (with CUDA enabled)
-
-The installer from WasmEdge 0.13.5 will detect cuda automatically.
-
-If CUDA is detected, the installer will always attempt to install a CUDA-enabled version of the plugin.
-
-Install WasmEdge 0.13.5+WASI-NN ggml plugin via installer
-
-```bash
-curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- --plugin wasi_nn-ggml
-# After installing the wasmedge, you have to activate the environment.
 # Assuming you use bash (the default shell on Ubuntu), you will need to run the following command
 source $HOME/.bashrc
 ```
+
+The supported matrix:
+
+| OS    | Arch          | GPU        | Framework | Comments                                                                  |
+| -     | -             | -          | -         | -                                                                         |
+| Linux | amd64         | NVIDIA GPU | cuda 12.x | When CUDA is detected, we will install the cuda enabled plugin by default |
+| Linux | amd64         | -          | -         | -                                                                         |
+| Linux | arm64         | NVIDIA GPU | cuda 11.x | This is built on Jetson AGX Orin                                          |
+| Linux | arm64         | -          | -         | -                                                                         |
+| macOS | Intel         | -          | -         | Metal is not working very well on AMD GPU                                 |
+| macOS | Apple Silicon | Mx         | Metal     | -                                                                         |
+
+We are planing to support in the near future:
+
+| OS    | Arch  | GPU     | Framework | Comments         |
+| -     | -     | -       | -         | -                |
+| Linux | amd64 | AMD GPU | OpenCL    | Work in progress |
 
 This version is verified on the following platforms:
 1. Nvidia Jetson AGX Orin 64GB developer kit
 2. Intel i7-10700 + Nvidia GTX 1080 8G GPU
 2. AWS EC2 `g5.xlarge` + Nvidia A10G 24G GPU + Amazon deep learning base Ubuntu 20.04
 
-### For Linux (without CUDA enabled)
-
-If the CPU is the only available hardware on your machine, the installer will install the OpenBLAS version of the plugin instead.
-
-You may need to install `libopenblas-dev` by `apt update && apt install -y libopenblas-dev`.
-
-Install WasmEdge 0.13.5+WASI-NN ggml plugin via installer
-
-```bash
-apt update && apt install -y libopenblas-dev # You may need sudo if the user is not root.
-curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- --plugin wasi_nn-ggml
-# After installing the wasmedge, you have to activate the environment.
-# Assuming you use bash (the default shell on Ubuntu), you will need to run the following command
-source $HOME/.bashrc
-```
-
 ## Prepare WASM application
 
 ### (Recommend) Use the pre-built one bundled in this repo
 
 We built a wasm of this example under the folder, check these files:
-- `llama/wasmedge-ggml-llama.wasm`
 - `chatml/wasmedge-ggml-chatml.wasm`
+- `embedding/wasmedge-ggml-llama-embedding.wasm`
+- `llama/wasmedge-ggml-llama.wasm`
 - `llama-stream/wasmedge-ggml-llama-stream.wasm`
 
 ### (Optional) Build from source
@@ -228,12 +218,23 @@ context
         1,
         wasi_nn::TensorType::U8,
         &[1],
-        serde_json::to_string(&options).unwrap().as_bytes().to_vec(),
+        serde_json::to_string(&options).expect("Failed to serialize options").as_bytes().to_vec(),
     )
     .unwrap();
 ```
 
 (For more detailed instructions on usage or default values for the parameters, please refer to [WasmEdge](https://github.com/WasmEdge/WasmEdge/blob/master/plugins/wasi_nn/ggml.cpp).)
+
+### Embedding Usage
+
+Once the `embedding` mode is on, the return output will be a JSON object in the following format:
+
+```json
+{
+  "n_embedding": 4096,
+  "embedding": [...]
+}
+```
 
 ### Token Usage
 
