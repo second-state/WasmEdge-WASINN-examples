@@ -15,9 +15,7 @@ curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/insta
 source $HOME/.zshenv
 ```
 
-### For Ubuntu (>= 20.04)
-
-#### CUDA enabled
+### For Linux (with CUDA enabled)
 
 The installer from WasmEdge 0.13.5 will detect cuda automatically.
 
@@ -37,7 +35,7 @@ This version is verified on the following platforms:
 2. Intel i7-10700 + Nvidia GTX 1080 8G GPU
 2. AWS EC2 `g5.xlarge` + Nvidia A10G 24G GPU + Amazon deep learning base Ubuntu 20.04
 
-#### CPU only
+### For Linux (without CUDA enabled)
 
 If the CPU is the only available hardware on your machine, the installer will install the OpenBLAS version of the plugin instead.
 
@@ -50,17 +48,6 @@ apt update && apt install -y libopenblas-dev # You may need sudo if the user is 
 curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- --plugin wasi_nn-ggml
 # After installing the wasmedge, you have to activate the environment.
 # Assuming you use bash (the default shell on Ubuntu), you will need to run the following command
-source $HOME/.bashrc
-```
-
-### For General Linux
-
-Install WasmEdge 0.13.5+WASI-NN ggml plugin via installer
-
-```bash
-curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- --plugin wasi_nn-ggml
-# After installing the wasmedge, you have to activate the environment.
-# Assuming you use bash (the default shell on Linux), you will need to run the following command
 source $HOME/.bashrc
 ```
 
@@ -80,6 +67,7 @@ If you want to do some modifications, you can build from source.
 Compile the application to WebAssembly:
 
 ```bash
+cd llama
 cargo build --target wasm32-wasi --release
 ```
 
