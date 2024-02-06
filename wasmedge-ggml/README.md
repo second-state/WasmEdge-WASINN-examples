@@ -143,7 +143,7 @@ Supported parameters include:
 - `stream-stdout`: Set it to true to print the inferred tokens to standard output.
 - `ctx-size`: Set the context size, the same as the `--ctx-size` parameter in llama.cpp.
 - `n-predict`: Set the number of tokens to predict, the same as the `--n-predict` parameter in llama.cpp.
-- `n-gpu-layers`: Set the number of layers to store in VRAM, the same as the `--n-gpu-layers` parameter in llama.cpp. When using Metal support in macOS, please set `n-gpu-layers` to `0` or do not set it for the default value.
+- `n-gpu-layers`: Set the number of layers to store in VRAM, the same as the `--n-gpu-layers` parameter in llama.cpp.
 - `reverse-prompt`: Set it to the token at which you want to halt the generation. Similar to the `--reverse-prompt` parameter in llama.cpp.
 - `batch-size`: Set the batch size number for prompt processing, the same as the `--batch-size` parameter in llama.cpp.
 - `temp`: Set the temperature for the generation, the same as the `--temp` parameter in llama.cpp.

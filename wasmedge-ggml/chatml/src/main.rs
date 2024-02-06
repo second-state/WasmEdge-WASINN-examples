@@ -44,13 +44,13 @@ fn get_data_from_context(context: &GraphExecutionContext, index: usize) -> Strin
 }
 
 fn get_output_from_context(context: &GraphExecutionContext) -> String {
-    return get_data_from_context(context, 0);
+    get_data_from_context(context, 0)
 }
 
 #[allow(dead_code)]
 fn get_metadata_from_context(context: &GraphExecutionContext) -> Value {
-    return serde_json::from_str(&get_data_from_context(context, 1))
-        .expect("Failed to get metadata");
+    serde_json::from_str(&get_data_from_context(context, 1))
+        .expect("Failed to get metadata")
 }
 
 fn main() {
@@ -90,7 +90,7 @@ fn main() {
     loop {
         println!("Question:");
         let input = read_input();
-        if saved_prompt == "" {
+        if saved_prompt.is_empty() {
             saved_prompt = format!("<|im_start|>system\n{}<|im_end|>\n<|im_start|>user\n{}<|im_end|>\n<|im_start|>assistant\n", system_prompt, input);
         } else {
             saved_prompt = format!(
