@@ -80,6 +80,11 @@ jobs:
         cd wasmedge-ggml/embedding
         cargo build --target wasm32-wasi --release
 
+    - name: Build llava
+      run: |
+        cd wasmedge-ggml/llava
+        cargo build --target wasm32-wasi --release
+
   macos:
     strategy:
       matrix:
@@ -139,4 +144,9 @@ jobs:
     - name: Build embedding
       run: |
         cd wasmedge-ggml/embedding
+        cargo build --target wasm32-wasi --release
+
+    - name: Build llava
+      run: |
+        cd wasmedge-ggml/llava
         cargo build --target wasm32-wasi --release
