@@ -4,8 +4,14 @@
   <p><strong>High-level bindings for writing wasi-nn applications</strong></p>
 
   <p>
-    <a href="https://github.com/second-state/WasmEdge-WASINN-examples/actions?query=workflow%3ACI++">
-      <img src="https://github.com/second-state/WasmEdge-WASINN-examples/actions/workflows/build.yaml/badge.svg" alt="CI status"/>
+    <a href="https://github.com/second-state/WasmEdge-WASINN-examples/actions/workflows/llama.yml/">
+      <img src="https://github.com/second-state/WasmEdge-WASINN-examples/actions/workflows/llama.yml/badge.svg" alt="CI status - llama"/>
+    </a>
+    <a href="https://github.com/second-state/WasmEdge-WASINN-examples/actions/workflows/pytorch.yml/">
+      <img src="https://github.com/second-state/WasmEdge-WASINN-examples/actions/workflows/pytorch.yml/badge.svg" alt="CI status - pytorch"/>
+    </a>
+    <a href="https://github.com/second-state/WasmEdge-WASINN-examples/actions/workflows/tflite.yml/">
+      <img src="https://github.com/second-state/WasmEdge-WASINN-examples/actions/workflows/tflite.yml/badge.svg" alt="CI status - tflite"/>
     </a>
   </p>
 </div>
