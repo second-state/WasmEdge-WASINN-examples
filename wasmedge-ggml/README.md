@@ -149,6 +149,8 @@ Supported parameters include:
 - `temp`: Set the temperature for the generation, the same as the `--temp` parameter in llama.cpp.
 - `repeat-penalty`: Set the repeat penalty for the generation, the same as the `--repeat-penalty` parameter in llama.cpp.
 - `threads`: Set the number of threads for the inference, the same as the `--threads` parameter in llama.cpp.
+- `mmproj`: Set the path to the multimodal projector file for llava, the same as the `--mmproj` parameter in llama.cpp.
+- `image`: Set the path to the image file for llava, the same as the `--image` parameter in llama.cpp.
 
 (For more detailed instructions on usage or default values for the parameters, please refer to [WasmEdge](https://github.com/WasmEdge/WasmEdge/blob/master/plugins/wasi_nn/ggml.cpp).)
 
