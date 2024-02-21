@@ -60,8 +60,7 @@ fn get_single_output_from_context(context: &GraphExecutionContext) -> String {
 
 #[allow(dead_code)]
 fn get_metadata_from_context(context: &GraphExecutionContext) -> Value {
-    serde_json::from_str(&get_data_from_context(context, 1, false))
-        .expect("Failed to get metadata")
+    serde_json::from_str(&get_data_from_context(context, 1, false)).expect("Failed to get metadata")
 }
 
 fn main() {
@@ -100,7 +99,7 @@ fn main() {
     let system_prompt = String::from("You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe." );
 
     loop {
-        println!("Question:");
+        println!("USER:");
         let input = read_input();
         if saved_prompt.is_empty() {
             saved_prompt = format!(
@@ -130,7 +129,7 @@ fn main() {
         // Execute the inference (streaming mode).
         let mut output = String::new();
         let mut reset_prompt = false;
-        println!("Answer:");
+        println!("ASSISTANT:");
         loop {
             match context.compute_single() {
                 Ok(_) => (),
