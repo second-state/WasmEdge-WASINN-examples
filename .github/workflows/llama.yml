@@ -51,7 +51,7 @@ jobs:
           --nn-preload default:GGML:AUTO:tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf \
           target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
           default \
-          '<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
+          '<|im_start|>system\nYou are an AI assistant, always answer as short as possible<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
 
     - name: llama2 7b
       run: |
