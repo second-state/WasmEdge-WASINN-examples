@@ -49,8 +49,7 @@ fn get_output_from_context(context: &GraphExecutionContext) -> String {
 
 #[allow(dead_code)]
 fn get_metadata_from_context(context: &GraphExecutionContext) -> Value {
-    serde_json::from_str(&get_data_from_context(context, 1))
-        .expect("Failed to get metadata")
+    serde_json::from_str(&get_data_from_context(context, 1)).expect("Failed to get metadata")
 }
 
 fn main() {
@@ -88,7 +87,7 @@ fn main() {
     let system_prompt = String::from("You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe." );
 
     loop {
-        println!("Question:");
+        println!("USER:");
         let input = read_input();
         if saved_prompt.is_empty() {
             saved_prompt = format!("<|im_start|>system\n{}<|im_end|>\n<|im_start|>user\n{}<|im_end|>\n<|im_start|>assistant\n", system_prompt, input);
@@ -134,7 +133,7 @@ fn main() {
 
         // Retrieve the output.
         let mut output = get_output_from_context(&context);
-        println!("Answer:\n{}", output.trim());
+        println!("ASSISTANT:\n{}", output.trim());
 
         // Update the saved prompt.
         if reset_prompt {
