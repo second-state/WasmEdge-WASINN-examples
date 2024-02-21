@@ -74,10 +74,10 @@ fn main() {
 
     let mut saved_prompt = String::new();
     let system_prompt = String::from("You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe." );
-    let image_placeholder = "{WASMEDGE_IMAGE}";
+    let image_placeholder = "<image>";
 
     loop {
-        println!("Question:");
+        println!("USER:");
         let input = read_input();
 
         // llava chat format is "<system_prompt>\nUSER:<image_embeddings>\n<textual_prompt>\nASSISTANT:"
@@ -113,7 +113,7 @@ fn main() {
 
         // Retrieve the output.
         let mut output = get_output_from_context(&context);
-        println!("Answer:\n{}", output.trim());
+        println!("ASSISTANT:\n{}", output.trim());
 
         // Update the saved prompt.
         if reset_prompt {
