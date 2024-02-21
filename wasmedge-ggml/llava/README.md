@@ -33,10 +33,10 @@ For GPU offloading, please adjust the `n-gpu-layers` options to the number of la
 options.insert("n-gpu-layers", Value::from(...));
 ```
 
-In llava inference, we recommend to use the `ctx-size` at least `2048` for better performance.
+In llava inference, we recommend to use the `ctx-size` at least `2048` when using llava-v1.5 and at least `4096` when using llava-v1.6 for better results.
 
 ```rust
-options.insert("ctx-size", Value::from(2048));
+options.insert("ctx-size", Value::from(4096));
 ```
 
 ## Execute
