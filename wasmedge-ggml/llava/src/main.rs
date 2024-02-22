@@ -72,6 +72,22 @@ fn main() {
         .init_execution_context()
         .expect("Failed to init context");
 
+    // If there is a third argument, use it as the prompt and enter non-interactive mode.
+    // This is mainly for the CI workflow.
+    if args.len() >= 3 {
+        let prompt = &args[2];
+        println!("Prompt:\n{}", prompt);
+        let tensor_data = prompt.as_bytes().to_vec();
+        context
+            .set_input(0, wasi_nn::TensorType::U8, &[1], &tensor_data)
+            .expect("Failed to set input");
+        println!("Response:");
+        context.compute().expect("Failed to compute");
+        let output = get_output_from_context(&context);
+        println!("{}", output.trim());
+        std::process::exit(0);
+    }
+
     let mut saved_prompt = String::new();
     let system_prompt = String::from("You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe." );
     let image_placeholder = "<image>";
