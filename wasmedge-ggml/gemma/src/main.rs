@@ -23,13 +23,15 @@ fn get_options_from_env() -> Value {
     }
     if let Ok(val) = env::var("ctx_size") {
         options["ctx-size"] = serde_json::from_str(val.as_str()).unwrap()
+    } else {
+        options["ctx-size"] = serde_json::from_str("4096").unwrap()
     }
     if let Ok(val) = env::var("n_gpu_layers") {
         options["n-gpu-layers"] = serde_json::from_str(val.as_str()).unwrap()
+    } else {
+        options["n-gpu-layers"] = serde_json::from_str("100").unwrap()
     }
-    if let Ok(val) = env::var("stream_output") {
-        options["stream-stdout"] = serde_json::from_str(val.as_str()).unwrap()
-    }
+    options["stream-stdout"] = serde_json::from_str("true").unwrap();
 
     options
 }
