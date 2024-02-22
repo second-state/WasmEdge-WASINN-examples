@@ -61,7 +61,7 @@ fn main() {
     let mut options = HashMap::new();
     options.insert("enable-log", Value::from(false));
     options.insert("n-gpu-layers", Value::from(0));
-    options.insert("ctx-size", Value::from(512));
+    options.insert("ctx-size", Value::from(1024));
 
     // Create graph and initialize context.
     let graph =
