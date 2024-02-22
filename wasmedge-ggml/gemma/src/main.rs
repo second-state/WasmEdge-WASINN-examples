@@ -1,5 +1,5 @@
-use serde_json::Value;
 use serde_json::json;
+use serde_json::Value;
 use std::env;
 use std::io;
 use wasi_nn::{self, GraphExecutionContext};
@@ -67,8 +67,7 @@ fn get_output_from_context(context: &GraphExecutionContext) -> String {
 
 #[allow(dead_code)]
 fn get_metadata_from_context(context: &GraphExecutionContext) -> Value {
-    serde_json::from_str(&get_data_from_context(context, 1))
-        .expect("Failed to get metadata")
+    serde_json::from_str(&get_data_from_context(context, 1)).expect("Failed to get metadata")
 }
 
 fn main() {
@@ -119,7 +118,7 @@ fn main() {
     let mut saved_prompt = String::new();
 
     loop {
-        println!("Question:");
+        println!("USER:");
         let input = read_input();
         if saved_prompt.is_empty() {
             saved_prompt = format!(
@@ -127,7 +126,10 @@ fn main() {
                 input
             );
         } else {
-            saved_prompt = format!("{} <start_of_turn>user {} <end_of_turn><start_of_turn>model", saved_prompt, input);
+            saved_prompt = format!(
+                "{} <start_of_turn>user {} <end_of_turn><start_of_turn>model",
+                saved_prompt, input
+            );
         }
 
         // Set prompt to the input tensor.
@@ -148,6 +150,7 @@ fn main() {
 
         // Execute the inference.
         let mut reset_prompt = false;
+        println!("ASSISTANT:");
         match context.compute() {
             Ok(_) => (),
             Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::ContextFull)) => {
@@ -165,7 +168,11 @@ fn main() {
 
         // Retrieve the output.
         let mut output = get_output_from_context(&context);
-        println!("Answer:\n{}", output.trim());
+        if let Some(true) = options["stream-stdout"].as_bool() {
+            println!("");
+        } else {
+            println!("{}", output.trim());
+        }
 
         // Update the saved prompt.
         if reset_prompt {
