@@ -42,7 +42,6 @@ fn get_options_from_env() -> HashMap<&'static str, Value> {
     if let Ok(val) = env::var("n_gpu_layers") {
         options.insert("n-gpu-layers", serde_json::from_str(val.as_str()).unwrap());
     }
-
     options
 }
 
