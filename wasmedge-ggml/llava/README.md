@@ -7,11 +7,18 @@
 
 In this example, we are going to use the pre-converted [llava-v1.5-7b](https://huggingface.co/mys/ggml_llava-v1.5-7b) model.
 
-Download the llava model:
+Download the llava v1.5 model:
 
 ```bash
 curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/ggml-model-q5_k.gguf
 curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/mmproj-model-f16.gguf
+```
+
+or use the llava v1.6 model:
+
+```bash
+curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/vicuna-7b-q5_k.gguf
+curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/mmproj-vicuna7b-f16.gguf
 ```
 
 ## Prepare the Image
@@ -42,6 +49,9 @@ options.insert("ctx-size", Value::from(4096));
 ## Execute
 
 Execute the WASM with the `wasmedge` using the named model feature to preload a large model:
+
+> [!NOTE]
+> You may see some warnings stating `key clip.vision.* not found in file.` when using llava v1.5 models. These are expected and can be ignored.
 
 ```console
 $ wasmedge --dir .:. \
