@@ -1,5 +1,5 @@
 use serde_json::Value;
-use std::collections::HashMap;
+use serde_json::json;
 use std::env;
 use std::io;
 use wasi_nn::{self, GraphExecutionContext};
@@ -14,6 +14,21 @@ fn read_input() -> String {
             return answer.trim().to_string();
         }
     }
+}
+
+fn get_options_from_env() -> Value {
+    let mut options = json!({});
+    if let Ok(val) = env::var("enable_log") {
+        options["enable-log"] = serde_json::from_str(val.as_str()).unwrap()
+    }
+    if let Ok(val) = env::var("n_gpu_layers") {
+        options["n-gpu-layers"] = serde_json::from_str(val.as_str()).unwrap()
+    } else {
+        options["n-gpu-layers"] = serde_json::from_str("0").unwrap()
+    }
+    options["ctx-size"] = serde_json::from_str("1024").unwrap();
+
+    options
 }
 
 fn set_data_to_context(
@@ -58,10 +73,7 @@ fn main() {
 
     // Set options for the graph. Check our README for more details:
     // https://github.com/second-state/WasmEdge-WASINN-examples/tree/master/wasmedge-ggml#parameters
-    let mut options = HashMap::new();
-    options.insert("enable-log", Value::from(false));
-    options.insert("n-gpu-layers", Value::from(0));
-    options.insert("ctx-size", Value::from(1024));
+    let options = get_options_from_env();
 
     // Create graph and initialize context.
     let graph =
