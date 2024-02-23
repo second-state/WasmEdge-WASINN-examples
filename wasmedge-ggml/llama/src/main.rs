@@ -1,5 +1,5 @@
-use serde_json::Value;
 use serde_json::json;
+use serde_json::Value;
 use std::env;
 use std::io;
 use wasi_nn::{self, GraphExecutionContext};
@@ -19,10 +19,14 @@ fn read_input() -> String {
 fn get_options_from_env() -> Value {
     let mut options = json!({});
     if let Ok(val) = env::var("enable_log") {
-        options["enable-log"] = serde_json::from_str(val.as_str()).unwrap()
+        options["enable-log"] = serde_json::from_str(val.as_str())
+            .expect("invalid value for enable-log option (true/false)")
+    } else {
+        options["enable-log"] = serde_json::from_str("false").unwrap()
     }
     if let Ok(val) = env::var("n_gpu_layers") {
-        options["n-gpu-layers"] = serde_json::from_str(val.as_str()).unwrap()
+        options["n-gpu-layers"] =
+            serde_json::from_str(val.as_str()).expect("invalid ngl value (unsigned integer")
     } else {
         options["n-gpu-layers"] = serde_json::from_str("0").unwrap()
     }
