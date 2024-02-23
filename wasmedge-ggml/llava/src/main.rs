@@ -34,6 +34,11 @@ fn get_options_from_env() -> HashMap<&'static str, Value> {
     }
 
     // Optional parameters
+    if let Ok(val) = env::var("enable_log") {
+        options.insert("enable-log", serde_json::from_str(val.as_str()).unwrap());
+    } else {
+        options.insert("enable-log", Value::from(false));
+    }
     if let Ok(val) = env::var("ctx_size") {
         options.insert("ctx-size", serde_json::from_str(val.as_str()).unwrap());
     } else {
@@ -41,8 +46,9 @@ fn get_options_from_env() -> HashMap<&'static str, Value> {
     }
     if let Ok(val) = env::var("n_gpu_layers") {
         options.insert("n-gpu-layers", serde_json::from_str(val.as_str()).unwrap());
+    } else {
+        options.insert("n-gpu-layers", Value::from(0));
     }
-
     options
 }
 
@@ -75,9 +81,9 @@ fn main() {
 
     // Set options for the graph. Check our README for more details:
     // https://github.com/second-state/WasmEdge-WASINN-examples/tree/master/wasmedge-ggml#parameters
-    let mut options = get_options_from_env();
+    let options = get_options_from_env();
     // You could also set the options manually like this:
-    options.insert("enable-log", Value::from(false));
+    // options.insert("enable-log", Value::from(false));
 
     // Create graph and initialize context.
     let graph =
