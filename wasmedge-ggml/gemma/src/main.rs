@@ -19,17 +19,20 @@ fn read_input() -> String {
 fn get_options_from_env() -> Value {
     let mut options = json!({});
     if let Ok(val) = env::var("enable_log") {
-        options["enable-log"] = serde_json::from_str(val.as_str()).unwrap()
+        options["enable-log"] =
+            serde_json::from_str(val.as_str()).expect("invalid enable-log value (true/false)")
     } else {
         options["enable-log"] = serde_json::from_str("false").unwrap()
     }
     if let Ok(val) = env::var("ctx_size") {
-        options["ctx-size"] = serde_json::from_str(val.as_str()).unwrap()
+        options["ctx-size"] =
+            serde_json::from_str(val.as_str()).expect("invalid ctx-size value (unsigned integer)")
     } else {
         options["ctx-size"] = serde_json::from_str("4096").unwrap()
     }
     if let Ok(val) = env::var("n_gpu_layers") {
-        options["n-gpu-layers"] = serde_json::from_str(val.as_str()).unwrap()
+        options["n-gpu-layers"] =
+            serde_json::from_str(val.as_str()).expect("invalid ngl (unsigned integer)")
     } else {
         options["n-gpu-layers"] = serde_json::from_str("100").unwrap()
     }
@@ -173,7 +176,7 @@ fn main() {
         // Retrieve the output.
         let mut output = get_output_from_context(&context);
         if let Some(true) = options["stream-stdout"].as_bool() {
-            println!("");
+            println!();
         } else {
             println!("{}", output.trim());
         }
