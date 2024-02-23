@@ -20,6 +20,8 @@ fn get_options_from_env() -> Value {
     let mut options = json!({});
     if let Ok(val) = env::var("enable_log") {
         options["enable-log"] = serde_json::from_str(val.as_str()).unwrap()
+    } else {
+        options["enable-log"] = serde_json::from_str("false").unwrap()
     }
     if let Ok(val) = env::var("ctx_size") {
         options["ctx-size"] = serde_json::from_str(val.as_str()).unwrap()
