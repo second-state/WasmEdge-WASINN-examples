@@ -31,7 +31,7 @@ jobs:
               cd wasmedge-ggml/llama
               curl -LO https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf
               cargo build --target wasm32-wasi --release
-              wasmedge --dir .:. \
+              time wasmedge --dir .:. \
                 --nn-preload default:GGML:AUTO:tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf \
                 target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
                 default \
@@ -42,7 +42,7 @@ jobs:
               cd wasmedge-ggml/gemma
               curl -LO https://huggingface.co/second-state/Gemma-2b-it-GGUF/resolve/main/gemma-2b-it-Q5_K_M.gguf
               cargo build --target wasm32-wasi --release
-              wasmedge --dir .:. \
+              time wasmedge --dir .:. \
                 --env n_gpu_layers=0 \
                 --nn-preload default:GGML:AUTO:gemma-2b-it-Q5_K_M.gguf \
                 target/wasm32-wasi/release/wasmedge-ggml-gemma.wasm \
@@ -56,7 +56,7 @@ jobs:
               curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/mmproj-model-f16.gguf
               curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
               cargo build --target wasm32-wasi --release
-              wasmedge --dir .:. \
+              time wasmedge --dir .:. \
                 --env mmproj=mmproj-model-f16.gguf \
                 --env image=monalisa.jpg \
                 --env n_gpu_layers=0 \
@@ -72,7 +72,7 @@ jobs:
               curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/mmproj-vicuna7b-f16.gguf
               curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
               cargo build --target wasm32-wasi --release
-              wasmedge --dir .:. \
+              time wasmedge --dir .:. \
                 --env mmproj=mmproj-vicuna7b-f16.gguf \
                 --env image=monalisa.jpg \
                 --env ctx_size=4096 \
@@ -87,7 +87,7 @@ jobs:
               cd wasmedge-ggml/llama
               curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
               cargo build --target wasm32-wasi --release
-              wasmedge --dir .:. \
+              time wasmedge --dir .:. \
                 --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
                 target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
                 default \
@@ -136,7 +136,7 @@ jobs:
               cd wasmedge-ggml/llama
               curl -LO https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf
               cargo build --target wasm32-wasi --release
-              wasmedge --dir .:. \
+              time wasmedge --dir .:. \
                 --nn-preload default:GGML:AUTO:tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf \
                 --env n_gpu_layers=100 \
                 target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
@@ -149,7 +149,7 @@ jobs:
               cd wasmedge-ggml/gemma
               curl -LO https://huggingface.co/second-state/Gemma-2b-it-GGUF/resolve/main/gemma-2b-it-Q5_K_M.gguf
               cargo build --target wasm32-wasi --release
-              wasmedge --dir .:. \
+              time wasmedge --dir .:. \
                 --env n_gpu_layers=100 \
                 --nn-preload default:GGML:AUTO:gemma-2b-it-Q5_K_M.gguf \
                 target/wasm32-wasi/release/wasmedge-ggml-gemma.wasm \
@@ -164,7 +164,7 @@ jobs:
               curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/mmproj-model-f16.gguf
               curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
               cargo build --target wasm32-wasi --release
-              wasmedge --dir .:. \
+              time wasmedge --dir .:. \
                 --env mmproj=mmproj-model-f16.gguf \
                 --env image=monalisa.jpg \
                 --env ctx_size=2048 \
@@ -182,7 +182,7 @@ jobs:
               curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/mmproj-vicuna7b-f16.gguf
               curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
               cargo build --target wasm32-wasi --release
-              wasmedge --dir .:. \
+              time wasmedge --dir .:. \
                 --env mmproj=mmproj-vicuna7b-f16.gguf \
                 --env image=monalisa.jpg \
                 --env ctx_size=4096 \
@@ -198,7 +198,7 @@ jobs:
               cd wasmedge-ggml/llama
               curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
               cargo build --target wasm32-wasi --release
-              wasmedge --dir .:. \
+              time wasmedge --dir .:. \
                 --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
                 --env n_gpu_layers=100 \
                 target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
