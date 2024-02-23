@@ -21,109 +21,97 @@ on:
       - "wasmedge-ggml/**"
 
 jobs:
-  ubuntu:
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Install apt-get packages
-      run: |
-        echo RESET grub-efi/install_devices | sudo debconf-communicate grub-pc
-        sudo ACCEPT_EULA=Y apt-get update
-        sudo ACCEPT_EULA=Y apt-get upgrade
-        sudo apt-get install wget git curl software-properties-common build-essential libopenblas-dev
-
-    - name: Install Rust target for wasm
-      run: |
-        rustup target add wasm32-wasi
-
-    - name: Install WasmEdge + WASI-NN + GGML
-      run: |
-        VERSION=0.13.5
-        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -v $VERSION --plugins wasi_nn-ggml -p /usr/local
-
-    - name: Tiny Llama
-      run: |
-        cd wasmedge-ggml/llama
-        curl -LO https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf
-        cargo build --target wasm32-wasi --release
-        wasmedge --dir .:. \
-          --nn-preload default:GGML:AUTO:tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf \
-          target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
-          default \
-          $'<|im_start|>system\nYou are an AI assistant, always answer as short as possible<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
-
-    - name: Gemma 2B
-      run: |
-        cd wasmedge-ggml/gemma
-        curl -LO https://huggingface.co/second-state/Gemma-2b-it-GGUF/resolve/main/gemma-2b-it-Q5_K_M.gguf
-        cargo build --target wasm32-wasi --release
-        wasmedge --dir .:. \
-          --nn-preload default:GGML:AUTO:gemma-2b-it-Q5_K_M.gguf \
-          target/wasm32-wasi/release/wasmedge-ggml-gemma.wasm \
-          default \
-          '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
-
-    - name: Llava v1.5 7B
-      run: |
-        cd wasmedge-ggml/llava
-        curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/ggml-model-q5_k.gguf
-        curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/mmproj-model-f16.gguf
-        curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
-        cargo build --target wasm32-wasi --release
-        wasmedge --dir .:. \
-          --env mmproj=mmproj-model-f16.gguf \
-          --env image=monalisa.jpg \
-          --nn-preload default:GGML:AUTO:ggml-model-q5_k.gguf \
-          target/wasm32-wasi/release/wasmedge-ggml-llava.wasm \
-          default \
-          $'You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe.\nUSER:<image>\nDo you know who drew this painting?\nASSISTANT:'
-
-    - name: llama2 7b
-      run: |
-        cd wasmedge-ggml/llama
-        curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-
-        cargo build --target wasm32-wasi --release
-        wasmedge --dir .:. \
-          --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-          target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
-          default \
-          $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
-
-    - name: Build llama-stream
-      run: |
-        cd wasmedge-ggml/llama-stream
-        cargo build --target wasm32-wasi --release
-
-    - name: Build chatml
-      run: |
-        cd wasmedge-ggml/chatml
-        cargo build --target wasm32-wasi --release
-
-    - name: Build embedding
-      run: |
-        cd wasmedge-ggml/embedding
-        cargo build --target wasm32-wasi --release
-
-    - name: Build llava
-      run: |
-        cd wasmedge-ggml/llava
-        cargo build --target wasm32-wasi --release
-
-  macos:
+  build:
     strategy:
       matrix:
-        include:
-          - name: MacOS-13
-            host_runner: macos-13
-          - name: MacOS-14
-            host_runner: macos-14
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.host_runner }}
+        runner: [ubuntu-20.04, macos-13, macos-14]
+        job:
+          - name: "Tiny Llama"
+            run: |
+              cd wasmedge-ggml/llama
+              curl -LO https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf
+              cargo build --target wasm32-wasi --release
+              wasmedge --dir .:. \
+                --nn-preload default:GGML:AUTO:tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
+                default \
+                $'<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
+
+          - name: Gemma 2B
+            run: |
+              cd wasmedge-ggml/gemma
+              curl -LO https://huggingface.co/second-state/Gemma-2b-it-GGUF/resolve/main/gemma-2b-it-Q5_K_M.gguf
+              cargo build --target wasm32-wasi --release
+              wasmedge --dir .:. \
+                --env n_gpu_layers=0 \
+                --nn-preload default:GGML:AUTO:gemma-2b-it-Q5_K_M.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-gemma.wasm \
+                default \
+                '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
+
+          - name: Llava v1.5 7B
+            run: |
+              cd wasmedge-ggml/llava
+              curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/ggml-model-q5_k.gguf
+              curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/mmproj-model-f16.gguf
+              curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
+              cargo build --target wasm32-wasi --release
+              wasmedge --dir .:. \
+                --env mmproj=mmproj-model-f16.gguf \
+                --env image=monalisa.jpg \
+                --env n_gpu_layers=0 \
+                --nn-preload default:GGML:AUTO:ggml-model-q5_k.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-llava.wasm \
+                default \
+                $'You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe.\nUSER:<image>\nDo you know who drew this painting?\nASSISTANT:'
+
+          - name: Llava v1.6 7B
+            run: |
+              cd wasmedge-ggml/llava
+              curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/vicuna-7b-q5_k.gguf
+              curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/mmproj-vicuna7b-f16.gguf
+              curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
+              cargo build --target wasm32-wasi --release
+              wasmedge --dir .:. \
+                --env mmproj=mmproj-vicuna7b-f16.gguf \
+                --env image=monalisa.jpg \
+                --env ctx_size=4096 \
+                --env n_gpu_layers=0 \
+                --nn-preload default:GGML:AUTO:vicuna-7b-q5_k.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-llava.wasm \
+                default \
+                $'You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe.\nUSER:<image>\nDo you know who drew this painting?\nASSISTANT:'
+
+          - name: Llama2 7B
+            run: |
+              cd wasmedge-ggml/llama
+              curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
+              cargo build --target wasm32-wasi --release
+              wasmedge --dir .:. \
+                --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
+                default \
+                $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
+
+          - name: Build llama-stream
+            run: |
+              cd wasmedge-ggml/llama-stream
+              cargo build --target wasm32-wasi --release
+
+          - name: Build chatml
+            run: |
+              cd wasmedge-ggml/chatml
+              cargo build --target wasm32-wasi --release
+
+          - name: Build embedding
+            run: |
+              cd wasmedge-ggml/embedding
+              cargo build --target wasm32-wasi --release
+
+    name: ${{ matrix.runner }} - ${{ matrix.job.name }}
+    runs-on: ${{ matrix.runner }}
     steps:
     - uses: actions/checkout@v4
-
     - uses: actions-rust-lang/setup-rust-toolchain@v1
     - name: Install Rust target for wasm
       run: |
@@ -134,72 +122,6 @@ jobs:
         VERSION=0.13.5
         curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -v $VERSION --plugins wasi_nn-ggml -p /usr/local
 
-    - name: Tiny Llama
-      run: |
-        cd wasmedge-ggml/llama
-        curl -LO https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf
-        cargo build --target wasm32-wasi --release
-        wasmedge --dir .:. \
-          --nn-preload default:GGML:AUTO:tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf \
-          target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
-          default \
-          $'<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
+    - name: ${{ matrix.job.name }}
+      run: ${{ matrix.job.run }}
 
-    - name: Gemma 2B
-      run: |
-        cd wasmedge-ggml/gemma
-        curl -LO https://huggingface.co/second-state/Gemma-2b-it-GGUF/resolve/main/gemma-2b-it-Q5_K_M.gguf
-        cargo build --target wasm32-wasi --release
-        wasmedge --dir .:. \
-          --env n_gpu_layers=0 \
-          --nn-preload default:GGML:AUTO:gemma-2b-it-Q5_K_M.gguf \
-          target/wasm32-wasi/release/wasmedge-ggml-gemma.wasm \
-          default \
-          '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
-
-    - name: Llava v1.5 7B
-      run: |
-        cd wasmedge-ggml/llava
-        curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/ggml-model-q5_k.gguf
-        curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/mmproj-model-f16.gguf
-        curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
-        cargo build --target wasm32-wasi --release
-        wasmedge --dir .:. \
-          --env mmproj=mmproj-model-f16.gguf \
-          --env image=monalisa.jpg \
-          --nn-preload default:GGML:AUTO:ggml-model-q5_k.gguf \
-          target/wasm32-wasi/release/wasmedge-ggml-llava.wasm \
-          default \
-          $'You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe.\nUSER:<image>\nDo you know who drew this painting?\nASSISTANT:'
-
-    - name: llama2 7b
-      run: |
-        cd wasmedge-ggml/llama
-        curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-
-        cargo build --target wasm32-wasi --release
-        wasmedge --dir .:. \
-          --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-          target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
-          default \
-          $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
-
-    - name: Build llama-stream
-      run: |
-        cd wasmedge-ggml/llama-stream
-        cargo build --target wasm32-wasi --release
-
-    - name: Build chatml
-      run: |
-        cd wasmedge-ggml/chatml
-        cargo build --target wasm32-wasi --release
-
-    - name: Build embedding
-      run: |
-        cd wasmedge-ggml/embedding
-        cargo build --target wasm32-wasi --release
-
-    - name: Build llava
-      run: |
-        cd wasmedge-ggml/llava
-        cargo build --target wasm32-wasi --release

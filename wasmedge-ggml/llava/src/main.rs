@@ -16,6 +16,36 @@ fn read_input() -> String {
     }
 }
 
+fn get_options_from_env() -> HashMap<&'static str, Value> {
+    let mut options = HashMap::new();
+
+    // Required parameters for llava
+    if let Ok(val) = env::var("mmproj") {
+        options.insert("mmproj", Value::from(val.as_str()));
+    } else {
+        eprintln!("Failed to get mmproj model.");
+        std::process::exit(1);
+    }
+    if let Ok(val) = env::var("image") {
+        options.insert("image", Value::from(val.as_str()));
+    } else {
+        eprintln!("Failed to get the target image.");
+        std::process::exit(1);
+    }
+
+    // Optional parameters
+    if let Ok(val) = env::var("ctx_size") {
+        options.insert("ctx-size", serde_json::from_str(val.as_str()).unwrap());
+    } else {
+        options.insert("ctx-size", Value::from(2048));
+    }
+    if let Ok(val) = env::var("n_gpu_layers") {
+        options.insert("n-gpu-layers", serde_json::from_str(val.as_str()).unwrap());
+    }
+
+    options
+}
+
 fn set_data_to_context(
     context: &mut GraphExecutionContext,
     data: Vec<u8>,
@@ -45,22 +75,9 @@ fn main() {
 
     // Set options for the graph. Check our README for more details:
     // https://github.com/second-state/WasmEdge-WASINN-examples/tree/master/wasmedge-ggml#parameters
-    let mut options = HashMap::new();
+    let mut options = get_options_from_env();
+    // You could also set the options manually like this:
     options.insert("enable-log", Value::from(false));
-    options.insert("n-gpu-layers", Value::from(0));
-    options.insert("ctx-size", Value::from(2048));
-    if let Ok(val) = env::var("mmproj") {
-        options.insert("mmproj", Value::from(val.as_str()));
-    } else {
-        eprintln!("Failed to get mmproj model.");
-        std::process::exit(1);
-    }
-    if let Ok(val) = env::var("image") {
-        options.insert("image", Value::from(val.as_str()));
-    } else {
-        eprintln!("Failed to get the target image.");
-        std::process::exit(1);
-    }
 
     // Create graph and initialize context.
     let graph =
