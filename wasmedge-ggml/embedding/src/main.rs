@@ -1,7 +1,10 @@
 use serde_json::{json, Value};
 use std::env;
 use std::io::{self};
-use wasi_nn::{self, GraphExecutionContext};
+use wasmedge_wasi_nn::{
+    self, BackendError, Error, ExecutionTarget, GraphBuilder, GraphEncoding, GraphExecutionContext,
+    TensorType,
+};
 
 fn read_input() -> String {
     loop {
@@ -33,19 +36,16 @@ fn get_options_from_env() -> Value {
     options
 }
 
-fn set_data_to_context(
-    context: &mut GraphExecutionContext,
-    data: Vec<u8>,
-) -> Result<(), wasi_nn::Error> {
-    context.set_input(0, wasi_nn::TensorType::U8, &[1], &data)
+fn set_data_to_context(context: &mut GraphExecutionContext, data: Vec<u8>) -> Result<(), Error> {
+    context.set_input(0, TensorType::U8, &[1], &data)
 }
 
 #[allow(dead_code)]
 fn set_metadata_to_context(
     context: &mut GraphExecutionContext,
     data: Vec<u8>,
-) -> Result<(), wasi_nn::Error> {
-    context.set_input(1, wasi_nn::TensorType::U8, &[1], &data)
+) -> Result<(), Error> {
+    context.set_input(1, TensorType::U8, &[1], &data)
 }
 
 fn get_data_from_context(context: &GraphExecutionContext, index: usize) -> String {
@@ -77,11 +77,10 @@ fn main() {
     options["embedding"] = serde_json::Value::Bool(true);
 
     // Create graph and initialize context.
-    let graph =
-        wasi_nn::GraphBuilder::new(wasi_nn::GraphEncoding::Ggml, wasi_nn::ExecutionTarget::AUTO)
-            .config(options.to_string())
-            .build_from_cache(model_name)
-            .expect("Create GraphBuilder Failed, please check the model name or options");
+    let graph = GraphBuilder::new(GraphEncoding::Ggml, ExecutionTarget::AUTO)
+        .config(options.to_string())
+        .build_from_cache(model_name)
+        .expect("Create GraphBuilder Failed, please check the model name or options");
     let mut context = graph
         .init_execution_context()
         .expect("Init Context Failed, please check the model");
@@ -98,7 +97,7 @@ fn main() {
         println!("Prompt:\n{}", prompt);
         let tensor_data = prompt.as_bytes().to_vec();
         context
-            .set_input(0, wasi_nn::TensorType::U8, &[1], &tensor_data)
+            .set_input(0, TensorType::U8, &[1], &tensor_data)
             .unwrap();
         println!("Raw Embedding Output:");
         context.compute().unwrap();
@@ -139,10 +138,10 @@ fn main() {
 
         match context.compute() {
             Ok(_) => (),
-            Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::ContextFull)) => {
+            Err(Error::BackendError(BackendError::ContextFull)) => {
                 println!("\n[INFO] Context full");
             }
-            Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::PromptTooLong)) => {
+            Err(Error::BackendError(BackendError::PromptTooLong)) => {
                 println!("\n[INFO] Prompt too long");
             }
             Err(err) => {

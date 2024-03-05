@@ -2,7 +2,10 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::env;
 use std::io::{self, Write};
-use wasi_nn::{self, GraphExecutionContext};
+use wasmedge_wasi_nn::{
+    self, BackendError, Error, ExecutionTarget, GraphBuilder, GraphEncoding, GraphExecutionContext,
+    TensorType,
+};
 
 fn read_input() -> String {
     loop {
@@ -16,19 +19,16 @@ fn read_input() -> String {
     }
 }
 
-fn set_data_to_context(
-    context: &mut GraphExecutionContext,
-    data: Vec<u8>,
-) -> Result<(), wasi_nn::Error> {
-    context.set_input(0, wasi_nn::TensorType::U8, &[1], &data)
+fn set_data_to_context(context: &mut GraphExecutionContext, data: Vec<u8>) -> Result<(), Error> {
+    context.set_input(0, TensorType::U8, &[1], &data)
 }
 
 #[allow(dead_code)]
 fn set_metadata_to_context(
     context: &mut GraphExecutionContext,
     data: Vec<u8>,
-) -> Result<(), wasi_nn::Error> {
-    context.set_input(1, wasi_nn::TensorType::U8, &[1], &data)
+) -> Result<(), Error> {
+    context.set_input(1, TensorType::U8, &[1], &data)
 }
 
 fn get_data_from_context(context: &GraphExecutionContext, index: usize, is_single: bool) -> String {
@@ -75,11 +75,10 @@ fn main() {
     options.insert("ctx-size", Value::from(512));
 
     // Create graph and initialize context.
-    let graph =
-        wasi_nn::GraphBuilder::new(wasi_nn::GraphEncoding::Ggml, wasi_nn::ExecutionTarget::AUTO)
-            .config(serde_json::to_string(&options).expect("Failed to serialize options"))
-            .build_from_cache(model_name)
-            .expect("Failed to build graph");
+    let graph = GraphBuilder::new(GraphEncoding::Ggml, ExecutionTarget::AUTO)
+        .config(serde_json::to_string(&options).expect("Failed to serialize options"))
+        .build_from_cache(model_name)
+        .expect("Failed to build graph");
     let mut context = graph
         .init_execution_context()
         .expect("Failed to init context");
@@ -133,15 +132,15 @@ fn main() {
         loop {
             match context.compute_single() {
                 Ok(_) => (),
-                Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::EndOfSequence)) => {
+                Err(Error::BackendError(BackendError::EndOfSequence)) => {
                     break;
                 }
-                Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::ContextFull)) => {
+                Err(Error::BackendError(BackendError::ContextFull)) => {
                     println!("\n[INFO] Context full, we'll reset the context and continue.");
                     reset_prompt = true;
                     break;
                 }
-                Err(wasi_nn::Error::BackendError(wasi_nn::BackendError::PromptTooLong)) => {
+                Err(Error::BackendError(BackendError::PromptTooLong)) => {
                     println!("\n[INFO] Prompt too long, we'll reset the context and continue.");
                     reset_prompt = true;
                     break;
