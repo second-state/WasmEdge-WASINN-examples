@@ -100,6 +100,20 @@ jobs:
                 default \
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
 
+          - name: StarCoder 2 7B
+            run: |
+              test -f ~/.wasmedge/env && source ~/.wasmedge/env
+              cd wasmedge-ggml/basic
+              curl -LO https://huggingface.co/second-state/StarCoder2-7B-GGUF/resolve/main/starcoder2-7b-Q5_K_M.gguf
+              cargo build --target wasm32-wasi --release
+              time wasmedge --dir .:. \
+                --env n_gpu_layers="$NGL" \
+                --env n_predict=100 \
+                --nn-preload default:GGML:AUTO:starcoder2-7b-Q5_K_M.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-basic.wasm \
+                default \
+                'def print_hello_world():'
+
           - name: Build llama-stream
             run: |
               cd wasmedge-ggml/llama-stream
