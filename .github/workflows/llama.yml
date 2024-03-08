@@ -114,6 +114,24 @@ jobs:
                 default \
                 'def print_hello_world():'
 
+          - name: Multiple Models Example
+            run: |
+              test -f ~/.wasmedge/env && source ~/.wasmedge/env
+              cd wasmedge-ggml/multimodel
+              curl -LO https://huggingface.co/second-state/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
+              curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/vicuna-7b-q5_k.gguf
+              curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/mmproj-vicuna7b-f16.gguf
+              curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
+              cargo build --target wasm32-wasi --release
+              time wasmedge --dir .:. \
+                --env n_gpu_layers="$NGL" \
+                --env image=monalisa.jpg \
+                --env mmproj=mmproj-vicuna7b-f16.gguf \
+                --nn-preload llama2:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
+                --nn-preload llava:GGML:AUTO:vicuna-7b-q5_k.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-multimodel.wasm \
+                'describe this picture please'
+
           - name: Build llama-stream
             run: |
               cd wasmedge-ggml/llama-stream
