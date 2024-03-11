@@ -24,7 +24,7 @@ jobs:
   build:
     strategy:
       matrix:
-        runner: [ubuntu-20.04, macos-13, macos-14, macos-m1]
+        runner: [ubuntu-20.04, macos-13, macos-m1]
         job:
           - name: "Tiny Llama"
             run: |
