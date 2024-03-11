@@ -37,7 +37,7 @@ $ wasmedge --dir .:. \
   --env mmproj=mmproj-vicuna7b-f16.gguf \
   --nn-preload llama2:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
   --nn-preload llava:GGML:AUTO:vicuna-7b-q5_k.gguf \
-  wasmedge-ggml-multimodel.wasm default
+  wasmedge-ggml-multimodel.wasm
 
 USER:
 describe this picture please
