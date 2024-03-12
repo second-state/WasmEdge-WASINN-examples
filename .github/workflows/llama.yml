@@ -132,6 +132,18 @@ jobs:
                 target/wasm32-wasi/release/wasmedge-ggml-multimodel.wasm \
                 'describe this picture please'
 
+          - name: Embedding Example
+            run: |
+              test -f ~/.wasmedge/env && source ~/.wasmedge/env
+              cd wasmedge-ggml/embedding
+              curl -LO https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-ggml-model-f16.gguf
+              cargo build --target wasm32-wasi --release
+              time wasmedge --dir .:. \
+                --nn-preload default:GGML:AUTO:all-MiniLM-L6-v2-ggml-model-f16.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-llama-embedding.wasm \
+                default \
+                'hello world'
+
           - name: Build llama-stream
             run: |
               cd wasmedge-ggml/llama-stream
@@ -140,11 +152,6 @@ jobs:
           - name: Build chatml
             run: |
               cd wasmedge-ggml/chatml
-              cargo build --target wasm32-wasi --release
-
-          - name: Build embedding
-            run: |
-              cd wasmedge-ggml/embedding
               cargo build --target wasm32-wasi --release
 
           - name: Build llava-base64-stream
