@@ -46,7 +46,7 @@ In llava inference, we recommend to use the `ctx-size` at least `2048` when usin
 options.insert("ctx-size", Value::from(4096));
 ```
 
-## Execute
+## Execute (llava-1.5)
 
 Execute the WASM with the `wasmedge` using the named model feature to preload a large model:
 
@@ -60,12 +60,37 @@ $ wasmedge --dir .:. \
   --nn-preload default:GGML:AUTO:ggml-model-q5_k.gguf \
   wasmedge-ggml-llava.wasm default
 
-Question:
+USER:
 what is in this picture?
-Answer:
+ASSISTANT:
 The image features a painting or portrait of a woman with long hair, likely inspired by the famous Mona Lisa artwork. She appears to be smiling and is surrounded by an ocean view, giving the impression of being on a boat. The scene is painted in black and white, creating a classic and timeless look. Additionally, there are two birds present within this painting, one on the left side towards the top and another slightly higher up in the center.
-Question:
+USER:
 Do you know who drew this painting?
-Answer:
+ASSISTANT:
 As a visual AI, I don't have knowledge about the artist who created this painting. However, it is inspired by the famous Mona Lisa artwork, which was painted by Leonardo da Vinci.
+```
+
+## Execute (llava-1.6)
+
+Execute the WASM with the `wasmedge` using the named model feature to preload a large model:
+
+> [!NOTE]
+> For the llava-1.6 model, we will need to set the context size to at least 4096 to work.
+
+```console
+$ wasmedge --dir .:. \
+  --env mmproj=mmproj-vicuna7b-f16.gguf \
+  --env image=monalisa.jpg \
+  --env ctx_size=4096 \
+  --nn-preload default:GGML:AUTO:vicuna-7b-q5_k.gguf \
+  wasmedge-ggml-llava.wasm default
+
+USER:
+what is in this picture?
+ASSISTANT:
+The image you've provided appears to be a portrait of the famous artwork known as the Mona Lisa, one of Leonardo da Vinci's most recognizable paintings. It features a woman with a subtly enigmatic smile and her gaze directed slightly off-center towards the viewer. The background is filled with elements of Renaissance landscape painting, including rolling hills, trees, waterways, and a distant city skyline, creating a serene yet intriguing atmosphere that complements the subject's ethereal presence.
+USER:
+Do you know who drew this painting?
+ASSISTANT:
+Yes, the painting was created by Leonardo da Vinci. It is one of his most celebrated works and is known for its enigmatic expression and the artist's attention to detail in both the subject's features and the landscape elements surrounding her.
 ```
