@@ -25,6 +25,7 @@ jobs:
     strategy:
       matrix:
         runner: [ubuntu-20.04, macos-13, macos-m1]
+        plugin: [wasi_nn-ggml, wasi_nn-ggml-b2334]
         job:
           - name: "Tiny Llama"
             run: |
@@ -163,7 +164,7 @@ jobs:
           - runner: macos-m1
             ngl: 100
 
-    name: ${{ matrix.runner }} - ${{ matrix.job.name }}
+    name: ${{ matrix.runner }} - ${{ matrix.job.name }} - ${{ matrix.plugin }}
     runs-on: ${{ matrix.runner }}
     steps:
     - uses: actions/checkout@v4
@@ -175,7 +176,7 @@ jobs:
     - name: Install WasmEdge + WASI-NN + GGML
       run: |
         VERSION=0.13.5
-        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION --plugins wasi_nn-ggml
+        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION --plugins ${{ matrix.plugin }}
 
     - name: Set environment variable
       run: echo "NGL=${{ matrix.ngl || 0 }}" >> $GITHUB_ENV
