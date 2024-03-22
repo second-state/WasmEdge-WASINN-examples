@@ -75,6 +75,10 @@ fn get_output_from_context(context: &GraphExecutionContext) -> String {
     get_data_from_context(context, 0)
 }
 
+fn get_metadata_from_context(context: &GraphExecutionContext) -> Value {
+    serde_json::from_str(&get_data_from_context(context, 1)).expect("Failed to get metadata")
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let model_name: &str = &args[1];
@@ -98,15 +102,41 @@ fn main() {
     // This is mainly for the CI workflow.
     if args.len() >= 3 {
         let prompt = &args[2];
+        // Set the prompt.
         println!("Prompt:\n{}", prompt);
         let tensor_data = prompt.as_bytes().to_vec();
         context
             .set_input(0, TensorType::U8, &[1], &tensor_data)
             .expect("Failed to set input");
         println!("Response:");
+
+        // Get the number of input tokens and llama.cpp versions.
+        let input_metadata = get_metadata_from_context(&context);
+        println!("[INFO] llama_commit: {}", input_metadata["llama_commit"]);
+        println!(
+            "[INFO] llama_build_number: {}",
+            input_metadata["llama_build_number"]
+        );
+        println!(
+            "[INFO] Number of input tokens: {}",
+            input_metadata["input_tokens"]
+        );
+
+        // Get the output.
         context.compute().expect("Failed to compute");
         let output = get_output_from_context(&context);
         println!("{}", output.trim());
+
+        // Retrieve the output metadata.
+        let metadata = get_metadata_from_context(&context);
+        println!(
+            "[INFO] Number of input tokens: {}",
+            metadata["input_tokens"]
+        );
+        println!(
+            "[INFO] Number of output tokens: {}",
+            metadata["output_tokens"]
+        );
         std::process::exit(0);
     }
 
