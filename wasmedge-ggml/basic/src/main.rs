@@ -37,7 +37,7 @@ fn get_options_from_env() -> Value {
         options["n-gpu-layers"] =
             serde_json::from_str(val.as_str()).expect("invalid ngl (unsigned integer)")
     } else {
-        options["n-gpu-layers"] = serde_json::from_str("100").unwrap()
+        options["n-gpu-layers"] = serde_json::from_str("0").unwrap()
     }
     if let Ok(val) = env::var("n_predict") {
         options["n-predict"] =
