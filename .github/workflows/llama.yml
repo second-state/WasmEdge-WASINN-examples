@@ -115,19 +115,6 @@ jobs:
                 default \
                 'def print_hello_world():'
 
-          - name: C4AI Command-R v01
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/command-r
-              curl -LO https://huggingface.co/andrewcanis/c4ai-command-r-v01-GGUF/resolve/main/c4ai-command-r-v01-Q2_K.gguf
-              cargo build --target wasm32-wasi --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:c4ai-command-r-v01-Q2_K.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-command-r.wasm \
-                default \
-                '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>What is the capital of the United States?<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>'
-
           - name: Multiple Models Example
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
@@ -202,6 +189,21 @@ jobs:
         include:
           - runner: macos-m1
             ngl: 100
+          - runner: ubuntu-20.04
+            plugin: wasi_nn-ggml
+            job:
+              name: C4AI Command-R v01
+              run: |
+                test -f ~/.wasmedge/env && source ~/.wasmedge/env
+                cd wasmedge-ggml/command-r
+                curl -LO https://huggingface.co/andrewcanis/c4ai-command-r-v01-GGUF/resolve/main/c4ai-command-r-v01-Q2_K.gguf
+                cargo build --target wasm32-wasi --release
+                time wasmedge --dir .:. \
+                  --env n_gpu_layers="$NGL" \
+                  --nn-preload default:GGML:AUTO:c4ai-command-r-v01-Q2_K.gguf \
+                  target/wasm32-wasi/release/wasmedge-ggml-command-r.wasm \
+                  default \
+                  '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>What is the capital of the United States?<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>'
 
     name: ${{ matrix.runner }} - ${{ matrix.job.name }} - ${{ matrix.plugin }}
     runs-on: ${{ matrix.runner }}
