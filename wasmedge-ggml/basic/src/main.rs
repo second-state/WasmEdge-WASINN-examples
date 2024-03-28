@@ -115,7 +115,11 @@ fn main() {
         println!("Response:");
         context.compute().expect("Failed to compute");
         let output = get_output_from_context(&context);
-        println!("{}", output.trim());
+        if let Some(true) = options["stream-stdout"].as_bool() {
+            println!();
+        } else {
+            println!("{}", output.trim());
+        }
         std::process::exit(0);
     }
 
