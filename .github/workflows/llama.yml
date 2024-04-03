@@ -171,6 +171,19 @@ jobs:
                 default \
                 '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
 
+          - name: Grammar Example
+            run: |
+              test -f ~/.wasmedge/env && source ~/.wasmedge/env
+              cd wasmedge-ggml/grammar
+              curl -LO https://huggingface.co/TheBloke/Llama-2-7b-GGUF/resolve/main/llama-2-7b.Q5_K_M.gguf
+              cargo build --target wasm32-wasi --release
+              time wasmedge --dir .:. \
+                --env n_gpu_layers="$NGL" \
+                --nn-preload default:GGML:AUTO:llama-2-7b.Q5_K_M.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-grammar.wasm \
+                default \
+                'JSON object with 5 country names as keys and their capitals as values: '
+
           - name: Build llama-stream
             run: |
               cd wasmedge-ggml/llama-stream
