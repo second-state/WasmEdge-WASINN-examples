@@ -94,6 +94,15 @@ fn main() {
     // We set the temperature to 0.2 in this example to make the response more consistent.
     options["temp"] = Value::from(0.1);
 
+    // ! debug
+    options["embedding"] = Value::from(true);
+
+    // ! debug
+    println!(
+        "[DEBUG] options: {:?}",
+        serde_json::to_string(&options).expect("Failed to serialize options")
+    );
+
     // Create graph and initialize context.
     let graph = GraphBuilder::new(GraphEncoding::Ggml, ExecutionTarget::AUTO)
         .config(serde_json::to_string(&options).expect("Failed to serialize options"))
