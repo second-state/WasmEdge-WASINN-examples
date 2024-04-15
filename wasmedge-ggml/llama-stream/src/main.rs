@@ -1,5 +1,5 @@
+use serde_json::json;
 use serde_json::Value;
-use std::collections::HashMap;
 use std::env;
 use std::io::{self, Write};
 use wasmedge_wasi_nn::{
@@ -17,6 +17,24 @@ fn read_input() -> String {
             return answer.trim().to_string();
         }
     }
+}
+
+fn get_options_from_env() -> Value {
+    let mut options = json!({});
+    if let Ok(val) = env::var("enable_log") {
+        options["enable-log"] = serde_json::from_str(val.as_str())
+            .expect("invalid value for enable-log option (true/false)")
+    } else {
+        options["enable-log"] = serde_json::from_str("false").unwrap()
+    }
+    if let Ok(val) = env::var("n_gpu_layers") {
+        options["n-gpu-layers"] =
+            serde_json::from_str(val.as_str()).expect("invalid ngl value (unsigned integer")
+    } else {
+        options["n-gpu-layers"] = serde_json::from_str("0").unwrap()
+    }
+
+    options
 }
 
 fn set_data_to_context(context: &mut GraphExecutionContext, data: Vec<u8>) -> Result<(), Error> {
@@ -69,10 +87,7 @@ fn main() {
 
     // Set options for the graph. Check our README for more details:
     // https://github.com/second-state/WasmEdge-WASINN-examples/tree/master/wasmedge-ggml#parameters
-    let mut options = HashMap::new();
-    options.insert("enable-log", Value::from(false));
-    options.insert("n-gpu-layers", Value::from(0));
-    options.insert("ctx-size", Value::from(512));
+    let options = get_options_from_env();
 
     // Create graph and initialize context.
     let graph = GraphBuilder::new(GraphEncoding::Ggml, ExecutionTarget::AUTO)
@@ -93,6 +108,72 @@ fn main() {
     //         .to_vec(),
     // )
     // .expect("Failed to set metadata");
+
+    // If there is a third argument, use it as the prompt and enter non-interactive mode.
+    // This is mainly for the CI workflow.
+    if args.len() >= 3 {
+        let prompt = &args[2];
+        // Set the prompt.
+        println!("Prompt:\n{}", prompt);
+        let tensor_data = prompt.as_bytes().to_vec();
+        context
+            .set_input(0, TensorType::U8, &[1], &tensor_data)
+            .expect("Failed to set input");
+        println!("Response:");
+
+        // Get the number of input tokens and llama.cpp versions.
+        let input_metadata = get_metadata_from_context(&context);
+        println!("[INFO] llama_commit: {}", input_metadata["llama_commit"]);
+        println!(
+            "[INFO] llama_build_number: {}",
+            input_metadata["llama_build_number"]
+        );
+        println!(
+            "[INFO] Number of input tokens: {}",
+            input_metadata["input_tokens"]
+        );
+
+        // Get the output.
+        let mut output = String::new();
+        loop {
+            match context.compute_single() {
+                Ok(_) => (),
+                Err(Error::BackendError(BackendError::EndOfSequence)) => {
+                    break;
+                }
+                Err(Error::BackendError(BackendError::ContextFull)) => {
+                    println!("\n[INFO] Context full, we'll reset the context and continue.");
+                    break;
+                }
+                Err(Error::BackendError(BackendError::PromptTooLong)) => {
+                    println!("\n[INFO] Prompt too long, we'll reset the context and continue.");
+                    break;
+                }
+                Err(err) => {
+                    println!("\n[ERROR] {}", err);
+                    std::process::exit(1);
+                }
+            }
+            // Retrieve the single output token and print it.
+            let token = get_single_output_from_context(&context);
+            print!("{}", token);
+            io::stdout().flush().unwrap();
+            output += &token;
+        }
+        println!();
+
+        // Retrieve the output metadata.
+        let metadata = get_metadata_from_context(&context);
+        println!(
+            "[INFO] Number of input tokens: {}",
+            metadata["input_tokens"]
+        );
+        println!(
+            "[INFO] Number of output tokens: {}",
+            metadata["output_tokens"]
+        );
+        std::process::exit(0);
+    }
 
     let mut saved_prompt = String::new();
     let system_prompt = String::from("You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe." );
