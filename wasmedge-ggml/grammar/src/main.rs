@@ -33,6 +33,10 @@ fn get_options_from_env() -> Value {
     } else {
         options["n-gpu-layers"] = serde_json::from_str("0").unwrap()
     }
+    if let Ok(val) = env::var("n_predict") {
+        options["n-predict"] =
+            serde_json::from_str(val.as_str()).expect("invalid n-predict value (unsigned integer")
+    }
     options["ctx-size"] = serde_json::from_str("1024").unwrap();
 
     options
@@ -70,13 +74,42 @@ fn get_metadata_from_context(context: &GraphExecutionContext) -> Value {
     serde_json::from_str(&get_data_from_context(context, 1)).expect("Failed to get metadata")
 }
 
+const JSON_GRAMMAR: &str = r#"
+root   ::= object
+value  ::= object | array | string | number | ("true" | "false" | "null") ws
+object ::=
+  "{" ws (
+            string ":" ws value
+    ("," ws string ":" ws value)*
+  )? "}" ws
+array  ::=
+  "[" ws (
+            value
+    ("," ws value)*
+  )? "]" ws
+string ::=
+  "\"" (
+    [^"\\\x7F\x00-\x1F] |
+    "\\" (["\\/bfnrt] | "u" [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F])
+  )* "\"" ws
+number ::= ("-"? ([0-9] | [1-9] [0-9]*)) ("." [0-9]+)? ([eE] [-+]? [0-9]+)? ws
+ws ::= ([ \t\n] ws)?
+"#;
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let model_name: &str = &args[1];
 
     // Set options for the graph. Check our README for more details:
     // https://github.com/second-state/WasmEdge-WASINN-examples/tree/master/wasmedge-ggml#parameters
-    let options = get_options_from_env();
+    let mut options = get_options_from_env();
+
+    // Add grammar for JSON output.
+    // Check [here](https://github.com/ggerganov/llama.cpp/tree/master/grammars) for more details.
+    options["grammar"] = JSON_GRAMMAR.into();
+
+    // Make the output more consistent.
+    options["temp"] = json!(0.1);
 
     // Create graph and initialize context.
     let graph = GraphBuilder::new(GraphEncoding::Ggml, ExecutionTarget::AUTO)
@@ -86,17 +119,6 @@ fn main() {
     let mut context = graph
         .init_execution_context()
         .expect("Failed to init context");
-
-    // We also support setting the options via input tensor with index 1.
-    // Uncomment the line below to run the example, Check our README for more details.
-    // set_metadata_to_context(
-    //     &mut context,
-    //     serde_json::to_string(&options)
-    //         .expect("Failed to serialize options")
-    //         .as_bytes()
-    //         .to_vec(),
-    // )
-    // .expect("Failed to set metadata");
 
     // If there is a third argument, use it as the prompt and enter non-interactive mode.
     // This is mainly for the CI workflow.
@@ -140,84 +162,21 @@ fn main() {
         std::process::exit(0);
     }
 
-    let mut saved_prompt = String::new();
-    let system_tool_prompt = r#"
-        # Safety Preamble
-        The instructions in this section override those in the task description and style guide sections. Don't answer questions that are harmful or immoral.
-
-        # System Preamble
-        ## Basic Rules
-        You are a powerful conversational AI trained by Cohere to help people. You are augmented by a number of tools, and your job is to use and consume the output of these tools to best help the user. You will see a conversation history between yourself and a user, ending with an utterance from the user. You will then see a specific instruction instructing you what kind of response to generate. When you answer the user's requests, you cite your sources in your answers, according to those instructions.
-
-        # User Preamble
-        ## Task and Context
-        You help people answer their questions and other requests interactively. You will be asked a very wide array of requests on all kinds of topics. You will be equipped with a wide range of search engines or similar tools to help you, which you use to research your answer. You should focus on serving the user's needs as best you can, which will be wide-ranging.
-
-        ## Style Guide
-        Unless the user asks for a different style of answer, you should answer in full sentences, using proper grammar and spelling.
-
-        ## Available Tools
-        Here is a list of tools that you have available to you:
-
-        ```python
-        def internet_search(query: str) -> List[Dict]:
-            """Returns a list of relevant document snippets for a textual query retrieved from the internet
-
-            Args:
-                query (str): Query to search the internet with
-            """
-            pass
-        ```
-
-        ```python
-        def directly_answer() -> List[Dict]:
-            """Calls a standard (un-augmented) AI chatbot to generate a response given the conversation history
-            """
-            pass
-        ```
-    "#;
-    let system_instruction_prompt = r#"
-        Write 'Action:' followed by a json-formatted list of actions that you want to perform in order to produce a good response to the user's last input. You can use any of the supplied tools any number of times, but you should aim to execute the minimum number of necessary actions for the input. You should use the `directly-answer` tool if calling the other tools is unnecessary. The list of actions you want to call should be formatted as a list of json objects, for example:
-        ```json
-        [
-            {
-                "tool_name": title of the tool in the specification,
-                "parameters": a dict of parameters to input into the tool as they are defined in the specs, or {} if it takes no parameters
-            }
-        ]```
-    "#;
-
     loop {
         println!("USER:");
         let input = read_input();
-        //
-        if saved_prompt.is_empty() {
-            saved_prompt = format!(
-                "<|START_OF_TURN_TOKEN|><|SYSTEM_TOKEN|>{}<|END_OF_TURN_TOKEN|>\
-                <|USER_TOKEN|>{}<|END_OF_TURN_TOKEN|>\
-                <|START_OF_TURN_TOKEN|><|SYSTEM_TOKEN|>{}<|END_OF_TURN_TOKEN|>\
-                <|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>",
-                system_tool_prompt, input, system_instruction_prompt
-            );
-        } else {
-            saved_prompt = format!("{} <|START_OF_TURN_TOKEN|><|USER_TOKEN|>{}<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>", saved_prompt, input);
-        }
 
         // Set prompt to the input tensor.
-        set_data_to_context(&mut context, saved_prompt.as_bytes().to_vec())
-            .expect("Failed to set input");
+        set_data_to_context(&mut context, input.as_bytes().to_vec()).expect("Failed to set input");
 
         // Execute the inference.
-        let mut reset_prompt = false;
         match context.compute() {
             Ok(_) => (),
             Err(Error::BackendError(BackendError::ContextFull)) => {
                 println!("\n[INFO] Context full, we'll reset the context and continue.");
-                reset_prompt = true;
             }
             Err(Error::BackendError(BackendError::PromptTooLong)) => {
                 println!("\n[INFO] Prompt too long, we'll reset the context and continue.");
-                reset_prompt = true;
             }
             Err(err) => {
                 println!("\n[ERROR] {}", err);
@@ -225,15 +184,7 @@ fn main() {
         }
 
         // Retrieve the output.
-        let mut output = get_output_from_context(&context);
+        let output = get_output_from_context(&context);
         println!("ASSISTANT:\n{}", output.trim());
-
-        // Update the saved prompt.
-        if reset_prompt {
-            saved_prompt.clear();
-        } else {
-            output = output.trim().to_string();
-            saved_prompt = format!("{} {} <|END_OF_TURN_TOKEN|>", saved_prompt, output);
-        }
     }
 }
