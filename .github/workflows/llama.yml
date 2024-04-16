@@ -237,6 +237,16 @@ jobs:
                 default \
                 'JSON object with 5 country names as keys and their capitals as values: '
 
+          - name: Model Not Found
+            run: |
+              test -f ~/.wasmedge/env && source ~/.wasmedge/env
+              cd wasmedge-ggml/test/model-not-found
+              cargo build --target wasm32-wasi --release
+              time wasmedge --dir .:. \
+                --nn-preload default:GGML:AUTO:model-not-found.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-model-not-found.wasm \
+                default
+
           - name: Build llama-stream
             run: |
               cd wasmedge-ggml/llama-stream
