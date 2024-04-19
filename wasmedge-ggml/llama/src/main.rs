@@ -27,6 +27,12 @@ fn get_options_from_env() -> Value {
     } else {
         options["enable-log"] = serde_json::from_str("false").unwrap()
     }
+    if let Ok(val) = env::var("llama3") {
+        options["llama3"] = serde_json::from_str(val.as_str())
+            .expect("invalid value for llama3 option (true/false)");
+    } else {
+        options["llama3"] = serde_json::from_str("false").unwrap()
+    }
     if let Ok(val) = env::var("n_gpu_layers") {
         options["n-gpu-layers"] =
             serde_json::from_str(val.as_str()).expect("invalid ngl value (unsigned integer")
@@ -147,12 +153,23 @@ fn main() {
         println!("USER:");
         let input = read_input();
         if saved_prompt.is_empty() {
-            saved_prompt = format!(
-                "[INST] <<SYS>> {} <</SYS>> {} [/INST]",
-                system_prompt, input
-            );
+            if options["llama3"].as_bool().unwrap() {
+                saved_prompt = format!(
+                    "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n{}<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\n\n{}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>\n\n",
+                    system_prompt, input
+                );
+            } else {
+                saved_prompt = format!(
+                    "[INST] <<SYS>> {} <</SYS>> {} [/INST]",
+                    system_prompt, input
+                );
+            }
         } else {
-            saved_prompt = format!("{} [INST] {} [/INST]", saved_prompt, input);
+            if options["llama3"].as_bool().unwrap() {
+                saved_prompt = format!("{}<|start_header_id|>user<|end_header_id|>\n\n{}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>\n\n", saved_prompt, input);
+            } else {
+                saved_prompt = format!("{} [INST] {} [/INST]", saved_prompt, input);
+            }
         }
 
         // Set prompt to the input tensor.
