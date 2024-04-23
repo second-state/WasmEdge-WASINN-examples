@@ -1,5 +1,5 @@
 [package]
-name = "wasmedge-ggml-set-input-twice"
+name = "wasmedge-ggml-model-not-found"
 version = "0.1.0"
 edition = "2021"
 
