@@ -57,6 +57,6 @@ fn main() {
         .collect();
         let output = tokenizer.decode(&output_id, true).unwrap();
         println!("{}", output);
-        context.fini_single().expect("Failed to free resource");
+        graph.unload().expect("Failed to free resource");
 
 }
