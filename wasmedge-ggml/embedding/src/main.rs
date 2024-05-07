@@ -49,8 +49,9 @@ fn set_metadata_to_context(
 }
 
 fn get_data_from_context(context: &GraphExecutionContext, index: usize) -> String {
-    // Preserve for 4096 tokens with average token length 15
-    const MAX_OUTPUT_BUFFER_SIZE: usize = 4096 * 15 + 128;
+    // Preserve for 4096 embedding size and each embedding number is length 20,
+    // and add 128 bytes for other information such as "n_embedding" of other symbols.
+    const MAX_OUTPUT_BUFFER_SIZE: usize = 4096 * 20 + 128;
     let mut output_buffer = vec![0u8; MAX_OUTPUT_BUFFER_SIZE];
     let mut output_size = context.get_output(index, &mut output_buffer).unwrap();
     output_size = std::cmp::min(MAX_OUTPUT_BUFFER_SIZE, output_size);
