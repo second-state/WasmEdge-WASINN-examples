@@ -26,7 +26,7 @@ cmake --build build
 cmake --install build
 ```
 
-Then you will have an executable `wasmedge` runtime under `/usr/local/bin` and the WASI-NN with OpenVINO backend plug-in under `/usr/local/lib/wasmedge/libwasmedgePluginWasiNN.so` after installation.
+Then you will have an executable `wasmedge` runtime under `/usr/local/bin` and the WASI-NN with Neural Speed backend plug-in under `/usr/local/lib/wasmedge/libwasmedgePluginWasiNN.so` after installation.
 ## Model Download Link
 
 In this example, we will use neural-chat-7b-v3-1.Q4_0 model in GGUF format.
