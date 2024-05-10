@@ -57,7 +57,7 @@ Please refer to [WasmEdge Docs](https://wasmedge.org/docs/contribute/source/plug
   cargo build --target wasm32-wasi --release
   cd ..
 
-  wasmedge --dir .:. ./rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr
+  wasmedge --dir .:. ./rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin input.jpg
   ```
 
   If the commands above run successfully, you will get the output:
