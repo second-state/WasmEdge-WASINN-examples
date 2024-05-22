@@ -25,7 +25,7 @@ jobs:
     strategy:
       matrix:
         runner: [ubuntu-20.04, macos-13, macos-m1]
-        plugin: [wasi_nn-ggml]
+        plugin: [wasi_nn-ggml, wasi_nn-ggml-b2963]
         job:
           - name: "Tiny Llama"
             run: |
