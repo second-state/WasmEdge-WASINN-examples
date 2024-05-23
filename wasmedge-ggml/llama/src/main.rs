@@ -155,7 +155,7 @@ fn main() {
         if saved_prompt.is_empty() {
             if options["llama3"].as_bool().unwrap() {
                 saved_prompt = format!(
-                    "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n{}<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\n\n{}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>\n\n",
+                    "<|start_header_id|>system<|end_header_id|>\n\n{}<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\n\n{}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>\n\n",
                     system_prompt, input
                 );
             } else {
