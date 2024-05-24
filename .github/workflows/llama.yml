@@ -224,6 +224,34 @@ jobs:
                 default \
                 '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
 
+          - name: Yi 1.5 9B 16K
+            run: |
+              test -f ~/.wasmedge/env && source ~/.wasmedge/env
+              cd wasmedge-ggml/chatml
+              curl -LO https://huggingface.co/second-state/Yi-1.5-9B-Chat-16K-GGUF/resolve/main/Yi-1.5-9B-Chat-16K-Q5_K_M.gguf
+              cargo build --target wasm32-wasi --release
+              time wasmedge --dir .:. \
+                --env n_gpu_layers="$NGL" \
+                --env reverse_prompt='<|im_end|>' \
+                --nn-preload default:GGML:AUTO:Yi-1.5-9B-Chat-16K-Q5_K_M.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-chatml.wasm \
+                default \
+                $'<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
+
+          - name: Yi 1.5 9B
+            run: |
+              test -f ~/.wasmedge/env && source ~/.wasmedge/env
+              cd wasmedge-ggml/chatml
+              curl -LO https://huggingface.co/second-state/Yi-1.5-9B-Chat-GGUF/resolve/main/Yi-1.5-9B-Chat-Q5_K_M.gguf
+              cargo build --target wasm32-wasi --release
+              time wasmedge --dir .:. \
+                --env n_gpu_layers="$NGL" \
+                --env reverse_prompt='<|im_end|>' \
+                --nn-preload default:GGML:AUTO:Yi-1.5-9B-Chat-Q5_K_M.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-chatml.wasm \
+                default \
+                $'<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
+
           - name: Grammar Example
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
@@ -301,11 +329,6 @@ jobs:
           - name: Build llama-stream
             run: |
               cd wasmedge-ggml/llama-stream
-              cargo build --target wasm32-wasi --release
-
-          - name: Build chatml
-            run: |
-              cd wasmedge-ggml/chatml
               cargo build --target wasm32-wasi --release
 
           - name: Build llava-base64-stream
