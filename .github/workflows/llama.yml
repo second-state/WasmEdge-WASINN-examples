@@ -25,7 +25,8 @@ jobs:
     strategy:
       matrix:
         runner: [ubuntu-20.04, macos-m1]
-        plugin: [wasi_nn-ggml-b2963]
+        wasmedge: ["0.13.5", "0.14.0"]
+        plugin: [wasi_nn-ggml]
         job:
           - name: "Tiny Llama"
             run: |
@@ -340,6 +341,7 @@ jobs:
           - runner: macos-m1
             ngl: 100
           - runner: ubuntu-20.04
+            wasmedge: "0.14.0"
             plugin: wasi_nn-ggml
             job:
               name: C4AI Command-R v01
@@ -355,7 +357,7 @@ jobs:
                   default \
                   '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>What is the capital of the United States?<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>'
 
-    name: ${{ matrix.runner }} - ${{ matrix.job.name }} - ${{ matrix.plugin }}
+    name: ${{ matrix.runner }} - ${{ matrix.job.name }} - ${{ matrix.wasmedge }} - ${{ matrix.plugin }}
     runs-on: ${{ matrix.runner }}
     steps:
     - uses: actions/checkout@v4
@@ -366,8 +368,7 @@ jobs:
 
     - name: Install WasmEdge + WASI-NN + GGML
       run: |
-        VERSION=0.13.5
-        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION --plugins ${{ matrix.plugin }}
+        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v ${{ matrix.wasmedge }} --plugins ${{ matrix.plugin }}
 
     - name: Set environment variable
       run: echo "NGL=${{ matrix.ngl || 0 }}" >> $GITHUB_ENV
