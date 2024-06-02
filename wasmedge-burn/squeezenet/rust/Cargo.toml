@@ -1,0 +1,12 @@
+[package]
+name = "wasmedge-wasinn-example-squeezenet"
+version = "0.1.0"
+authors = ["Second-State"]
+readme = "README.md"
+edition = "2021"
+publish = false
+
+[dependencies]
+wasi-nn = { git = "https://github.com/CaptainVincent/wasi-nn.git", branch = "burn" }
+image = { version = "0.24.7", features = ["png", "jpeg"] }
+squeezenet-burn = { git = "https://github.com/tracel-ai/models.git", features = ["weights_file"], default-features = false }
