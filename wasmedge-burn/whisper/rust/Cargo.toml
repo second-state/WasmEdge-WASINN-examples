@@ -1,0 +1,11 @@
+[package]
+name = "wasmedge-wasinn-example-whisper"
+version = "0.1.0"
+authors = ["Second-State"]
+readme = "README.md"
+edition = "2021"
+publish = false
+
+[dependencies]
+wasi-nn = { git = "https://github.com/CaptainVincent/wasi-nn.git", branch = "burn" }
+hound = "3.5.0"
