@@ -26,7 +26,7 @@ jobs:
       matrix:
         runner: [ubuntu-20.04, macos-m1]
         wasmedge: ["0.13.5", "0.14.0"]
-        plugin: [wasi_nn-ggml]
+        plugin: [wasi_nn-ggml-b3075]
         job:
           - name: "Tiny Llama"
             run: |
