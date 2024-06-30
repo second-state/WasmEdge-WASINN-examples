@@ -25,7 +25,7 @@ jobs:
     strategy:
       matrix:
         runner: [ubuntu-20.04, macos-m1]
-        wasmedge: ["0.13.5", "0.14.0"]
+        wasmedge: ["0.13.5"]
         plugin: [wasi_nn-ggml-b3259]
         job:
           - name: "Tiny Llama"
