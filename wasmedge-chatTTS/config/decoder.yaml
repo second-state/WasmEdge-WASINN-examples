@@ -1,0 +1,12 @@
+
+
+dim: 384
+
+decoder_config:
+  idim: ${dim}
+  odim: ${dim}
+  hidden: 512
+  n_layer: 12
+  bn_dim: 128
+
+vq_config: null

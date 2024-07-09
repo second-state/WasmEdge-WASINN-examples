@@ -1,0 +1,14 @@
+
+
+dim: 512
+decoder_config:
+  idim: ${dim}
+  odim: ${dim}
+  n_layer: 12
+  bn_dim: 128
+
+vq_config:
+  dim: 1024
+  levels: [5,5,5,5]
+  G: 2
+  R: 2
