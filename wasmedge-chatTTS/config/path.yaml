@@ -1,0 +1,11 @@
+
+
+vocos_config_path: config/vocos.yaml
+vocos_ckpt_path: asset/Vocos.pt
+dvae_config_path: config/dvae.yaml
+dvae_ckpt_path: asset/DVAE.pt
+gpt_config_path: config/gpt.yaml
+gpt_ckpt_path: asset/GPT.pt
+decoder_config_path: config/decoder.yaml
+decoder_ckpt_path: asset/Decoder.pt
+tokenizer_path: asset/tokenizer.pt

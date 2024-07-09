@@ -1,0 +1,9 @@
+[package]
+name = "wasmedge-chattts"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde_json = "1.0"
+wasmedge-wasi-nn = {path = "../../wasmedge-wasi-nn/rust", version = "0.8.0"}
+hound = "3.4"
