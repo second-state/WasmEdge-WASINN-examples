@@ -1,11 +1,10 @@
-use wasmedge_wasi_nn::{
-    self, ExecutionTarget, GraphBuilder, GraphEncoding, GraphExecutionContext,
-    TensorType,
-};
 use hound;
+use serde_json::json;
+use wasmedge_wasi_nn::{
+    self, ExecutionTarget, GraphBuilder, GraphEncoding, GraphExecutionContext, TensorType,
+};
 
 fn get_data_from_context(context: &GraphExecutionContext, index: usize, limit: usize) -> Vec<u8> {
-    // Preserve for 4096 tokens with average token length 8
     const MAX_OUTPUT_BUFFER_SIZE: usize = 4096 * 4096;
     let mut output_buffer = vec![0u8; MAX_OUTPUT_BUFFER_SIZE];
     let _ = context
@@ -16,8 +15,12 @@ fn get_data_from_context(context: &GraphExecutionContext, index: usize, limit: u
 }
 
 fn main() {
-    let prompt = "It is a test sentence.";
+    let prompt = "It is [uv_break] test sentence [laugh] for chat T T S";
     let tensor_data = prompt.as_bytes().to_vec();
+    let config_data = serde_json::to_string(&json!({"prompt": "[oral_2][laugh_0][break_6]", "spk_emb": "random", "temperature": 0.5, "top_k": 0, "top_p": 0.9}))
+        .unwrap()
+        .as_bytes()
+        .to_vec();
     let empty_vec: Vec<Vec<u8>> = Vec::new();
     let graph = GraphBuilder::new(GraphEncoding::ChatTTS, ExecutionTarget::CPU)
         .build_from_bytes(empty_vec)
@@ -27,6 +30,9 @@ fn main() {
         .expect("Failed to init context");
     context
         .set_input(0, TensorType::U8, &[1], &tensor_data)
+        .expect("Failed to set input");
+    context
+        .set_input(1, TensorType::U8, &[1], &config_data)
         .expect("Failed to set input");
     context.compute().expect("Failed to compute");
     let bytes_written = get_data_from_context(&context, 1, 4);
