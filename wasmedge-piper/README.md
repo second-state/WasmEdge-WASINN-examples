@@ -4,6 +4,17 @@ This example demonstrates how to use WasmEdge WASI-NN Piper plugin to perform TT
 
 ## Build WasmEdge with WASI-NN Piper plugin
 
+Overview of WASI-NN Piper plugin dependencies:
+
+![d2 --layout elk dependencies.d2 dependencies.svg](dependencies.svg)
+
+- [piper](https://github.com/rhasspy/piper): A fast, local neural text to speech system.
+- [piper-phonemize](https://github.com/rhasspy/piper-phonemize): C++ library for converting text to phonemes for Piper.
+- [espeak-ng](https://github.com/rhasspy/espeak-ng): An open source speech synthesizer that supports more than hundred languages and accents. Piper uses it for text to phoneme translation.
+- [onnxruntime](https://github.com/microsoft/onnxruntime): A cross-platform inference and training machine-learning accelerator. [ONNX](https://onnx.ai/) is an open format built to represent machine learning models. Piper uses ONNX Runtime as an inference backend for its ONNX models to convert phoneme ids to WAV audio.
+
+WasmEdge will download and build these dependencies automatically.
+
 Build WasmEdge from source:
 
 ```bash
