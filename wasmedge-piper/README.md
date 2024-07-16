@@ -2,7 +2,7 @@
 
 This example demonstrates how to use WasmEdge WASI-NN Piper plugin to perform TTS.
 
-## Build WasmeEdge with WASI-NN Piper plugin
+## Build WasmEdge with WASI-NN Piper plugin
 
 Build WasmEdge from source:
 
