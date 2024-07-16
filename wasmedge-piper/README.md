@@ -77,7 +77,7 @@ WASMEDGE_PLUGIN_PATH=/path/to/parent/directory/of/libwasmedgePluginWasiNN.so /pa
 Example layout:
 
 ```
-/home/username/
+.
 ├── en_US-lessac-medium.onnx
 ├── en_US-lessac-medium.onnx.json
 ├── espeak-ng-data/
@@ -90,9 +90,7 @@ Example layout:
 Then the command will be:
 
 ```bash
-cd /home/username
-
-WASMEDGE_PLUGIN_PATH=/home/username/WasmEdge/build/plugins/wasi_nn /home/username/WasmEdge/build/tools/wasmedge/wasmedge --dir .:. /home/username/WasmEdge-WASINN-examples/wasmedge-piper/target/wasm32-wasi/release/wasmedge-piper.wasm
+WASMEDGE_PLUGIN_PATH=WasmEdge/build/plugins/wasi_nn WasmEdge/build/tools/wasmedge/wasmedge --dir .:. WasmEdge-WASINN-examples/wasmedge-piper/target/wasm32-wasi/release/wasmedge-piper.wasm
 ```
 
 The output `welcome.wav` is the synthesized audio.
