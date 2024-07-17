@@ -1,0 +1,68 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "model": {
+            "description": "Path to .onnx voice file",
+            "type": "string"
+        },
+        "config": {
+            "description": "Path to JSON voice config file, default is model path + .json",
+            "type": "string"
+        },
+        "output_type": {
+            "default": "wav",
+            "description": "Type of output to produce",
+            "enum": [
+                "raw",
+                "wav"
+            ]
+        },
+        "speaker": {
+            "default": 0,
+            "description": "Numerical id of the default speaker (multi-speaker voices)",
+            "type": "number"
+        },
+        "noise_scale": {
+            "default": 0.667,
+            "description": "Amount of noise to add during audio generation, default value can be overridden by the value in voice model config",
+            "type": "number"
+        },
+        "length_scale": {
+            "default": 1.0,
+            "description": "Speed of speaking (1 = normal, < 1 is faster, > 1 is slower), default value can be overridden by the value in voice model config",
+            "type": "number"
+        },
+        "noise_w": {
+            "default": 0.8,
+            "description": "Variation in phoneme lengths, default value can be overridden by the value in voice model config",
+            "type": "number"
+        },
+        "sentence_silence": {
+            "default": 0.2,
+            "description": "Seconds of silence to add after each sentence",
+            "type": "number"
+        },
+        "espeak_data": {
+            "description": "Path to espeak-ng data directory, required for espeak phonemes",
+            "type": "string"
+        },
+        "tashkeel_model": {
+            "description": "Path to libtashkeel ort model (https://github.com/mush42/libtashkeel), required for Arabic",
+            "type": "string"
+        },
+        "json_input": {
+            "default": false,
+            "description": "input is JSON instead of text",
+            "type": "boolean"
+        },
+        "phoneme_silence": {
+            "additionalProperties": {
+                "type": "number"
+            },
+            "description": "Seconds of extra silence to insert after a single phoneme, this is a mapping from single codepoints to seconds"
+        }
+    },
+    "required": [
+        "model"
+    ]
+}

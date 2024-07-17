@@ -105,3 +105,9 @@ WASMEDGE_PLUGIN_PATH=WasmEdge/build/plugins/wasi_nn WasmEdge/build/tools/wasmedg
 ```
 
 The output `welcome.wav` is the synthesized audio.
+
+## Config options
+
+The JSON config options passed to WasmEdge WASI-NN Piper plugin via `bytes_array` in `wasmedge_wasi_nn::GraphBuilder::build_from_bytes` is similar to the Piper command-line program options.
+
+See [config.schema.json](config.schema.json) for available options and [json_input.schema.json](json_input.schema.json) for JSON input.
