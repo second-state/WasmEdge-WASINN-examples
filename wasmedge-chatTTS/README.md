@@ -58,3 +58,5 @@ let config_data = serde_json::to_string(&json!({"prompt": "[oral_2][laugh_0][bre
         .as_bytes()
         .to_vec();
 ```
+
+And it is the [Demo speaker](./assets/demo.wav).
