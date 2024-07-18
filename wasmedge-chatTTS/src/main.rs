@@ -15,7 +15,7 @@ fn get_data_from_context(context: &GraphExecutionContext, index: usize, limit: u
 }
 
 fn main() {
-    let prompt = "It is [uv_break] test sentence [laugh] for chat T T S";
+    let prompt = "It is test sentence [uv_break] for chat T T S.";
     let tensor_data = prompt.as_bytes().to_vec();
     let config_data = serde_json::to_string(&json!({"prompt": "[oral_2][laugh_0][break_6]", "spk_emb": "random", "temperature": 0.5, "top_k": 0, "top_p": 0.9}))
         .unwrap()
@@ -37,7 +37,6 @@ fn main() {
     context.compute().expect("Failed to compute");
     let bytes_written = get_data_from_context(&context, 1, 4);
     let bytes_written = usize::from_le_bytes(bytes_written.as_slice().try_into().unwrap());
-    println!("Byte: {}", bytes_written);
     let output_bytes = get_data_from_context(&context, 0, bytes_written);
     let spec = hound::WavSpec {
         channels: 1,
