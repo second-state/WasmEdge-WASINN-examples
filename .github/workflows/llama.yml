@@ -23,6 +23,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         runner: [ubuntu-20.04, macos-m1]
         wasmedge: ["0.13.5", "0.14.0"]
