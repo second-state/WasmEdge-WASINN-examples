@@ -151,6 +151,8 @@ Supported parameters include:
 - `threads`: Set the number of threads for the inference, the same as the `--threads` parameter in llama.cpp.
 - `mmproj`: Set the path to the multimodal projector file for llava, the same as the `--mmproj` parameter in llama.cpp.
 - `image`: Set the path to the image file for llava, the same as the `--image` parameter in llama.cpp.
+- `grammar`: Specify a grammar to constrain model output to a specific format, the same as the `--grammar` parameter in llama.cpp.
+- `json-schema`: Specify a JSON schema to constrain model output, the  same as the `--json-schema` parameter in llama.cpp.
 
 (For more detailed instructions on usage or default values for the parameters, please refer to [WasmEdge](https://github.com/WasmEdge/WasmEdge/blob/master/plugins/wasi_nn/ggml.cpp).)
 

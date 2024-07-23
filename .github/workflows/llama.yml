@@ -327,6 +327,19 @@ jobs:
                 default \
                 $'<|user|>\nWhat is the capital of Japan?<|end|>\n<|assistant|>'
 
+          - name: JSON Schema
+            run: |
+              test -f ~/.wasmedge/env && source ~/.wasmedge/env
+              cd wasmedge-ggml/json-schema
+              curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
+              cargo build --target wasm32-wasi --release
+              time wasmedge --dir .:. \
+                --env n_gpu_layers="$NGL" \
+                --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
+                target/wasm32-wasi/release/wasmedge-ggml-json-schema.wasm \
+                default \
+                $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always output JSON format string.\n<</SYS>>\nGive me a JSON array of Apple products.[/INST]'
+
           - name: Build llama-stream
             run: |
               cd wasmedge-ggml/llama-stream
