@@ -20,7 +20,7 @@ Build WasmEdge from source:
 ```bash
 cd /path/to/wasmedge/source/folder
 
-cmake -GNinja -Bbuild -DCMAKE_BUILD_TYPE=Release -DWASMEDGE_PLUGIN_WASI_NN_BACKEND=Piper
+cmake -GNinja -Bbuild -DCMAKE_BUILD_TYPE=Release -DWASMEDGE_USE_LLVM=OFF -DWASMEDGE_PLUGIN_WASI_NN_BACKEND=Piper
 cmake --build build
 ```
 

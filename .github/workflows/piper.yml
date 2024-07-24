@@ -19,7 +19,7 @@ jobs:
       - name: Install Dependencies for building WasmEdge
         run: |
           sudo apt-get update
-          sudo apt-get install liblld-14-dev ninja-build
+          sudo apt-get install ninja-build
 
       - name: Checkout WasmEdge
         uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
 
       - name: Build WasmEdge with WASI-NN Piper plugin
         run: |
-          cmake -GNinja -Bbuild -DCMAKE_BUILD_TYPE=Release -DWASMEDGE_PLUGIN_WASI_NN_BACKEND=Piper
+          cmake -GNinja -Bbuild -DCMAKE_BUILD_TYPE=Release -DWASMEDGE_USE_LLVM=OFF -DWASMEDGE_PLUGIN_WASI_NN_BACKEND=Piper
           cmake --build build
         working-directory: WasmEdge
 
