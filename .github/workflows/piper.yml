@@ -21,6 +21,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install ninja-build
 
+      - name: Install ONNX Runtime 1.14.1
+        run: |
+          curl -LO https://github.com/microsoft/onnxruntime/releases/download/v1.14.1/onnxruntime-linux-x64-1.14.1.tgz
+          tar zxf onnxruntime-linux-x64-1.14.1.tgz
+          mv onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
+          mv onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/
+          rm -rf onnxruntime-linux-x64-1.14.1.tgz onnxruntime-linux-x64-1.14.1
+
       - name: Checkout WasmEdge
         uses: actions/checkout@v4
         with:

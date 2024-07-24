@@ -13,7 +13,19 @@ Overview of WASI-NN Piper plugin dependencies:
 - [espeak-ng](https://github.com/rhasspy/espeak-ng): An open source speech synthesizer that supports more than hundred languages and accents. Piper uses it for text to phoneme translation.
 - [onnxruntime](https://github.com/microsoft/onnxruntime): A cross-platform inference and training machine-learning accelerator. [ONNX](https://onnx.ai/) is an open format built to represent machine learning models. Piper uses ONNX Runtime as an inference backend for its ONNX models to convert phoneme ids to WAV audio.
 
-WasmEdge will download and build these dependencies automatically.
+The WasmEdge WASI-NN Piper plugin relies on the ONNX Runtime C++ API. For installation instructions, please refer to the installation table on the [official website](https://onnxruntime.ai/getting-started).
+
+Example of installing ONNX Runtime 1.14.1 on Ubuntu:
+
+```bash
+curl -LO https://github.com/microsoft/onnxruntime/releases/download/v1.14.1/onnxruntime-linux-x64-1.14.1.tgz
+tar zxf onnxruntime-linux-x64-1.14.1.tgz
+mv onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
+mv onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/
+rm -rf onnxruntime-linux-x64-1.14.1.tgz onnxruntime-linux-x64-1.14.1
+```
+
+For other dependencies, WasmEdge will download and build them automatically.
 
 Build WasmEdge from source:
 
