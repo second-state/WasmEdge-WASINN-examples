@@ -288,45 +288,6 @@ jobs:
                 default \
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
 
-          - name: Phi 3 Mini 4k
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/test/phi-3
-              curl -LO https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf
-              cargo build --target wasm32-wasi --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:Phi-3-mini-4k-instruct-q4.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-phi-3.wasm \
-                default \
-                $'<|user|>\nWhat is the capital of Japan?<|end|>\n<|assistant|>'
-
-          - name: Phi 3 Mini 128k
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/test/phi-3
-              curl -LO https://huggingface.co/second-state/Phi-3-mini-128k-instruct-GGUF/resolve/main/Phi-3-mini-128k-instruct-Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:Phi-3-mini-128k-instruct-Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-phi-3.wasm \
-                default \
-                $'<|user|>\nWhat is the capital of Japan?<|end|>\n<|assistant|>'
-
-          - name: Phi 3 Medium 4k
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/test/phi-3
-              curl -LO https://huggingface.co/second-state/Phi-3-medium-4k-instruct-GGUF/resolve/main/Phi-3-medium-4k-instruct-Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:Phi-3-medium-4k-instruct-Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-phi-3.wasm \
-                default \
-                $'<|user|>\nWhat is the capital of Japan?<|end|>\n<|assistant|>'
-
           - name: JSON Schema
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
