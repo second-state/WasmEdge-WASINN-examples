@@ -4,14 +4,14 @@ use wasmedge_wasi_nn::{
     self, ExecutionTarget, GraphBuilder, GraphEncoding, GraphExecutionContext, TensorType,
 };
 
-fn get_data_from_context(context: &GraphExecutionContext, index: usize, limit: usize) -> Vec<u8> {
+fn get_data_from_context(context: &GraphExecutionContext, index: usize) -> Vec<u8> {
     const MAX_OUTPUT_BUFFER_SIZE: usize = 4096 * 4096;
     let mut output_buffer = vec![0u8; MAX_OUTPUT_BUFFER_SIZE];
-    let _ = context
+    let bytes_written = context
         .get_output(index, &mut output_buffer)
         .expect("Failed to get output");
 
-    return output_buffer[..limit].to_vec();
+    return output_buffer[..bytes_written].to_vec();
 }
 
 fn main() {
@@ -35,9 +35,7 @@ fn main() {
         .set_input(1, TensorType::U8, &[1], &config_data)
         .expect("Failed to set input");
     context.compute().expect("Failed to compute");
-    let bytes_written = get_data_from_context(&context, 1, 4);
-    let bytes_written = usize::from_le_bytes(bytes_written.as_slice().try_into().unwrap());
-    let output_bytes = get_data_from_context(&context, 0, bytes_written);
+    let output_bytes = get_data_from_context(&context, 0);
     let spec = hound::WavSpec {
         channels: 1,
         sample_rate: 24000,
