@@ -58,5 +58,12 @@ let config_data = serde_json::to_string(&json!({"prompt": "[oral_2][laugh_0][bre
         .as_bytes()
         .to_vec();
 ```
+<table>
+<tr>
+<td>
 
-And it is the [Demo speaker](./assets/demo.wav).
+[demo.webm](https://github.com/user-attachments/assets/377e0487-9107-41db-9c22-31962ce53f88)
+
+</td>
+</tr>
+</table>
