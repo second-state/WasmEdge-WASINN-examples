@@ -23,6 +23,7 @@ tar zxf onnxruntime-linux-x64-1.14.1.tgz
 mv onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
 mv onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/
 rm -rf onnxruntime-linux-x64-1.14.1.tgz onnxruntime-linux-x64-1.14.1
+ldconfig
 ```
 
 For other dependencies, WasmEdge will download and build them automatically.

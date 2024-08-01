@@ -28,6 +28,7 @@ jobs:
           sudo mv onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
           sudo mv onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/
           rm -rf onnxruntime-linux-x64-1.14.1.tgz onnxruntime-linux-x64-1.14.1
+          ldconfig
 
       - name: Checkout WasmEdge
         uses: actions/checkout@v4
