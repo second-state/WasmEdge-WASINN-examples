@@ -1,0 +1,68 @@
+name: Piper Example
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    paths:
+      - ".github/workflows/piper.yml"
+      - "wasmedge-piper/**"
+  pull_request:
+    paths:
+      - ".github/workflows/piper.yml"
+      - "wasmedge-piper/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install Dependencies for building WasmEdge
+        run: |
+          sudo apt-get update
+          sudo apt-get install ninja-build
+
+      - name: Checkout WasmEdge
+        uses: actions/checkout@v4
+        with:
+          repository: WasmEdge/WasmEdge
+          path: WasmEdge
+
+      - name: Install ONNX Runtime
+        run: sudo bash utils/wasi-nn/install-onnxruntime.sh
+        working-directory: WasmEdge
+
+      - name: Build WasmEdge with WASI-NN Piper plugin
+        run: |
+          cmake -GNinja -Bbuild -DCMAKE_BUILD_TYPE=Release -DWASMEDGE_USE_LLVM=OFF -DWASMEDGE_PLUGIN_WASI_NN_BACKEND=Piper
+          cmake --build build
+        working-directory: WasmEdge
+
+      - name: Install Rust target for wasm
+        run: rustup target add wasm32-wasi
+
+      - name: Checkout WasmEdge-WASINN-examples
+        uses: actions/checkout@v4
+        with:
+          path: WasmEdge-WASINN-examples
+
+      - name: Build wasm
+        run: cargo build --target wasm32-wasi --release
+        working-directory: WasmEdge-WASINN-examples/wasmedge-piper
+
+      - name: Download model
+        run: curl -LO https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx
+
+      - name: Download config
+        run: curl -LO https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json
+
+      - name: Download espeak-ng-data
+        run: |
+          curl -LO https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_x86_64.tar.gz
+          tar -xzf piper_linux_x86_64.tar.gz piper/espeak-ng-data --strip-components=1
+          rm piper_linux_x86_64.tar.gz
+
+      - name: Execute
+        run: WASMEDGE_PLUGIN_PATH=WasmEdge/build/plugins/wasi_nn WasmEdge/build/tools/wasmedge/wasmedge --dir .:. WasmEdge-WASINN-examples/wasmedge-piper/target/wasm32-wasi/release/wasmedge-piper.wasm
+
+      - name: Verify output
+        run: test "$(file --brief welcome.wav)" == 'RIFF (little-endian) data, WAVE audio, Microsoft PCM, 16 bit, mono 22050 Hz'

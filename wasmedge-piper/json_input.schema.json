@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "text": {
+            "description": "Text input for speech synthesis",
+            "type": "string"
+        },
+        "speaker_id": {
+            "description": "Override the default speaker id, takes precedence over speaker",
+            "type": "number"
+        },
+        "speaker": {
+            "description": "Override the default speaker by name",
+            "type": "string"
+        }
+    },
+    "required": [
+        "text"
+    ]
+}
