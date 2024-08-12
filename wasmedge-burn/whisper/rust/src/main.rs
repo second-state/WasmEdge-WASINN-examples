@@ -1,5 +1,6 @@
 use hound::{self, SampleFormat};
 use std::process;
+use wasmedge_wasi_nn as wasi_nn;
 
 pub fn main() {
     let wav_file = std::env::args().nth(1).expect("No wav file name provided");

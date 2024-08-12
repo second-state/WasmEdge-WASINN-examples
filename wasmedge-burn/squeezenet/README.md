@@ -9,9 +9,8 @@ The current version of the plugin has not been officially released yet, so it ne
 The plugin can ==only support one model type== at a time.
 
 ```bash
-git clone https://github.com/CaptainVincent/WasmEdge.git
+git clone https://github.com/WasmEdge/WasmEdge.git
 cd WasmEdge
-git checkout wasi_nn_rust
 
 // For squeezenet model
 cmake -GNinja -Bbuild -DCMAKE_BUILD_TYPE=Release -DWASMEDGE_BUILD_AOT_RUNTIME=OFF -DWASMEDGE_PLUGIN_WASI_NN_RUST_MODEL=squeezenet
@@ -43,20 +42,18 @@ We could use the wasmedge shim as docker wasm runtime to run the example.
 ### Build the docker image include the wasm application only
 
 ```bash
-cd WasmEdge-WASINN-examples
-git checkout docker
-
 cd wasmedge-burn/squeezenet
 docker build . --platform wasi/wasm -t squeezenet
 ```
 
-### Install the experimental version of Docker Desktop that supports WebGPU
-
-Our plugin will be packaged as part of the runtime in Docker Desktop.
-
-(Coming soon)
-
 ### Execute
+
+A specific version of Docker Desktop is required to support using WebGPU inside container. 
+It hasn't been released yet, but you can refer to below link for a related demo.
+
+https://www.youtube.com/watch?v=ODhJFe4-n6Y
+
+And our plugin will be packaged as part of the runtime in this experimental version of Docker Desktop.
 
 ```bash
 cd WasmEdge-WASINN-examples/wasmedge-burn/squeezenet
@@ -77,3 +74,7 @@ docker run \
   --env WASMEDGE_WASINN_PRELOAD=default:Burn:GPU:/resource/squeezenet1.mpk \
   squeezenet:latest /resource/samples/bridge.jpg default
 ```
+
+### Appendix
+
+Verify CPU-only usage inside the container with the Docker Engine and a self-built Wamsedge shim + plugin. (on going)

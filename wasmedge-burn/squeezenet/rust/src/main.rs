@@ -2,6 +2,7 @@ use image;
 use std::fs::File;
 use std::io::Read;
 use squeezenet_burn::model::label::LABELS;
+use wasmedge_wasi_nn as wasi_nn;
 
 pub fn main() {
     let img_path = std::env::args().nth(1).expect("No image path provided");
