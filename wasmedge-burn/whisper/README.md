@@ -13,12 +13,12 @@ git clone https://github.com/WasmEdge/WasmEdge.git
 cd WasmEdge
 
 // For whisper model
-cmake -GNinja -Bbuild -DCMAKE_BUILD_TYPE=Release -DWASMEDGE_BUILD_AOT_RUNTIME=OFF -DWASMEDGE_PLUGIN_WASI_NN_RUST_MODEL=whisper
+cmake -GNinja -Bbuild -DCMAKE_BUILD_TYPE=Release -DWASMEDGE_BUILD_AOT_RUNTIME=OFF -DWASMEDGE_PLUGIN_WASI_NN_BURNRS_MODEL=whisper
 cmake --build build
 
 // Replace the path to your WasmEdge
 export PATH=<Your WasmEdge Path>/build/tools/wasmedge:$PATH
-export WASMEDGE_PLUGIN_PATH=<Your WasmEdge Path>/build/plugins/wasi_nn_rust
+export WASMEDGE_PLUGIN_PATH=<Your WasmEdge Path>/build/plugins/wasi_nn_burnrs
 ```
 ([More about how to build Wasmedge](https://wasmedge.org/docs/contribute/source/os/linux/))
 
