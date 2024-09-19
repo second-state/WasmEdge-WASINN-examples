@@ -24,7 +24,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let model_name: &str = &args[1];
     let graph = GraphBuilder::new(GraphEncoding::Mlx, ExecutionTarget::AUTO)
-        .config(serde_json::to_string(&json!({"model_type": "tiny_llama_1.1B_chat_v1.0", "tokenizer":tokenizer_path, "max_token":100})).expect("Failed to serialize options"))
+        .config(serde_json::to_string(&json!({"is_quantized":false, "group_size": 64, "q_bits": 4,"model_type": "tiny_llama_1.1B_chat_v1.0", "tokenizer":tokenizer_path, "max_token":100})).expect("Failed to serialize options"))
         .build_from_cache(model_name)
         .expect("Failed to build graph");
     let mut context = graph
