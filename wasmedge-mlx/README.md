@@ -70,10 +70,19 @@ wasmedge --dir .:. \
 
 There are some metadata for MLX plugin you can set.
 
+### Basic setting
+
 - model_type (required): LLM model type.
 - tokenizer (required): tokenizer.json path
 - max_token (option): maximum generate token number, default is 1024.
 - enable_debug_log (option): if print debug log, default is false.
+
+### Quantization
+
+The following three parameters need to be set together.
+- is_quantized (option): If the weight is quantized. If is_quantized is false, then MLX backend will quantize the weight. 
+- group_size (option): The group size to use for quantization.
+- q_bits (option): The number of bits to quantize to.
 
 ``` rust
 let graph = GraphBuilder::new(GraphEncoding::Mlx, ExecutionTarget::AUTO)
