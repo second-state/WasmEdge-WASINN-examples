@@ -22,7 +22,7 @@ cmake --build build
 cmake --install build
 ```
 
-Then you will have an executable `wasmedge` runtime under `/usr/local/bin` and the WASI-NN with Neural Speed backend plug-in under `/usr/local/lib/wasmedge/libwasmedgePluginWasiNN.so` after installation.
+Then you will have an executable `wasmedge` runtime under `/usr/local/bin` and the WASI-NN with ChatTTS backend plug-in under `/usr/local/lib/wasmedge/libwasmedgePluginWasiNN.so` after installation.
 
 ## Build wasm
 
