@@ -1,7 +1,8 @@
+use serde_json::json;
 use std::env;
-use std::fs;
 use std::error::Error;
-use wasmedge_wasi_nn::{GraphBuilder, GraphEncoding, ExecutionTarget, TensorType};
+use std::fs;
+use wasmedge_wasi_nn::{ExecutionTarget, GraphBuilder, GraphEncoding, TensorType};
 
 pub fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
@@ -11,7 +12,17 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let model_bin = fs::read(model_bin_name)?;
     println!("Read model, size in bytes: {}", model_bin.len());
 
-    let graph = GraphBuilder::new(GraphEncoding::Whisper, ExecutionTarget::CPU).build_from_bytes(&[&model_bin])?;
+    // create config
+    let config = json!({
+        "max-len": 1,
+        "split-on-word": true
+    });
+    let config = serde_json::to_string(&config)?;
+    println!("Config: {}", &config);
+
+    let graph = GraphBuilder::new(GraphEncoding::Whisper, ExecutionTarget::CPU)
+        .config(config)
+        .build_from_bytes(&[&model_bin])?;
     let mut ctx = graph.init_execution_context()?;
     println!("Loaded graph into wasi-nn with ID: {}", graph);
 
@@ -29,7 +40,10 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let mut output_buffer = vec![0u8; 2048];
     _ = ctx.get_output(0, &mut output_buffer)?;
 
-    println!("Recognized from audio: \n{}", String::from_utf8(output_buffer).unwrap());
-    
+    println!(
+        "Recognized from audio: \n{}",
+        String::from_utf8(output_buffer).unwrap()
+    );
+
     Ok(())
 }
