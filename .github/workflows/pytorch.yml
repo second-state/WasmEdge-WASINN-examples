@@ -13,12 +13,12 @@ on:
     branches: [ '*' ]
     paths:
       - ".github/workflows/pytorch.yml"
-      - "pytorch-mobilenet-image/**"
+      - "pytorch-resnet18-image/**"
   pull_request:
     branches: [ '*' ]
     paths:
       - ".github/workflows/pytorch.yml"
-      - "pytorch-mobilenet-image/**"
+      - "pytorch-resnet18-image/**"
 
 jobs:
   build:
@@ -41,12 +41,12 @@ jobs:
 
     - name: Install WasmEdge + WASI-NN + PyTorch
       run: |
-        VERSION=0.13.4
+        VERSION=0.14.1
         curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -v $VERSION --plugins wasi_nn-pytorch -p /usr/local
-        export PYTORCH_VERSION="1.8.2"
-        # For the Ubuntu 20.04 or above, use the libtorch with cxx11 abi.
-        export PYTORCH_ABI="libtorch-cxx11-abi"
-        curl -s -L -O --remote-name-all https://download.pytorch.org/libtorch/lts/1.8/cpu/${PYTORCH_ABI}-shared-with-deps-${PYTORCH_VERSION}%2Bcpu.zip
+        export PYTORCH_VERSION="2.4.1"
+        # For AOTI example, use the libtorch with cxx11 abi.
+        export PYTORCH_ABI="libtorch"
+        curl -s -L -O --remote-name-all https://download.pytorch.org/libtorch/cpu/${PYTORCH_LINK}-shared-with-deps-${PYTORCH_VERSION}%2Bcpu.zip
         unzip -q "${PYTORCH_ABI}-shared-with-deps-${PYTORCH_VERSION}%2Bcpu.zip"
         rm -f "${PYTORCH_ABI}-shared-with-deps-${PYTORCH_VERSION}%2Bcpu.zip"
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$(pwd)/libtorch/lib
@@ -54,12 +54,14 @@ jobs:
     - name: Example
       run: |
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$(pwd)/libtorch/lib
-        cd pytorch-mobilenet-image/rust
+        cd pytorch-resnet18-image/rust
         cargo build --target wasm32-wasi --release
         cd ..
-        wasmedge compile rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm wasmedge-wasinn-example-mobilenet-image-aot.wasm
-        wasmedge compile rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image-named-model.wasm wasmedge-wasinn-example-mobilenet-image-named-model-aot.wasm
+        wasmedge compile rust/target/wasm32-wasi/release/wasmedge-wasinn-example-resnet18-image.wasm wasmedge-wasinn-example-resnet18-image-aot.wasm
+        wasmedge compile rust/target/wasm32-wasi/release/wasmedge-wasinn-example-resnet18-image-named-model.wasm wasmedge-wasinn-example-resnet18-image-named-model-aot.wasm
         echo "Run without named model"
-        wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image-aot.wasm mobilenet.pt input.jpg
+        wasmedge --dir .:. wasmedge-wasinn-example-resnet18-image-aot.wasm resnet18.pt input.jpg
         echo "Run with named model"
-        wasmedge --dir .:. --nn-preload demo:PyTorch:CPU:mobilenet.pt wasmedge-wasinn-example-mobilenet-image-named-model-aot.wasm demo input.jpg
+        wasmedge --dir .:. --nn-preload demo:PyTorch:CPU:resnet18.pt wasmedge-wasinn-example-resnet18-image-named-model-aot.wasm demo input.jpg
+        echo "Run with AOTI"
+        wasmedge --dir .:. --nn-preload demo:PyTorchAOTI:CPU:$(pwd)/resnet18_pt2.so wasmedge-wasinn-example-resnet18-image-named-model.wasm demo input.jpg
