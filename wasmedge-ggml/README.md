@@ -207,8 +207,15 @@ Currently, the WASI-NN ggml plugin supports several ways to set the metadata for
 When constructing the graph, you can set the metadata by using the `config` method.
 
 ```rust
-... wasi_nn::GraphBuilder::new(...).config(serde_json::to_string(&options).unwrap()) ...
+wasmedge_wasi_nn::GraphBuilder::new(...)
+    .config(serde_json::to_string(&options).unwrap())
+    .build_from_cache(...)
+    .unwrap();
 ```
+
+> [!NOTE]
+> The config will only be set when constructing the graph using `build_from_cache`.
+> Due to the file size limitation, you **SHOULD** use `build_from_cache` with `--nn-preload` to load the large model file.
 
 2. From the input tensor
 
@@ -220,7 +227,7 @@ If you modify the `n-gpu-layers` parameter, the model will be reloaded.
 context
     .set_input(
         1,
-        wasi_nn::TensorType::U8,
+        wasmedge_wasi_nn::TensorType::U8,
         &[1],
         serde_json::to_string(&options).expect("Failed to serialize options").as_bytes().to_vec(),
     )
