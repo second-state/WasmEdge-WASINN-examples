@@ -82,3 +82,26 @@ $ wasmedge --dir .:. \
   --nn-preload default:GGML:AUTO:grok-1-Q2_K-split-00001-of-00009.gguf \
   wasmedge-ggml-basic.wasm default 'hello'
 ```
+
+## TriLM & BitNet Models
+
+After the following pull requests are merged, the `TriLM` and `BitNet` models will be supported by the `ggml` plugin with model type `TQ1_0` and `TQ2_0`:
+- https://github.com/ggerganov/llama.cpp/pull/7931
+- https://github.com/ggerganov/llama.cpp/pull/8151
+
+### Get the Model
+
+Download the `TriLM` model:
+
+```bash
+curl -LO https://huggingface.co/Green-Sky/TriLM_3.9B-GGUF/resolve/main/TriLM_3.9B_Unpacked-4.0B-TQ2_0.gguf
+```
+
+### Execute
+
+```console
+$ wasmedge --dir .:. \
+  --env n_predict=100 \
+  --nn-preload default:GGML:AUTO:TriLM_3.9B_Unpacked-4.0B-TQ2_0.gguf \
+  wasmedge-ggml-basic.wasm default
+```
