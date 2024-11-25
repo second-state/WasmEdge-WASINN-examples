@@ -19,12 +19,16 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     });
     let config = serde_json::to_string(&config)?;
     println!("Config: {}", &config);
+    let config_bytes = config.as_bytes().to_vec();
 
     let graph = GraphBuilder::new(GraphEncoding::Whisper, ExecutionTarget::CPU)
-        .config(config)
         .build_from_bytes(&[&model_bin])?;
+
     let mut ctx = graph.init_execution_context()?;
     println!("Loaded graph into wasi-nn with ID: {}", graph);
+
+    ctx.set_input(1, wasmedge_wasi_nn::TensorType::U8, &[1], &config_bytes)?;
+    println!("Set config");
 
     // Load the raw pcm tensor.
     let wav_buf = fs::read(wav_name)?;
