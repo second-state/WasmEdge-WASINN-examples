@@ -1,5 +1,5 @@
 [package]
-name = "wasmedge-wasinn-example-mobilenet"
+name = "wasmedge-tf-example-mobilenet"
 version = "0.1.0"
 authors = ["Second-State"]
 readme = "README.md"
@@ -7,6 +7,7 @@ edition = "2021"
 publish = false
 
 [dependencies]
-wasi-nn = { version = "0.6.0" }
-
+wasmedge_tensorflow_interface = "0.3.0"
+wasi-nn = "0.1.0"
+bytemuck = "1.13.1"
 [workspace]
