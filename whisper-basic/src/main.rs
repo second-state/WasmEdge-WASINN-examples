@@ -70,6 +70,10 @@ pub fn main() -> Result<(), Box<dyn Error>> {
             String::from_utf8(output_buffer).unwrap()
         );
 
+        // * explicitly drop ctx and graph to release memory
+        drop(ctx);
+        drop(graph);
+
         println!("--------------------------------");
         let sec = 30;
         println!("Sleeping {} seconds for observing the memory usage", sec);
