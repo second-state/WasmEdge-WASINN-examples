@@ -78,7 +78,7 @@ fn load_model(model_path: &str) -> Result<wasi_nn::Graph> {
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer)?;
     let model_segments = &[&buffer[..]];
-    Ok(unsafe { wasi_nn::load(model_segments, 1, wasi_nn::EXECUTION_TARGET_CPU)? })
+    Ok(unsafe { wasi_nn::load(model_segments, 4, wasi_nn::EXECUTION_TARGET_CPU)? })
 }
 
 // Function to initialize the execution context
