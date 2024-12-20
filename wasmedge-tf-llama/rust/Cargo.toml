@@ -1,0 +1,17 @@
+[package]
+name = "wasmedge-tf-example-llama"
+version = "0.1.0"
+authors = ["victoryang00"]
+readme = "README.md"
+edition = "2021"
+publish = false
+
+[dependencies]
+wasmedge_tensorflow_interface = "0.3.0"
+wasi-nn = "0.1.0"  # Ensure you use the latest version
+thiserror = "1.0"
+bytemuck = "1.13.1"
+log = "0.4.19"
+env_logger = "0.10.0"
+anyhow = "1.0.79"
+[workspace]
