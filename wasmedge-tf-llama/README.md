@@ -1,4 +1,4 @@
-# Mobilenet Example For WasmEdge-Tensorflow plug-in
+# Llama Example For WasmEdge-Tensorflow plug-in
 
 This package is a high-level Rust bindings for [WasmEdge-TensorFlow plug-in](https://wasmedge.org/docs/develop/rust/tensorflow) example of Mobilenet.
 
@@ -9,6 +9,12 @@ This crate depends on the `wasmedge_tensorflow_interface` in the `Cargo.toml`:
 ```toml
 [dependencies]
 wasmedge_tensorflow_interface = "0.3.0"
+wasi-nn = "0.1.0"  # Ensure you use the latest version
+thiserror = "1.0"
+bytemuck = "1.13.1"
+log = "0.4.19"
+env_logger = "0.10.0"
+anyhow = "1.0.79"
 ```
 
 ## Build
@@ -16,25 +22,19 @@ wasmedge_tensorflow_interface = "0.3.0"
 Compile the application to WebAssembly:
 
 ```bash
-cd rust && cargo build --target=wasm32-wasi --release
+cd rust && cargo build --target=wasm32-wasip1 --release
 ```
 
-The output WASM file will be at [`rust/target/wasm32-wasi/release/wasmedge-tf-example-mobilenet.wasm`](wasmedge-tf-example-mobilenet.wasm).
+The output WASM file will be at [`rust/target/wasm32-wasip1/release/wasmedge-tf-example-llama.wasm`](wasmedge-tf-example-llama.wasm).
 To speed up the image processing, we can enable the AOT mode in WasmEdge with:
 
 ```bash
-wasmedge compile rust/target/wasm32-wasi/release/wasmedge-tf-example-mobilenet.wasm wasmedge-tf-example-mobilenet_aot.wasm
+wasmedge compile rust/target/wasm32-wasi/release/wasmedge-tf-example-llama.wasm wasmedge-tf-example-llama_aot.wasm
 ```
 
 ## Run
 
-### Test data
-
-The testing image is located at `./grace_hopper.jpg`:
-
-![grace_hopper](grace_hopper.jpg)
-
-The frozen `pb` model is located at `./mobilenet_v2_1.4_224_frozen.pb`.
+The frozen `tflite` model should be translated through `ai_edge_torch` and HuggingFace.
 
 ### Execute
 
@@ -47,13 +47,13 @@ curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/insta
 Execute the WASM with the `wasmedge` with Tensorflow Lite supporting:
 
 ```bash
-wasmedge --dir .:. wasmedge-tf-example-mobilenet.wasm mobilenet_v2_1.4_224_frozen.pb grace_hopper.jpg
+wasmedge --dir .:. wasmedge-tf-example-llama.wasm ./llama_1b_q8_ekv1280.tflite
 ```
 
 You will get the output:
 
 ```console
-653 : 0.3230184316635132
+Input the Chatbot:
+Hello world
+Hello world!
 ```
-
-Which is index 653 (0-based index) with rate `0.33690106868743896`. The index 653 of label table (which is line 654 in `imagenet_slim_labels.txt`) is `military uniform`.
