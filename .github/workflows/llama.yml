@@ -25,7 +25,7 @@ jobs:
     strategy:
       matrix:
         runner: [ubuntu-20.04, macos-m1]
-        wasmedge: ["0.13.5", "0.14.0"]
+        wasmedge: ["0.14.1"]
         plugin: [wasi_nn-ggml]
         job:
           - name: "Tiny Llama"
@@ -316,7 +316,7 @@ jobs:
                 --env image=monalisa.jpg \
                 target/wasm32-wasi/release/wasmedge-ggml-qwen2vl.wasm \
                 default \
-                <|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n<|vision_start|>{image_placeholder}<|vision_end|>what is in this picture?<|im_end|>\n<|im_start|>assistant\n"
+                $'<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n<|vision_start|><image><|vision_end|>what is in this picture?<|im_end|>\n<|im_start|>assistant\n'
 
           - name: Build llama-stream
             run: |
