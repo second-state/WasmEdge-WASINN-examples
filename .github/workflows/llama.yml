@@ -25,7 +25,7 @@ jobs:
     strategy:
       matrix:
         runner: [ubuntu-20.04, macos-m1]
-        wasmedge: ["0.13.5", "0.14.0"]
+        wasmedge: ["0.14.1"]
         plugin: [wasi_nn-ggml]
         job:
           - name: "Tiny Llama"
@@ -300,6 +300,23 @@ jobs:
                 target/wasm32-wasi/release/wasmedge-ggml-json-schema.wasm \
                 default \
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always output JSON format string.\n<</SYS>>\nGive me a JSON array of Apple products.[/INST]'
+
+          - name: Qwen2-VL
+            run: |
+              test -f ~/.wasmedge/env && source ~/.wasmedge/env
+              cd wasmedge-ggml/qwen2vl
+              curl -LO https://huggingface.co/second-state/Qwen2-VL-2B-Instruct-GGUF/resolve/main/Qwen2-VL-2B-Instruct-vision-encoder.gguf
+              curl -LO https://huggingface.co/second-state/Qwen2-VL-2B-Instruct-GGUF/resolve/main/Qwen2-VL-2B-Instruct-Q5_K_M.gguf
+              curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
+              cargo build --target wasm32-wasi --release
+              time wasmedge --dir .:. \
+                --env n_gpu_layers="$NGL" \
+                --nn-preload default:GGML:AUTO:Qwen2-VL-2B-Instruct-Q5_K_M.gguf \
+                --env mmproj=Qwen2-VL-2B-Instruct-vision-encoder.gguf \
+                --env image=monalisa.jpg \
+                target/wasm32-wasi/release/wasmedge-ggml-qwen2vl.wasm \
+                default \
+                $'<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n<|vision_start|><image><|vision_end|>what is in this picture?<|im_end|>\n<|im_start|>assistant\n'
 
           - name: Build llama-stream
             run: |
