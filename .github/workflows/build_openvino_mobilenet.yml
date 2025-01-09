@@ -44,7 +44,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt update
-          apt install -y libtbb2
+          apt install -y libtbbmalloc2
 
       - name: Install OpenVINO
         working-directory: scripts
