@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rust: [1.71]
+        rust: [1.84]
     container:
       image: wasmedge/wasmedge:ubuntu-build-clang
     steps:
