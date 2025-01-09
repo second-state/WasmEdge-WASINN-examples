@@ -33,11 +33,11 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/llama
               curl -LO https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --nn-preload default:GGML:AUTO:tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-llama.wasm \
                 default \
                 $'<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
 
@@ -46,11 +46,11 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/gemma
               curl -LO https://huggingface.co/second-state/Gemma-2b-it-GGUF/resolve/main/gemma-2b-it-Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --nn-preload default:GGML:AUTO:gemma-2b-it-Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-gemma.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-gemma.wasm \
                 default \
                 '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
 
@@ -61,13 +61,13 @@ jobs:
               curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/ggml-model-q5_k.gguf
               curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/mmproj-model-f16.gguf
               curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env mmproj=mmproj-model-f16.gguf \
                 --env image=monalisa.jpg \
                 --env n_gpu_layers="$NGL" \
                 --nn-preload default:GGML:AUTO:ggml-model-q5_k.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-llava.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-llava.wasm \
                 default \
                 $'You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe.\nUSER:<image>\nDo you know who drew this painting?\nASSISTANT:'
 
@@ -78,14 +78,14 @@ jobs:
               curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/vicuna-7b-q5_k.gguf
               curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/mmproj-vicuna7b-f16.gguf
               curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env mmproj=mmproj-vicuna7b-f16.gguf \
                 --env image=monalisa.jpg \
                 --env ctx_size=4096 \
                 --env n_gpu_layers="$NGL" \
                 --nn-preload default:GGML:AUTO:vicuna-7b-q5_k.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-llava.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-llava.wasm \
                 default \
                 $'You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe.\nUSER:<image>\nDo you know who drew this painting?\nASSISTANT:'
 
@@ -94,11 +94,11 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/llama
               curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-llama.wasm \
                 default \
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
 
@@ -107,11 +107,11 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/llama-stream
               curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-llama-stream.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-llama-stream.wasm \
                 default \
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
 
@@ -120,12 +120,12 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/llama
               curl -LO https://huggingface.co/QuantFactory/Meta-Llama-3-8B-Instruct-GGUF/resolve/main/Meta-Llama-3-8B-Instruct.Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --env llama3=true \
                 --nn-preload default:GGML:AUTO:Meta-Llama-3-8B-Instruct.Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-llama.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-llama.wasm \
                 default \
                 $"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\n\nWhat's the capital of Japan?<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>\n\n"
 
@@ -134,12 +134,12 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/llama-stream
               curl -LO https://huggingface.co/QuantFactory/Meta-Llama-3-8B-Instruct-GGUF/resolve/main/Meta-Llama-3-8B-Instruct.Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --env llama3=true \
                 --nn-preload default:GGML:AUTO:Meta-Llama-3-8B-Instruct.Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-llama-stream.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-llama-stream.wasm \
                 default \
                 $"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\n\nWhat's the capital of Japan?<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>\n\n"
 
@@ -148,12 +148,12 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/basic
               curl -LO https://huggingface.co/second-state/StarCoder2-7B-GGUF/resolve/main/starcoder2-7b-Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --env n_predict=100 \
                 --nn-preload default:GGML:AUTO:starcoder2-7b-Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-basic.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-basic.wasm \
                 default \
                 'def print_hello_world():'
 
@@ -165,14 +165,14 @@ jobs:
               curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/vicuna-7b-q5_k.gguf
               curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/mmproj-vicuna7b-f16.gguf
               curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --env image=monalisa.jpg \
                 --env mmproj=mmproj-vicuna7b-f16.gguf \
                 --nn-preload llama2:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
                 --nn-preload llava:GGML:AUTO:vicuna-7b-q5_k.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-multimodel.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-multimodel.wasm \
                 'describe this picture please'
 
           - name: Embedding Example (All-MiniLM)
@@ -180,10 +180,10 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/embedding
               curl -LO https://huggingface.co/second-state/All-MiniLM-L6-v2-Embedding-GGUF/resolve/main/all-MiniLM-L6-v2-ggml-model-f16.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --nn-preload default:GGML:AUTO:all-MiniLM-L6-v2-ggml-model-f16.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-llama-embedding.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-llama-embedding.wasm \
                 default \
                 'hello world'
 
@@ -192,10 +192,10 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/embedding
               curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-llama-embedding.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-llama-embedding.wasm \
                 default \
                 'hello world'
 
@@ -204,11 +204,11 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/nnrpc
               curl -LO https://huggingface.co/second-state/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-nnrpc.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-nnrpc.wasm \
                 default \
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
 
@@ -217,11 +217,11 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/test/set-input-twice
               curl -LO https://huggingface.co/second-state/Gemma-2b-it-GGUF/resolve/main/gemma-2b-it-Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --nn-preload default:GGML:AUTO:gemma-2b-it-Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-set-input-twice.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-set-input-twice.wasm \
                 default \
                 '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
 
@@ -230,12 +230,12 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/chatml
               curl -LO https://huggingface.co/second-state/Yi-1.5-9B-Chat-16K-GGUF/resolve/main/Yi-1.5-9B-Chat-16K-Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --env reverse_prompt='<|im_end|>' \
                 --nn-preload default:GGML:AUTO:Yi-1.5-9B-Chat-16K-Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-chatml.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-chatml.wasm \
                 default \
                 $'<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
 
@@ -244,12 +244,12 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/chatml
               curl -LO https://huggingface.co/second-state/Yi-1.5-9B-Chat-GGUF/resolve/main/Yi-1.5-9B-Chat-Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --env reverse_prompt='<|im_end|>' \
                 --nn-preload default:GGML:AUTO:Yi-1.5-9B-Chat-Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-chatml.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-chatml.wasm \
                 default \
                 $'<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
 
@@ -258,11 +258,11 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/grammar
               curl -LO https://huggingface.co/TheBloke/Llama-2-7b-GGUF/resolve/main/llama-2-7b.Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --nn-preload default:GGML:AUTO:llama-2-7b.Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-grammar.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-grammar.wasm \
                 default \
                 'JSON object with 5 country names as keys and their capitals as values: '
 
@@ -270,10 +270,10 @@ jobs:
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/test/model-not-found
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --nn-preload default:GGML:AUTO:model-not-found.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-model-not-found.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-model-not-found.wasm \
                 default
 
           - name: Unload
@@ -281,10 +281,10 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/test/unload
               curl -LO https://huggingface.co/second-state/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-unload.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-unload.wasm \
                 default \
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
 
@@ -293,11 +293,11 @@ jobs:
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/json-schema
               curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-                target/wasm32-wasi/release/wasmedge-ggml-json-schema.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-json-schema.wasm \
                 default \
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always output JSON format string.\n<</SYS>>\nGive me a JSON array of Apple products.[/INST]'
 
@@ -308,25 +308,25 @@ jobs:
               curl -LO https://huggingface.co/second-state/Qwen2-VL-2B-Instruct-GGUF/resolve/main/Qwen2-VL-2B-Instruct-vision-encoder.gguf
               curl -LO https://huggingface.co/second-state/Qwen2-VL-2B-Instruct-GGUF/resolve/main/Qwen2-VL-2B-Instruct-Q5_K_M.gguf
               curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
                 --nn-preload default:GGML:AUTO:Qwen2-VL-2B-Instruct-Q5_K_M.gguf \
                 --env mmproj=Qwen2-VL-2B-Instruct-vision-encoder.gguf \
                 --env image=monalisa.jpg \
-                target/wasm32-wasi/release/wasmedge-ggml-qwen2vl.wasm \
+                target/wasm32-wasip1/release/wasmedge-ggml-qwen2vl.wasm \
                 default \
                 $'<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n<|vision_start|><image><|vision_end|>what is in this picture?<|im_end|>\n<|im_start|>assistant\n'
 
           - name: Build llama-stream
             run: |
               cd wasmedge-ggml/llama-stream
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
 
           - name: Build llava-base64-stream
             run: |
               cd wasmedge-ggml/llava-base64-stream
-              cargo build --target wasm32-wasi --release
+              cargo build --target wasm32-wasip1 --release
 
         include:
           - runner: macos-m1
@@ -340,11 +340,11 @@ jobs:
                 test -f ~/.wasmedge/env && source ~/.wasmedge/env
                 cd wasmedge-ggml/command-r
                 curl -LO https://huggingface.co/andrewcanis/c4ai-command-r-v01-GGUF/resolve/main/c4ai-command-r-v01-Q2_K.gguf
-                cargo build --target wasm32-wasi --release
+                cargo build --target wasm32-wasip1 --release
                 time wasmedge --dir .:. \
                   --env n_gpu_layers="$NGL" \
                   --nn-preload default:GGML:AUTO:c4ai-command-r-v01-Q2_K.gguf \
-                  target/wasm32-wasi/release/wasmedge-ggml-command-r.wasm \
+                  target/wasm32-wasip1/release/wasmedge-ggml-command-r.wasm \
                   default \
                   '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>What is the capital of the United States?<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>'
 
@@ -355,7 +355,7 @@ jobs:
     - uses: actions-rust-lang/setup-rust-toolchain@v1
     - name: Install Rust target for wasm
       run: |
-        rustup target add wasm32-wasi
+        rustup target add wasm32-wasip1
 
     - name: Install WasmEdge + WASI-NN + GGML
       run: |

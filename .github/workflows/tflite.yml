@@ -37,7 +37,7 @@ jobs:
     
     - name: Install Rust target for wasm
       run: |
-        rustup target add wasm32-wasi
+        rustup target add wasm32-wasip1
         
     - name: Install WasmEdge + WASI-NN + TFLite
       run: |
@@ -53,8 +53,8 @@ jobs:
     - name: Example
       run: |
         cd tflite-birds_v1-image/rust
-        cargo build --target wasm32-wasi --release
+        cargo build --target wasm32-wasip1 --release
         cd ..
-        wasmedge compile rust/target/wasm32-wasi/release/wasmedge-wasinn-example-tflite-bird-image.wasm wasmedge-wasinn-example-tflite-bird-image.wasm
+        wasmedge compile rust/target/wasm32-wasip1/release/wasmedge-wasinn-example-tflite-bird-image.wasm wasmedge-wasinn-example-tflite-bird-image.wasm
         wasmedge --dir .:. wasmedge-wasinn-example-tflite-bird-image.wasm lite-model_aiy_vision_classifier_birds_V1_3.tflite bird.jpg
 

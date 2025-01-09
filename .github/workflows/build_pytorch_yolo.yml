@@ -37,7 +37,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ matrix.rust }}
-          target: wasm32-wasi
+          target: wasm32-wasip1
 
       - name: Install LibTorch
         working-directory: scripts
@@ -57,7 +57,7 @@ jobs:
         run: |
           cd pytorch-yolo-image
           cd rust
-          cargo build --target=wasm32-wasi --release
-          cp target/wasm32-wasi/release/wasmedge-wasinn-example-yolo-image.wasm ..
+          cargo build --target=wasm32-wasip1 --release
+          cp target/wasm32-wasip1/release/wasmedge-wasinn-example-yolo-image.wasm ..
           cd ..
           wasmedge --dir .:. wasmedge-wasinn-example-yolo-image.wasm ./yolov8n.torchscript ./input.jpg
