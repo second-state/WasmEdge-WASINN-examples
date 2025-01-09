@@ -39,7 +39,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ matrix.rust }}
-          target: wasm32-wasi
+          target: wasm32-wasip1
 
       - name: Install dependencies
         run: |
@@ -63,15 +63,15 @@ jobs:
         run: |
           bash download_mobilenet.sh
           cd rust
-          cargo build --target wasm32-wasi --release
+          cargo build --target wasm32-wasip1 --release
           cd ..
-          wasmedge --dir .:. ./rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr
+          wasmedge --dir .:. ./rust/target/wasm32-wasip1/release/wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin tensor-1x224x224x3-f32.bgr
 
       - name: Build and run openvino-mobilenet-image
         working-directory: openvino-mobilenet-image
         run: |
           bash download_mobilenet.sh
           cd rust
-          cargo build --target wasm32-wasi --release
+          cargo build --target wasm32-wasip1 --release
           cd ..
-          wasmedge --dir .:. ./rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.xml mobilenet.bin input.jpg
+          wasmedge --dir .:. ./rust/target/wasm32-wasip1/release/wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.xml mobilenet.bin input.jpg
