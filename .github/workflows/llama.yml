@@ -54,23 +54,6 @@ jobs:
                 default \
                 '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
 
-          - name: Llava v1.5 7B
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/llava
-              curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/ggml-model-q5_k.gguf
-              curl -LO https://huggingface.co/mys/ggml_llava-v1.5-7b/resolve/main/mmproj-model-f16.gguf
-              curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env mmproj=mmproj-model-f16.gguf \
-                --env image=monalisa.jpg \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:ggml-model-q5_k.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-llava.wasm \
-                default \
-                $'You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe.\nUSER:<image>\nDo you know who drew this painting?\nASSISTANT:'
-
           - name: Llava v1.6 7B
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
@@ -88,32 +71,6 @@ jobs:
                 target/wasm32-wasip1/release/wasmedge-ggml-llava.wasm \
                 default \
                 $'You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe.\nUSER:<image>\nDo you know who drew this painting?\nASSISTANT:'
-
-          - name: Llama2 7B
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/llama
-              curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-llama.wasm \
-                default \
-                $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
-
-          - name: Llama2 7B (Streaming)
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/llama-stream
-              curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-llama-stream.wasm \
-                default \
-                $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
 
           - name: Llama3 8B
             run: |
@@ -142,20 +99,6 @@ jobs:
                 target/wasm32-wasip1/release/wasmedge-ggml-llama-stream.wasm \
                 default \
                 $"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\n\nWhat's the capital of Japan?<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>\n\n"
-
-          - name: StarCoder 2 7B
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/basic
-              curl -LO https://huggingface.co/second-state/StarCoder2-7B-GGUF/resolve/main/starcoder2-7b-Q5_K_M.gguf
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --env n_predict=100 \
-                --nn-preload default:GGML:AUTO:starcoder2-7b-Q5_K_M.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-basic.wasm \
-                default \
-                'def print_hello_world():'
 
           - name: Multiple Models Example
             run: |
@@ -224,34 +167,6 @@ jobs:
                 target/wasm32-wasip1/release/wasmedge-ggml-set-input-twice.wasm \
                 default \
                 '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
-
-          - name: Yi 1.5 9B 16K
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/chatml
-              curl -LO https://huggingface.co/second-state/Yi-1.5-9B-Chat-16K-GGUF/resolve/main/Yi-1.5-9B-Chat-16K-Q5_K_M.gguf
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --env reverse_prompt='<|im_end|>' \
-                --nn-preload default:GGML:AUTO:Yi-1.5-9B-Chat-16K-Q5_K_M.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-chatml.wasm \
-                default \
-                $'<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
-
-          - name: Yi 1.5 9B
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/chatml
-              curl -LO https://huggingface.co/second-state/Yi-1.5-9B-Chat-GGUF/resolve/main/Yi-1.5-9B-Chat-Q5_K_M.gguf
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --env reverse_prompt='<|im_end|>' \
-                --nn-preload default:GGML:AUTO:Yi-1.5-9B-Chat-Q5_K_M.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-chatml.wasm \
-                default \
-                $'<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
 
           - name: Grammar Example
             run: |
