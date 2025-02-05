@@ -66,10 +66,15 @@ fn get_options_from_env() -> HashMap<&'static str, Value> {
     } else {
         options.insert("batch-size", Value::from(8192));
     }
+    if let Ok(val) = env::var("ubatch_size") {
+        options.insert("ubatch-size", serde_json::from_str(val.as_str()).unwrap());
+    } else {
+        options.insert("ubatch-size", Value::from(8192));
+    }
     if let Ok(val) = env::var("n_gpu_layers") {
         options.insert("n-gpu-layers", serde_json::from_str(val.as_str()).unwrap());
     } else {
-        options.insert("n-gpu-layers", Value::from(0));
+        options.insert("n-gpu-layers", Value::from(100));
     }
     if let Ok(val) = env::var("seed") {
         options.insert("seed", serde_json::from_str(val.as_str()).unwrap());
