@@ -233,6 +233,23 @@ jobs:
                 default \
                 $'<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n<|vision_start|><image><|vision_end|>what is in this picture?<|im_end|>\n<|im_start|>assistant\n'
 
+          - name: Text-to-speech
+            run: |
+              test -f ~/.wasmedge/env && source ~/.wasmedge/env
+              cd wasmedge-ggml/tts
+              curl -LO https://huggingface.co/second-state/OuteTTS-0.2-500M-GGUF/resolve/main/OuteTTS-0.2-500M-Q5_K_M.gguf
+              curl -LO https://huggingface.co/second-state/OuteTTS-0.2-500M-GGUF/resolve/main/wavtokenizer-large-75-ggml-f16.gguf
+              cargo build --target wasm32-wasip1 --release
+              time wasmedge --dir .:. \
+                --env n_gpu_layers="$NGL" \
+                --nn-preload default:GGML:AUTO:OuteTTS-0.2-500M-Q5_K_M.gguf \
+                --env tts=true \
+                --env tts_output_file=output.wav \
+                --env model_vocoder=wavtokenizer-large-75-ggml-f16.gguf \
+                target/wasm32-wasip1/release/wasmedge-ggml-tts.wasm \
+                default \
+                'Hello, world.'
+
           - name: Build llama-stream
             run: |
               cd wasmedge-ggml/llama-stream
