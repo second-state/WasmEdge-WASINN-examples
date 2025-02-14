@@ -23,22 +23,26 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:20.04
 
     steps:
     - uses: actions/checkout@v3
-      
+
     - name: Install apt-get packages
       run: |
-        echo RESET grub-efi/install_devices | sudo debconf-communicate grub-pc
-        sudo ACCEPT_EULA=Y apt-get update
-        sudo ACCEPT_EULA=Y apt-get upgrade
-        sudo apt-get install wget git curl software-properties-common build-essential
-    
+        ACCEPT_EULA=Y apt-get update
+        ACCEPT_EULA=Y apt-get upgrade -y
+        apt-get install -y wget git curl software-properties-common build-essential
+      env:
+        DEBIAN_FRONTEND: noninteractive
+
     - name: Install Rust target for wasm
-      run: |
-        rustup target add wasm32-wasip1
-        
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        target: wasm32-wasip1
+
     - name: Install WasmEdge + WASI-NN + TFLite
       run: |
         VERSION=0.13.4
@@ -46,10 +50,10 @@ jobs:
         curl -s -L -O --remote-name-all https://github.com/second-state/WasmEdge-tensorflow-deps/releases/download/TF-2.12.0-CC/WasmEdge-tensorflow-deps-TFLite-TF-$TFVERSION-CC-manylinux2014_x86_64.tar.gz
         tar -zxf WasmEdge-tensorflow-deps-TFLite-TF-$TFVERSION-CC-manylinux2014_x86_64.tar.gz
         rm -f WasmEdge-tensorflow-deps-TFLite-TF-$TFVERSION-CC-manylinux2014_x86_64.tar.gz
-        sudo mv libtensorflowlite_c.so /usr/local/lib
-        sudo mv libtensorflowlite_flex.so /usr/local/lib
-        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -v $VERSION --plugins wasi_nn-tensorflowlite -p /usr/local
-        
+        mv libtensorflowlite_c.so /usr/local/lib
+        mv libtensorflowlite_flex.so /usr/local/lib
+        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION --plugins wasi_nn-tensorflowlite -p /usr/local
+
     - name: Example
       run: |
         cd tflite-birds_v1-image/rust
