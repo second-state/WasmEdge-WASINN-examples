@@ -24,11 +24,12 @@ jobs:
   build:
     strategy:
       matrix:
-        runner: [ubuntu-20.04, macos-m1]
+        runner: [ubuntu-latest, macos-m1]
         wasmedge: ["0.14.1"]
         plugin: [wasi_nn-ggml]
         job:
           - name: "Tiny Llama"
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/llama
@@ -42,6 +43,7 @@ jobs:
                 $'<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
 
           - name: Gemma 2B
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/gemma
@@ -55,6 +57,7 @@ jobs:
                 '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
 
           - name: Llava v1.6 7B
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/llava
@@ -73,6 +76,7 @@ jobs:
                 $'You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe.\nUSER:<image>\nDo you know who drew this painting?\nASSISTANT:'
 
           - name: Llama3 8B
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/llama
@@ -87,6 +91,7 @@ jobs:
                 $"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\n\nWhat's the capital of Japan?<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>\n\n"
 
           - name: Llama3 8B (Streaming)
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/llama-stream
@@ -101,6 +106,7 @@ jobs:
                 $"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\n\nWhat's the capital of Japan?<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>\n\n"
 
           - name: Multiple Models Example
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/multimodel
@@ -119,6 +125,7 @@ jobs:
                 'describe this picture please'
 
           - name: Embedding Example (All-MiniLM)
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/embedding
@@ -131,6 +138,7 @@ jobs:
                 'hello world'
 
           - name: Embedding Example (Llama-2)
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/embedding
@@ -143,6 +151,7 @@ jobs:
                 'hello world'
 
           - name: RPC Example
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/nnrpc
@@ -156,6 +165,7 @@ jobs:
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
 
           - name: Set Input Twice
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/test/set-input-twice
@@ -169,6 +179,7 @@ jobs:
                 '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
 
           - name: Grammar Example
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/grammar
@@ -182,6 +193,7 @@ jobs:
                 'JSON object with 5 country names as keys and their capitals as values: '
 
           - name: Model Not Found
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/test/model-not-found
@@ -192,6 +204,7 @@ jobs:
                 default
 
           - name: Unload
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/test/unload
@@ -204,6 +217,7 @@ jobs:
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
 
           - name: JSON Schema
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/json-schema
@@ -217,6 +231,7 @@ jobs:
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always output JSON format string.\n<</SYS>>\nGive me a JSON array of Apple products.[/INST]'
 
           - name: Qwen2-VL
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/qwen2vl
@@ -234,6 +249,7 @@ jobs:
                 $'<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n<|vision_start|><image><|vision_end|>what is in this picture?<|im_end|>\n<|im_start|>assistant\n'
 
           - name: Text-to-speech
+            shell: bash
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/tts
@@ -263,7 +279,7 @@ jobs:
         include:
           - runner: macos-m1
             ngl: 100
-          - runner: ubuntu-20.04
+          - runner: ubuntu-latest
             wasmedge: "0.14.0"
             plugin: wasi_nn-ggml
             job:
@@ -280,14 +296,26 @@ jobs:
                   default \
                   '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>What is the capital of the United States?<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>'
 
-    name: ${{ matrix.runner }} - ${{ matrix.job.name }} - ${{ matrix.wasmedge }} - ${{ matrix.plugin }}
+    name: ${{ matrix.runner == 'ubuntu-latest' && 'ubuntu:20.04' || matrix.runner }} - ${{ matrix.job.name }} - ${{ matrix.wasmedge }} - ${{ matrix.plugin }}
     runs-on: ${{ matrix.runner }}
+    # set image to `ubuntu:20.04` if runner is `ubuntu-latest`
+    container: ${{ matrix.runner == 'ubuntu-latest' && fromJSON('{"image":"ubuntu:20.04"}') || null }}
     steps:
     - uses: actions/checkout@v4
-    - uses: actions-rust-lang/setup-rust-toolchain@v1
-    - name: Install Rust target for wasm
+
+    - if: ${{ matrix.runner == 'ubuntu-latest' }}
+      name: Install apt-get packages
       run: |
-        rustup target add wasm32-wasip1
+        ACCEPT_EULA=Y apt-get update
+        ACCEPT_EULA=Y apt-get upgrade -y
+        apt-get install -y wget git curl software-properties-common build-essential
+      env:
+        DEBIAN_FRONTEND: noninteractive
+
+    - name: Install Rust target for wasm
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        target: wasm32-wasip1
 
     - name: Install WasmEdge + WASI-NN + GGML
       run: |
@@ -298,3 +326,4 @@ jobs:
 
     - name: ${{ matrix.job.name }}
       run: ${{ matrix.job.run }}
+      shell: bash
