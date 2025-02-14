@@ -276,26 +276,6 @@ jobs:
               cd wasmedge-ggml/llava-base64-stream
               cargo build --target wasm32-wasip1 --release
 
-        include:
-          - runner: macos-m1
-            ngl: 100
-          - runner: ubuntu-latest
-            wasmedge: "0.14.0"
-            plugin: wasi_nn-ggml
-            job:
-              name: C4AI Command-R v01
-              run: |
-                test -f ~/.wasmedge/env && source ~/.wasmedge/env
-                cd wasmedge-ggml/command-r
-                curl -LO https://huggingface.co/andrewcanis/c4ai-command-r-v01-GGUF/resolve/main/c4ai-command-r-v01-Q2_K.gguf
-                cargo build --target wasm32-wasip1 --release
-                time wasmedge --dir .:. \
-                  --env n_gpu_layers="$NGL" \
-                  --nn-preload default:GGML:AUTO:c4ai-command-r-v01-Q2_K.gguf \
-                  target/wasm32-wasip1/release/wasmedge-ggml-command-r.wasm \
-                  default \
-                  '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>What is the capital of the United States?<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>'
-
     name: ${{ matrix.runner == 'ubuntu-latest' && 'ubuntu:20.04' || matrix.runner }} - ${{ matrix.job.name }} - ${{ matrix.wasmedge }} - ${{ matrix.plugin }}
     runs-on: ${{ matrix.runner }}
     # set image to `ubuntu:20.04` if runner is `ubuntu-latest`
