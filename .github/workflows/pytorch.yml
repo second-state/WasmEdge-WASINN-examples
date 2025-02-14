@@ -23,26 +23,30 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:20.04
 
     steps:
     - uses: actions/checkout@v3
 
     - name: Install apt-get packages
       run: |
-        echo RESET grub-efi/install_devices | sudo debconf-communicate grub-pc
-        sudo ACCEPT_EULA=Y apt-get update
-        sudo ACCEPT_EULA=Y apt-get upgrade
-        sudo apt-get install wget git curl software-properties-common build-essential
+        ACCEPT_EULA=Y apt-get update
+        ACCEPT_EULA=Y apt-get upgrade -y
+        apt-get install -y wget git curl software-properties-common build-essential unzip
+      env:
+        DEBIAN_FRONTEND: noninteractive
 
     - name: Install Rust target for wasm
-      run: |
-        rustup target add wasm32-wasip1
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        target: wasm32-wasip1
 
     - name: Install WasmEdge + WASI-NN + PyTorch
       run: |
         VERSION=0.13.4
-        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -v $VERSION --plugins wasi_nn-pytorch -p /usr/local
+        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v $VERSION --plugins wasi_nn-pytorch -p /usr/local
         export PYTORCH_VERSION="1.8.2"
         # For the Ubuntu 20.04 or above, use the libtorch with cxx11 abi.
         export PYTORCH_ABI="libtorch-cxx11-abi"
