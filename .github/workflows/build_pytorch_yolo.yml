@@ -15,6 +15,7 @@ on:
       - ".github/workflows/build_pytorch_yolo.yml"
       - "pytorch-yolo-image/**"
       - "scripts/install_libtorch.sh"
+  merge_group:
 
 env:
   CARGO_TERM_COLOR: always

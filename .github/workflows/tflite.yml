@@ -19,6 +19,7 @@ on:
     paths:
       - ".github/workflows/tflite.yml"
       - "tflite-birds_v1-image/**"
+  merge_group:
 
 jobs:
   build:

@@ -17,6 +17,7 @@ on:
       - "openvino-mobilenet-raw/**"
       - "openvino-mobilenet-image/**"
       - "scripts/install_openvino.sh"
+  merge_group:
 
 env:
   CARGO_TERM_COLOR: always
