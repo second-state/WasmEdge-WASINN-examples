@@ -1,23 +1,12 @@
 use serde_json::Value;
 use std::collections::HashMap;
 use std::env;
-use std::io;
+use std::fs::File;
+use std::io::{self, Write};
 use wasmedge_wasi_nn::{
     self, BackendError, Error, ExecutionTarget, GraphBuilder, GraphEncoding, GraphExecutionContext,
     TensorType,
 };
-
-fn read_input() -> String {
-    loop {
-        let mut answer = String::new();
-        io::stdin()
-            .read_line(&mut answer)
-            .expect("Failed to read line");
-        if !answer.is_empty() && answer != "\n" && answer != "\r\n" {
-            return answer.trim().to_string();
-        }
-    }
-}
 
 fn get_options_from_env() -> HashMap<&'static str, Value> {
     let mut options = HashMap::new();
@@ -35,6 +24,10 @@ fn get_options_from_env() -> HashMap<&'static str, Value> {
     } else {
         eprintln!("Failed to get vocoder model.");
         std::process::exit(1);
+    }
+    // Speaker profile is optional.
+    if let Ok(val) = env::var("tts_speaker_file") {
+        options.insert("tts-speaker-file", Value::from(val.as_str()));
     }
 
     // Optional parameters
@@ -79,6 +72,9 @@ fn get_options_from_env() -> HashMap<&'static str, Value> {
     if let Ok(val) = env::var("seed") {
         options.insert("seed", serde_json::from_str(val.as_str()).unwrap());
     }
+    if let Ok(val) = env::var("temp") {
+        options.insert("temp", serde_json::from_str(val.as_str()).unwrap());
+    }
     options
 }
 
@@ -86,24 +82,29 @@ fn set_data_to_context(context: &mut GraphExecutionContext, data: Vec<u8>) -> Re
     context.set_input(0, TensorType::U8, &[1], &data)
 }
 
-fn get_data_from_context(context: &GraphExecutionContext, index: usize) -> String {
-    // Preserve for 4096 tokens with average token length 6
-    const MAX_OUTPUT_BUFFER_SIZE: usize = 4096 * 6;
+fn get_data_from_context(context: &GraphExecutionContext, index: usize) -> Vec<u8> {
+    // Use 1MB as the maximum output buffer size for audio output.
+    const MAX_OUTPUT_BUFFER_SIZE: usize = 1024 * 1024;
     let mut output_buffer = vec![0u8; MAX_OUTPUT_BUFFER_SIZE];
     let mut output_size = context
         .get_output(index, &mut output_buffer)
         .expect("Failed to get output");
     output_size = std::cmp::min(MAX_OUTPUT_BUFFER_SIZE, output_size);
 
-    String::from_utf8_lossy(&output_buffer[..output_size]).to_string()
+    output_buffer[..output_size].to_vec()
 }
 
 fn get_metadata_from_context(context: &GraphExecutionContext) -> Value {
-    serde_json::from_str(&get_data_from_context(context, 1)).expect("Failed to get metadata")
+    serde_json::from_str(&String::from_utf8_lossy(&get_data_from_context(context, 1)).to_string())
+        .expect("Failed to get metadata")
 }
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+    if args.len() < 3 {
+        println!("Usage: {} <nn-preload-model> <prompt>", args[0]);
+        return;
+    }
     let model_name: &str = &args[1];
 
     // Set options for the graph. Check our README for more details:
@@ -121,53 +122,40 @@ fn main() {
 
     // If there is a third argument, use it as the prompt and enter non-interactive mode.
     // This is mainly for the CI workflow.
-    if args.len() >= 3 {
-        let prompt = &args[2];
-        // Set the prompt.
-        println!("Prompt:\n{}", prompt);
-        let tensor_data = prompt.as_bytes().to_vec();
-        context
-            .set_input(0, TensorType::U8, &[1], &tensor_data)
-            .expect("Failed to set input");
+    let prompt = &args[2];
+    // Set the prompt.
+    println!("Prompt:\n{}", prompt);
+    let tensor_data = prompt.as_bytes().to_vec();
+    context
+        .set_input(0, TensorType::U8, &[1], &tensor_data)
+        .expect("Failed to set input");
 
-        // Get the number of input tokens and llama.cpp versions.
-        let input_metadata = get_metadata_from_context(&context);
-        println!("[INFO] llama_commit: {}", input_metadata["llama_commit"]);
-        println!(
-            "[INFO] llama_build_number: {}",
-            input_metadata["llama_build_number"]
-        );
-        println!(
-            "[INFO] Number of input tokens: {}",
-            input_metadata["input_tokens"]
-        );
+    // Get the number of input tokens and llama.cpp versions.
+    let input_metadata = get_metadata_from_context(&context);
+    println!("[INFO] llama_commit: {}", input_metadata["llama_commit"]);
+    println!(
+        "[INFO] llama_build_number: {}",
+        input_metadata["llama_build_number"]
+    );
+    println!(
+        "[INFO] Number of input tokens: {}",
+        input_metadata["input_tokens"]
+    );
 
-        context.compute().expect("Failed to compute");
-        println!("[INFO] Write output file to {}", options["tts-output-file"]);
+    context.compute().expect("Failed to compute");
+    println!(
+        "[INFO] Plugin writes output to file {}",
+        options["tts-output-file"]
+    );
 
-        return;
-    }
+    // Write output buffer to file, should be the same as the output file in the options.
+    let output_filename = "output-buffer.wav";
+    let output_bytes = get_data_from_context(&context, 0);
+    let mut output_file = File::create(output_filename).expect("Failed to create output file");
+    output_file
+        .write_all(&output_bytes)
+        .expect("Failed to write output file");
+    println!("[INFO] Write output buffer to file {}", output_filename);
 
-    println!("Text:");
-    let input = read_input();
-
-    // Set prompt to the input tensor.
-    set_data_to_context(&mut context, input.as_bytes().to_vec()).expect("Failed to set input");
-
-    // Execute the inference.
-    match context.compute() {
-        Ok(_) => (),
-        Err(Error::BackendError(BackendError::ContextFull)) => {
-            println!("\n[INFO] Context full.");
-        }
-        Err(Error::BackendError(BackendError::PromptTooLong)) => {
-            println!("\n[INFO] Prompt too long.");
-        }
-        Err(err) => {
-            println!("\n[ERROR] {}", err);
-            std::process::exit(1);
-        }
-    }
-
-    println!("[INFO] Write output file to {}", options["tts-output-file"]);
+    return;
 }
