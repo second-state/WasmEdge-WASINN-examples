@@ -19,6 +19,7 @@ on:
     paths:
       - ".github/workflows/pytorch.yml"
       - "pytorch-mobilenet-image/**"
+  merge_group:
 
 jobs:
   build:

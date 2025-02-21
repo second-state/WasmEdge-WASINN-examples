@@ -19,6 +19,7 @@ on:
     paths:
       - ".github/workflows/llama.yml"
       - "wasmedge-ggml/**"
+  merge_group:
 
 jobs:
   build:

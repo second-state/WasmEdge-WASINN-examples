@@ -11,6 +11,7 @@ on:
     paths:
       - ".github/workflows/chatTTS.yml"
       - "wasmedge-chatTTS/**"
+  merge_group:
 jobs:
   build:
     runs-on: ubuntu-22.04
