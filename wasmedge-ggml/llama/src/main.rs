@@ -39,6 +39,10 @@ fn get_options_from_env() -> Value {
     } else {
         options["n-gpu-layers"] = serde_json::from_str("0").unwrap()
     }
+    if let Ok(val) = env::var("n_predict") {
+        options["n-predict"] =
+            serde_json::from_str(val.as_str()).expect("invalid n_predict value (unsigned integer")
+    }
     options["ctx-size"] = serde_json::from_str("1024").unwrap();
 
     options
@@ -143,7 +147,7 @@ fn main() {
             "[INFO] Number of output tokens: {}",
             metadata["output_tokens"]
         );
-        std::process::exit(0);
+        return;
     }
 
     let mut saved_prompt = String::new();
