@@ -27,7 +27,7 @@ jobs:
       matrix:
         runner: [ubuntu-latest, macos-m1]
         wasmedge: ["0.14.1"]
-        plugin: [wasi_nn-ggml]
+        plugin: [wasi_nn-ggml-b4818]
         job:
           - name: "Tiny Llama"
             shell: bash
