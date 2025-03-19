@@ -214,6 +214,24 @@ jobs:
                 'Hello, world.'
               sha1sum *.wav
 
+          - name: Gemma-3 Vision
+            shell: bash
+            run: |
+              test -f ~/.wasmedge/env && source ~/.wasmedge/env
+              cd wasmedge-ggml/gemma-3
+              curl -LO https://huggingface.co/second-state/gemma-3-4b-it-GGUF/resolve/main/gemma-3-4b-it-Q5_K_M.gguf
+              curl -LO https://huggingface.co/second-state/gemma-3-4b-it-GGUF/resolve/main/gemma-3-4b-it-mmproj-f16.gguf
+              curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
+              cargo build --target wasm32-wasip1 --release
+              time wasmedge --dir .:. \
+                --env n_gpu_layers="$NGL" \
+                --env image=monalisa.jpg \
+                --env mmproj=gemma-3-4b-it-mmproj-f16.gguf \
+                --nn-preload default:GGML:AUTO:gemma-3-4b-it-Q5_K_M.gguf \
+                target/wasm32-wasip1/release/wasmedge-ggml-gemma-3.wasm \
+                default \
+                $'<start_of_turn>user\n<start_of_image><image><end_of_image>Describe this image<end_of_turn>\n<start_of_turn>model\n'
+
           - name: Build llama-stream
             run: |
               cd wasmedge-ggml/llama-stream
