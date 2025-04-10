@@ -171,13 +171,13 @@ jobs:
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/test/unload
-              curl -LO https://huggingface.co/second-state/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
+              curl -LO https://huggingface.co/second-state/Gemma-2b-it-GGUF/resolve/main/gemma-2b-it-Q5_K_M.gguf
               cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
-                --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
+                --nn-preload default:GGML:AUTO:gemma-2b-it-Q5_K_M.gguf \
                 target/wasm32-wasip1/release/wasmedge-ggml-unload.wasm \
                 default \
-                $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
+                '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
 
           - name: JSON Schema
             shell: bash
