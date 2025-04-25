@@ -41,10 +41,10 @@ wget https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0/resolve/main/toke
 
 ## Build wasm
 
-Run the following command to build wasm, the output WASM file will be at `target/wasm32-wasi/release/`
+Run the following command to build wasm, the output WASM file will be at `target/wasm32-wasip1/release/`
 
 ```bash
-cargo build --target wasm32-wasi --release
+cargo build --target wasm32-wasip1 --release
 ```
 ## Execute 
 
@@ -53,7 +53,7 @@ Execute the WASM with the `wasmedge` using nn-preload to load model.
 ``` bash
 wasmedge --dir .:. \
  --nn-preload default:mlx:AUTO:model.safetensors \
-  ./target/wasm32-wasi/release/wasmedge-mlx.wasm default
+  ./target/wasm32-wasip1/release/wasmedge-mlx.wasm default
 
 ```
 
@@ -63,7 +63,7 @@ For example:
 ``` bash
 wasmedge --dir .:. \
  --nn-preload default:mlx:AUTO:llama2-7b/model-00001-of-00002.safetensors:llama2-7b/model-00002-of-00002.safetensors \
-  ./target/wasm32-wasi/release/wasmedge-mlx.wasm default
+  ./target/wasm32-wasip1/release/wasmedge-mlx.wasm default
 ```
 
 ## Other 
