@@ -1,0 +1,56 @@
+use serde_json::json;
+use std::env;
+use wasmedge_wasi_nn::{
+    self, ExecutionTarget, GraphBuilder, GraphEncoding, GraphExecutionContext, TensorType,
+};
+
+fn get_data_from_context(context: &GraphExecutionContext, index: usize) -> String {
+    // Preserve for 4096 tokens with average token length 6
+    const MAX_OUTPUT_BUFFER_SIZE: usize = 4096 * 6;
+    let mut output_buffer = vec![0u8; MAX_OUTPUT_BUFFER_SIZE];
+    let mut output_size = context
+        .get_output(index, &mut output_buffer)
+        .expect("Failed to get output");
+    output_size = std::cmp::min(MAX_OUTPUT_BUFFER_SIZE, output_size);
+
+    return String::from_utf8_lossy(&output_buffer[..output_size]).to_string();
+}
+
+fn get_output_from_context(context: &GraphExecutionContext) -> String {
+    get_data_from_context(context, 0)
+}
+
+fn main() {
+    // prompt: "What is this icon?";
+    // image: "wasmedge-runtime-logo.png";
+    let args: Vec<String> = env::args().collect();
+    let model_name: &str = &args[1];
+    let graph = GraphBuilder::new(GraphEncoding::Mlx, ExecutionTarget::AUTO)
+        .config(
+            serde_json::to_string(&json!({"model_type": "gemma3", "max_token":250}))
+                .expect("Failed to serialize options"),
+        )
+        .build_from_cache(model_name)
+        .expect("Failed to build graph");
+
+    let mut context = graph
+        .init_execution_context()
+        .expect("Failed to init context");
+
+    let tensor_data = "input_ids.npy".as_bytes().to_vec();
+    context
+        .set_input(0, TensorType::U8, &[1], &tensor_data)
+        .expect("Failed to set input");
+    let tensor_data = "pixel_values.npy".as_bytes().to_vec();
+    context
+        .set_input(1, TensorType::U8, &[1], &tensor_data)
+        .expect("Failed to set input");
+    let tensor_data = "mask.npy".as_bytes().to_vec();
+    context
+        .set_input(2, TensorType::U8, &[1], &tensor_data)
+        .expect("Failed to set input");
+
+    context.compute().expect("Failed to compute");
+    let output = get_output_from_context(&context);
+    println!("{}", output.trim());
+}
