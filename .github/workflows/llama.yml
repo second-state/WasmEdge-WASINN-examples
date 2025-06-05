@@ -57,25 +57,6 @@ jobs:
                 default \
                 '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
 
-          - name: Llava v1.6 7B
-            shell: bash
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/llava
-              curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/vicuna-7b-q5_k.gguf
-              curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/mmproj-vicuna7b-f16.gguf
-              curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env mmproj=mmproj-vicuna7b-f16.gguf \
-                --env image=monalisa.jpg \
-                --env ctx_size=4096 \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:vicuna-7b-q5_k.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-llava.wasm \
-                default \
-                $'You are a helpful, respectful and honest assistant. Always answer as short as possible, while being safe.\nUSER:<image>\nDo you know who drew this painting?\nASSISTANT:'
-
           - name: Llama3 8B
             shell: bash
             run: |
@@ -105,25 +86,6 @@ jobs:
                 target/wasm32-wasip1/release/wasmedge-ggml-llama-stream.wasm \
                 default \
                 $"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\n\nWhat's the capital of Japan?<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>\n\n"
-
-          - name: Multiple Models Example
-            shell: bash
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/multimodel
-              curl -LO https://huggingface.co/second-state/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-              curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/vicuna-7b-q5_k.gguf
-              curl -LO https://huggingface.co/cmp-nct/llava-1.6-gguf/resolve/main/mmproj-vicuna7b-f16.gguf
-              curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --env image=monalisa.jpg \
-                --env mmproj=mmproj-vicuna7b-f16.gguf \
-                --nn-preload llama2:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-                --nn-preload llava:GGML:AUTO:vicuna-7b-q5_k.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-multimodel.wasm \
-                'describe this picture please'
 
           - name: Embedding Example (All-MiniLM)
             shell: bash
@@ -209,13 +171,13 @@ jobs:
             run: |
               test -f ~/.wasmedge/env && source ~/.wasmedge/env
               cd wasmedge-ggml/test/unload
-              curl -LO https://huggingface.co/second-state/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
+              curl -LO https://huggingface.co/second-state/Gemma-2b-it-GGUF/resolve/main/gemma-2b-it-Q5_K_M.gguf
               cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
-                --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
+                --nn-preload default:GGML:AUTO:gemma-2b-it-Q5_K_M.gguf \
                 target/wasm32-wasip1/release/wasmedge-ggml-unload.wasm \
                 default \
-                $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you do not know the answer to a question, please do not share false information.\n<</SYS>>\nWhat is the capital of Japan?[/INST]'
+                '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
 
           - name: JSON Schema
             shell: bash
@@ -238,7 +200,7 @@ jobs:
               cd wasmedge-ggml/tts
               curl -LO https://huggingface.co/second-state/OuteTTS-0.2-500M-GGUF/resolve/main/OuteTTS-0.2-500M-Q5_K_M.gguf
               curl -LO https://huggingface.co/second-state/OuteTTS-0.2-500M-GGUF/resolve/main/wavtokenizer-large-75-ggml-f16.gguf
-              curl -LO https://raw.githubusercontent.com/edwko/OuteTTS/refs/heads/main/outetts/version/v1/default_speakers/en_male_1.json
+              curl -LO https://raw.githubusercontent.com/edwko/OuteTTS/fc3e7ba54aa6847083fb39062361c168fcde14cf/outetts/version/v1/default_speakers/en_male_1.json
               cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --env n_gpu_layers="$NGL" \
@@ -251,6 +213,24 @@ jobs:
                 default \
                 'Hello, world.'
               sha1sum *.wav
+
+          - name: Gemma-3 Vision
+            shell: bash
+            run: |
+              test -f ~/.wasmedge/env && source ~/.wasmedge/env
+              cd wasmedge-ggml/gemma-3
+              curl -LO https://huggingface.co/second-state/gemma-3-4b-it-GGUF/resolve/main/gemma-3-4b-it-Q5_K_M.gguf
+              curl -LO https://huggingface.co/second-state/gemma-3-4b-it-GGUF/resolve/main/gemma-3-4b-it-mmproj-f16.gguf
+              curl -LO https://llava-vl.github.io/static/images/monalisa.jpg
+              cargo build --target wasm32-wasip1 --release
+              time wasmedge --dir .:. \
+                --env n_gpu_layers="$NGL" \
+                --env image=monalisa.jpg \
+                --env mmproj=gemma-3-4b-it-mmproj-f16.gguf \
+                --nn-preload default:GGML:AUTO:gemma-3-4b-it-Q5_K_M.gguf \
+                target/wasm32-wasip1/release/wasmedge-ggml-gemma-3.wasm \
+                default \
+                $'<start_of_turn>user\n<start_of_image><image><end_of_image>Describe this image<end_of_turn>\n<start_of_turn>model\n'
 
           - name: Build llama-stream
             run: |

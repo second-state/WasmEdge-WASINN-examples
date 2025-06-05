@@ -74,13 +74,26 @@ fn image_to_tensor(path: String, height: u32, width: u32) -> Vec<u8> {
     let bgr_img = dyn_img.to_bgr8();
     // Get an array of the pixel values
     let raw_u8_arr: &[u8] = &bgr_img.as_raw()[..];
+
+    // Transpose from [height, width, 3] to [3, height, width]
+    let mut transposed: Vec<u8> = vec![0; raw_u8_arr.len()];
+    for ch in 0..3 {
+        for y in 0..height {
+            for x in 0..width {
+                let loc = y * height + x;
+                transposed[(ch * width * height + loc) as usize] =
+                    raw_u8_arr[(loc * 3 + ch) as usize];
+            }
+        }
+    }
+
     // Create an array to hold the f32 value of those pixels
-    let bytes_required = raw_u8_arr.len() * 4;
+    let bytes_required = transposed.len() * 4;
     let mut u8_f32_arr: Vec<u8> = vec![0; bytes_required];
 
-    for i in 0..raw_u8_arr.len() {
+    for i in 0..transposed.len() {
         // Read the number as a f32 and break it into u8 bytes
-        let u8_f32: f32 = raw_u8_arr[i] as f32;
+        let u8_f32: f32 = transposed[i] as f32;
         let u8_bytes = u8_f32.to_ne_bytes();
 
         for j in 0..4 {
