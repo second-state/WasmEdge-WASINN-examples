@@ -58,13 +58,13 @@ Compile the application to WebAssembly:
 
 ```bash
 cd llama
-cargo build --target wasm32-wasi --release
+cargo build --target wasm32-wasip1 --release
 ```
 
-The output WASM file will be at `target/wasm32-wasi/release/`.
+The output WASM file will be at `target/wasm32-wasip1/release/`.
 
 ```bash
-cp target/wasm32-wasi/release/wasmedge-ggml-llama.wasm ./wasmedge-ggml-llama.wasm
+cp target/wasm32-wasip1/release/wasmedge-ggml-llama.wasm ./wasmedge-ggml-llama.wasm
 ```
 
 ## Get Model

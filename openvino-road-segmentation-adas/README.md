@@ -19,10 +19,10 @@ The model files and the images used for this demonstration are from the [Intel o
 
   > It is recommended to use Rust 1.68 or above in the stable channel.
 
-  Then, add `wasm32-wasi` target to the Rustup toolchain:
+  Then, add `wasm32-wasip1` target to the Rustup toolchain:
 
   ```bash
-  rustup target add wasm32-wasi
+  rustup target add wasm32-wasip1
   ```
 
 - Clone the example repo
@@ -62,10 +62,10 @@ Please refer to [WasmEdge Docs](https://wasmedge.org/docs/contribute/source/plug
 
   ```bash
   cd openvino-road-seg-adas
-  cargo build --target wasm32-wasi --release
+  cargo build --target wasm32-wasip1 --release
   cd ..
 
-  wasmedge --dir .:. ./openvino-road-seg-adas/target/wasm32-wasi/release/openvino-road-seg-adas.wasm \
+  wasmedge --dir .:. ./openvino-road-seg-adas/target/wasm32-wasip1/release/openvino-road-seg-adas.wasm \
   ./model/road-segmentation-adas-0001.xml \
   ./model/road-segmentation-adas-0001.bin \
   ./image/empty_road_mapillary.jpg

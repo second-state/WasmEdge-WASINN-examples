@@ -16,14 +16,14 @@ wasmedge_tensorflow_interface = "0.3.0"
 Compile the application to WebAssembly:
 
 ```bash
-cd rust && cargo build --target=wasm32-wasi --release
+cd rust && cargo build --target=wasm32-wasip1 --release
 ```
 
-The output WASM file will be at [`rust/target/wasm32-wasi/release/wasmedge-tf-example-mtcnn.wasm`](wasmedge-tf-example-mtcnn.wasm).
+The output WASM file will be at [`rust/target/wasm32-wasip1/release/wasmedge-tf-example-mtcnn.wasm`](wasmedge-tf-example-mtcnn.wasm).
 To speed up the image processing, we can enable the AOT mode in WasmEdge with:
 
 ```bash
-wasmedge compile rust/target/wasm32-wasi/release/wasmedge-tf-example-mtcnn.wasm wasmedge-tf-example-mtcnn_aot.wasm
+wasmedge compile rust/target/wasm32-wasip1/release/wasmedge-tf-example-mtcnn.wasm wasmedge-tf-example-mtcnn_aot.wasm
 ```
 
 ## Run

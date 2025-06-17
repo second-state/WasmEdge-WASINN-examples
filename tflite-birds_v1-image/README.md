@@ -18,14 +18,14 @@ wasi-nn = "0.4.0"
 Compile the application to WebAssembly:
 
 ```bash
-cd rust && cargo build --target=wasm32-wasi --release
+cd rust && cargo build --target=wasm32-wasip1 --release
 ```
 
-The output WASM file will be at [`rust/target/wasm32-wasi/release/wasmedge-wasinn-example-tflite-bird-image.wasm`](wasmedge-wasinn-example-tflite-bird-image.wasm).
+The output WASM file will be at [`rust/target/wasm32-wasip1/release/wasmedge-wasinn-example-tflite-bird-image.wasm`](wasmedge-wasinn-example-tflite-bird-image.wasm).
 To speed up the image processing, we can enable the AOT mode in WasmEdge with:
 
 ```bash
-wasmedge compile rust/target/wasm32-wasi/release/wasmedge-wasinn-example-tflite-bird-image.wasm wasmedge-wasinn-example-tflite-bird-image.wasm
+wasmedge compile rust/target/wasm32-wasip1/release/wasmedge-wasinn-example-tflite-bird-image.wasm wasmedge-wasinn-example-tflite-bird-image.wasm
 ```
 
 ## Run

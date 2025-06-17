@@ -10,10 +10,10 @@ This example demonstrates how to use WasmEdge WASI-NN OpenVINO GenAI plugin to p
 
   > It is recommended to use Rust 1.68 or above in the stable channel.
 
-  Then, add `wasm32-wasi` target to the Rustup toolchain:
+  Then, add `wasm32-wasip1` target to the Rustup toolchain:
 
   ```bash
-  rustup target add wasm32-wasi
+  rustup target add wasm32-wasip1
   ```
 
 - Clone the example repo
@@ -72,13 +72,13 @@ This example demonstrates how to use WasmEdge WASI-NN OpenVINO GenAI plugin to p
 - Build the example
 
   ```bash 
-  cargo build --target wasm32-wasi --release 
+  cargo build --target wasm32-wasip1 --release 
   ```
 
 - Run the example
 
   ```bash
-  wasmedge ./target/wasm32-wasi/release/openvinogenai-deepseek-raw.wasm path_to_model_xml_folder
+  wasmedge ./target/wasm32-wasip1/release/openvinogenai-deepseek-raw.wasm path_to_model_xml_folder
   ```
 
   You will get the output:

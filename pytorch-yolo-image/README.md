@@ -14,16 +14,16 @@ https://github.com/ultralytics/assets/releases
 ### Build + Run
 
 To build (from the `/rust` directory):  
-`cargo build --release --target wasm32-wasi`
+`cargo build --release --target wasm32-wasip1`
 
 To compile the WASM AOT (Ahead of Time) - this results in a much more performant binary  
 `
-wasmedge compile ./target/wasm32-wasi/release/wasmedge-wasinn-example-yolo-image.wasm ./target/wasm32-wasi/release/wasmedge-wasinn-example-yolo-image.wasm
+wasmedge compile ./target/wasm32-wasip1/release/wasmedge-wasinn-example-yolo-image.wasm ./target/wasm32-wasip1/release/wasmedge-wasinn-example-yolo-image.wasm
 `
 
 To Run (from root `/` directory of the example):  
 `
-wasmedge --dir .:. ./rust/target/wasm32-wasi/release/wasmedge-wasinn-example-yolo-image.wasm ./yolov8n.torchscript ./input.jpg
+wasmedge --dir .:. ./rust/target/wasm32-wasip1/release/wasmedge-wasinn-example-yolo-image.wasm ./yolov8n.torchscript ./input.jpg
 `
 
 > **Note**

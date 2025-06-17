@@ -84,10 +84,10 @@ tar -xzf piper_linux_x86_64.tar.gz piper/espeak-ng-data --strip-components=1
 
 ## Build wasm
 
-Run the following command to build wasm, the output WASM file will be at `target/wasm32-wasi/release/`
+Run the following command to build wasm, the output WASM file will be at `target/wasm32-wasip1/release/`
 
 ```bash
-cargo build --target wasm32-wasi --release
+cargo build --target wasm32-wasip1 --release
 ```
 
 ## Execute
@@ -108,13 +108,13 @@ Example layout:
 ├── WasmEdge/build/
 │    ├── plugins/wasi_nn/libwasmedgePluginWasiNN.so
 │    └── tools/wasmedge/wasmedge
-└── WasmEdge-WASINN-examples/wasmedge-piper/target/wasm32-wasi/release/wasmedge-piper.wasm
+└── WasmEdge-WASINN-examples/wasmedge-piper/target/wasm32-wasip1/release/wasmedge-piper.wasm
 ```
 
 Then the command will be:
 
 ```bash
-WASMEDGE_PLUGIN_PATH=WasmEdge/build/plugins/wasi_nn WasmEdge/build/tools/wasmedge/wasmedge --dir .:. WasmEdge-WASINN-examples/wasmedge-piper/target/wasm32-wasi/release/wasmedge-piper.wasm
+WASMEDGE_PLUGIN_PATH=WasmEdge/build/plugins/wasi_nn WasmEdge/build/tools/wasmedge/wasmedge --dir .:. WasmEdge-WASINN-examples/wasmedge-piper/target/wasm32-wasip1/release/wasmedge-piper.wasm
 ```
 
 The output `welcome.wav` is the synthesized audio.

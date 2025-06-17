@@ -29,7 +29,7 @@ The output WASM file will be at [`rust/target/wasm32-wasip1/release/wasmedge-tf-
 To speed up the image processing, we can enable the AOT mode in WasmEdge with:
 
 ```bash
-wasmedge compile rust/target/wasm32-wasi/release/wasmedge-tf-example-llama.wasm wasmedge-tf-example-llama_aot.wasm
+wasmedge compile rust/target/wasm32-wasip1/release/wasmedge-tf-example-llama.wasm wasmedge-tf-example-llama_aot.wasm
 ```
 
 ## Run
