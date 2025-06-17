@@ -17,14 +17,14 @@ wasmedge-wasi-nn = "0.8.0"
 Compile the application to WebAssembly:
 
 ```bash
-cargo build --target=wasm32-wasi --release
+cargo build --target=wasm32-wasip1 --release
 ```
 
-The output WASM file will be at [`target/wasm32-wasi/release/whisper-basic.wasm`](whisper-basic.wasm).
+The output WASM file will be at [`target/wasm32-wasip1/release/whisper-basic.wasm`](whisper-basic.wasm).
 To speed up the processing, we can enable the AOT mode in WasmEdge with:
 
 ```bash
-wasmedge compile target/wasm32-wasi/release/whisper-basic.wasm whisper-basic_aot.wasm
+wasmedge compile target/wasm32-wasip1/release/whisper-basic.wasm whisper-basic_aot.wasm
 ```
 
 ## Run

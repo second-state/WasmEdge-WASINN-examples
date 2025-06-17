@@ -40,10 +40,10 @@ wget https://huggingface.co/Intel/neural-chat-7b-v3-1/raw/main/tokenizer.json -O
 
 ## Build wasm
 
-Run the following command to build wasm, the output WASM file will be at `target/wasm32-wasi/release/`
+Run the following command to build wasm, the output WASM file will be at `target/wasm32-wasip1/release/`
 
 ```bash
-cargo build --target wasm32-wasi --release
+cargo build --target wasm32-wasip1 --release
 ```
 
 ## Execute 
@@ -53,7 +53,7 @@ Execute the WASM with the `wasmedge` using nn-preload to load model.
 ```bash
 wasmedge --dir .:. \
   --nn-preload default:NeuralSpeed:AUTO:neural-chat-7b-v3-1.Q4_0.gguf \
-  ./target/wasm32-wasi/release/wasmedge-neural-speed.wasm default
+  ./target/wasm32-wasip1/release/wasmedge-neural-speed.wasm default
 
 ```
 

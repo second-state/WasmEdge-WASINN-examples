@@ -18,16 +18,16 @@ wasi-nn = "0.6.0"
 Compile the application to WebAssembly:
 
 ```bash
-cargo build --target=wasm32-wasi --release
+cargo build --target=wasm32-wasip1 --release
 ```
 
-Because here, we will demonstrate two ways of using wasi-nn. So the output WASM files will be at [`target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm`](wasmedge-wasinn-example-mobilenet-image.wasm) and [`target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image-named-model.wasm`](wasmedge-wasinn-example-mobilenet-image-named-model.wasm).
+Because here, we will demonstrate two ways of using wasi-nn. So the output WASM files will be at [`target/wasm32-wasip1/release/wasmedge-wasinn-example-mobilenet-image.wasm`](wasmedge-wasinn-example-mobilenet-image.wasm) and [`target/wasm32-wasip1/release/wasmedge-wasinn-example-mobilenet-image-named-model.wasm`](wasmedge-wasinn-example-mobilenet-image-named-model.wasm).
 To speed up the image processing, we can enable the AOT mode in WasmEdge with:
 
 ```bash
-wasmedgec rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm wasmedge-wasinn-example-mobilenet-image-aot.wasm
+wasmedgec rust/target/wasm32-wasip1/release/wasmedge-wasinn-example-mobilenet-image.wasm wasmedge-wasinn-example-mobilenet-image-aot.wasm
 
-wasmedgec rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image-named-model.wasm wasmedge-wasinn-example-mobilenet-image-named-model-aot.wasm
+wasmedgec rust/target/wasm32-wasip1/release/wasmedge-wasinn-example-mobilenet-image-named-model.wasm wasmedge-wasinn-example-mobilenet-image-named-model-aot.wasm
 ```
 
 ## Run

@@ -40,10 +40,10 @@ ldconfig
 #### Rust Installation
 
 For building the WASM files from rust source, please refer to the [Rust Official Site](https://www.rust-lang.org/tools/install) for the Rust installation.
-After the installation, developers should add the `wasm32-wasi` target.
+After the installation, developers should add the `wasm32-wasip1` target.
 
 ```bash
-rustup target add wasm32-wasi
+rustup target add wasm32-wasip1
 ```
 
 #### Download the `wasi-nn` Rust Crate

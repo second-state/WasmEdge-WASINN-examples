@@ -10,10 +10,10 @@ This example demonstrates how to use WasmEdge WASI-NN OpenVINO plugin to perform
 
   > It is recommended to use Rust 1.68 or above in the stable channel.
 
-  Then, add `wasm32-wasi` target to the Rustup toolchain:
+  Then, add `wasm32-wasip1` target to the Rustup toolchain:
 
   ```bash
-  rustup target add wasm32-wasi
+  rustup target add wasm32-wasip1
   ```
 
 - Clone the example repo
@@ -54,10 +54,10 @@ Please refer to [WasmEdge Docs](https://wasmedge.org/docs/contribute/source/plug
 
   ```bash
   cd rust
-  cargo build --target wasm32-wasi --release
+  cargo build --target wasm32-wasip1 --release
   cd ..
 
-  wasmedge --dir .:. ./rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin input.jpg
+  wasmedge --dir .:. ./rust/target/wasm32-wasip1/release/wasmedge-wasinn-example-mobilenet.wasm mobilenet.xml mobilenet.bin input.jpg
   ```
 
   If the commands above run successfully, you will get the output:

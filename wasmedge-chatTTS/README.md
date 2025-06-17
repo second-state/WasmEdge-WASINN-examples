@@ -26,10 +26,10 @@ Then you will have an executable `wasmedge` runtime under `/usr/local/bin` and t
 
 ## Build wasm
 
-Run the following command to build wasm, the output WASM file will be at `target/wasm32-wasi/release/`
+Run the following command to build wasm, the output WASM file will be at `target/wasm32-wasip1/release/`
 
 ```bash
-cargo build --target wasm32-wasi --release
+cargo build --target wasm32-wasip1 --release
 ```
 
 ## Execute
@@ -37,7 +37,7 @@ cargo build --target wasm32-wasi --release
 Execute the WASM with the `wasmedge`.
 
 ``` bash
-wasmedge --dir .:.  ./target/wasm32-wasi/release/wasmedge-chattts.wasm
+wasmedge --dir .:.  ./target/wasm32-wasip1/release/wasmedge-chattts.wasm
 ```
 
 Then you will generate the `output1.wav` file. It is the wav file of the input text.
