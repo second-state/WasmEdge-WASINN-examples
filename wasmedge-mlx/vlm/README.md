@@ -26,29 +26,22 @@ cmake --install build
 
 Then you will have an executable `wasmedge` runtime under `/usr/local/bin` and the WASI-NN with MLX backend plug-in under `/usr/local/lib/wasmedge/libwasmedgePluginWasiNN.so` after installation.
 
-## Install dependencies
-
-Currently, we use the Python transformer library to embed the prompt and image to input the token. You can use any other library instead of this step.
-
-``` bash
-sudo apt install python3 python3-pip
-pip install transformers pillow mlx
-```
-
 ## Download the model and tokenizer
 
-In this example, we will use `gemma-3-4b-pt-bf16`.
+In this example, we will use `gemma-3-4b-it-4bit`.
 
 ``` bash
-git clone https://huggingface.co/mlx-community/gemma-3-4b-pt-bf16
+git clone https://huggingface.co/mlx-community/gemma-3-4b-it-4bit
 ```
 
 ## Build wasm
 
-Run the following command to build wasm, the output WASM file will be at `target/wasm32-wasip1/release/`
+Run the following command to build wasm, the output WASM file will be at `target/wasm32-wasip1/release/`.
+Then we use AOT-compiled WASM to improve the performance.
 
 ```bash
 cargo build --target wasm32-wasip1 --release
+wasmedge compiler ./target/wasm32-wasip1/release/wasmedge-vlm.wasm wasmedge-vlm_aot.wasm
 ```
 ## Execute 
 
@@ -58,15 +51,10 @@ Execute the WASM with the `wasmedge` using nn-preload to load model.
 # Download sample image
 wget https://github.com/WasmEdge/WasmEdge/raw/master/docs/wasmedge-runtime-logo.png 
 
-# python encode.py <model_path> <image_path> <prompt>
-python encode.py gemma-3-4b-it-bf16 wasmedge-runtime-logo.png "What is this icon?"
 
 wasmedge --dir .:. \
- --nn-preload default:mlx:AUTO:model.safetensors \
-  ./target/wasm32-wasip1/release/wasmedge-vlm.wasm default
-
-# python encode.py <model_path> <Output mlx array path>
-python decode.py gemma-3-4b-it-bf16 Answer.npy
+--nn-preload default:mlx:AUTO:gemma-3-4b-it-4bit/model.safetensors \
+./wasmedge-vlm_aot.wasm default gemma-3-4b-it-4bit
 
 ```
 
@@ -74,9 +62,9 @@ If your model has multiple weight files, you need to provide all in the nn-prelo
 
 For example:
 ``` bash
-wasmedge --dir .:. \                        
-  --nn-preload default:mlx:AUTO:gemma-3-4b-it-bf16/model-00001-of-00002.safetensors:gemma-3-4b-it-bf16/model-00002-of-00002.safetensors \
-  ./target/wasm32-wasip1/release/wasmedge-vlm.wasm default
+wasmedge --dir .:. \
+--nn-preload default:mlx:AUTO:gemma-3-4b-it-4bit/model-00001-of-00002.safetensors:gemma-3-4b-it-4bit/model-00002-of-00002.safetensors \
+./target/wasm32-wasip1/release/wasmedge-vlm.wasm default
 ```
 
 ## Other 
