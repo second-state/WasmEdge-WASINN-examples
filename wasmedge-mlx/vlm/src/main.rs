@@ -2,18 +2,14 @@ use rust_processor::auto::processing_auto::AutoProcessor;
 use rust_processor::gemma3::detokenizer::decode;
 use rust_processor::processor_utils::prepare_inputs;
 use rust_processor::NDTensorI32;
-use serde_json::json;
 use std::env;
 use wasmedge_wasi_nn::{
     self, ExecutionTarget, GraphBuilder, GraphEncoding, GraphExecutionContext, TensorType,
 };
 
-use serde_json::{Map, Value};
+use serde_json::Value;
 use std::fs::File;
-use std::io::{self, BufReader, BufWriter};
-
-use std::fs;
-use std::path::Path;
+use std::io::{self, BufReader};
 
 fn get_data_from_context(context: &GraphExecutionContext, index: usize) -> NDTensorI32 {
     // Preserve for 4096 tokens with average token length 6
@@ -45,7 +41,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let model_name: &str = &args[1];
     let model_dir = &args[2];
-    let mut config = read_json(&format!("{}/config.json", model_dir)).unwrap();
+    let config = read_json(&format!("{}/config.json", model_dir)).unwrap();
     let prompt = "<bos><start_of_turn>user\
     What is this icon?<start_of_image><end_of_turn>\
     <start_of_turn>model";
@@ -67,18 +63,16 @@ fn main() {
         }
     };
     println!("processor created");
+    let image_token_index = config["image_token_index"].as_u64().unwrap_or(262144) as u32;
     let model_inputs = prepare_inputs(
         &mut processor,
         &[image_path], // Use single image array
         prompt,
-        262144,
+        image_token_index,
         Some((896, 896)), // Use 896x896 as image size
     );
-    // config["enable_debug_log"] = json!(true);
     let graph = GraphBuilder::new(GraphEncoding::Mlx, ExecutionTarget::AUTO)
-        .config(
-            config.to_string(),
-        )
+        .config(config.to_string())
         .build_from_cache(model_name)
         .expect("Failed to build graph");
 
