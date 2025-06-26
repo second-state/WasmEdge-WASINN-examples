@@ -1,5 +1,4 @@
 use std::env;
-use std::fs;
 use std::io::{self, Write};
 use wasmedge_wasi_nn;
 use wasmedge_wasi_nn::{ExecutionTarget, GraphBuilder, GraphEncoding, TensorType};
