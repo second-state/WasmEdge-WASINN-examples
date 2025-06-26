@@ -37,7 +37,8 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("done");
     println!("The size of the output buffer is {} bytes", size_in_bytes);
 
-    let string_output = String::from_utf8(output_buffer.iter().map(|&c| c as u8).collect()).unwrap();
+    let string_output =
+        String::from_utf8(output_buffer.iter().map(|&c| c as u8).collect()).unwrap();
     println!("Output: {}", string_output);
     println!("done");
     io::stdout().flush().unwrap();

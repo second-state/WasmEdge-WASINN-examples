@@ -94,7 +94,12 @@ impl Tokenizer {
     fn detokenize(&self, tokens: &[i32]) -> String {
         tokens
             .iter()
-            .map(|&token| self.vocab_reverse.get(&token).map_or("<UNK>", |v| v).as_str())
+            .map(|&token| {
+                self.vocab_reverse
+                    .get(&token)
+                    .map_or("<UNK>", |v| v)
+                    .as_str()
+            })
             .collect::<Vec<&str>>()
             .join(" ")
     }
