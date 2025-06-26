@@ -54,7 +54,7 @@ fn get_options_from_env() -> Value {
 }
 
 fn set_data_to_context(context: &mut GraphExecutionContext, data: Vec<u8>) -> Result<(), Error> {
-    context.set_input(0, TensorType::U8, &[1], &data)
+    context.set_input(0, TensorType::U8, &[data.len()], &data)
 }
 
 #[allow(dead_code)]
@@ -62,7 +62,7 @@ fn set_metadata_to_context(
     context: &mut GraphExecutionContext,
     data: Vec<u8>,
 ) -> Result<(), Error> {
-    context.set_input(1, TensorType::U8, &[1], &data)
+    context.set_input(1, TensorType::U8, &[data.len()], &data)
 }
 
 fn get_data_from_context(context: &GraphExecutionContext, index: usize) -> String {

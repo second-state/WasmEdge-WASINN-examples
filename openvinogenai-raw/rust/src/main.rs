@@ -20,8 +20,8 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("done");
 
     print!("Set input tensor ...");
-    let input_dims = vec![1];
     let tensor_data = "Hello, how are you?".as_bytes().to_vec();
+    let input_dims = vec![tensor_data.len()];
     context.set_input(0, TensorType::U8, &input_dims, tensor_data)?;
     println!("done");
 

@@ -79,7 +79,7 @@ fn get_options_from_env() -> HashMap<&'static str, Value> {
 }
 
 fn set_data_to_context(context: &mut GraphExecutionContext, data: Vec<u8>) -> Result<(), Error> {
-    context.set_input(0, TensorType::U8, &[1], &data)
+    context.set_input(0, TensorType::U8, &[data.len()], &data)
 }
 
 fn get_data_from_context(context: &GraphExecutionContext, index: usize) -> Vec<u8> {
@@ -127,7 +127,7 @@ fn main() {
     println!("Prompt:\n{}", prompt);
     let tensor_data = prompt.as_bytes().to_vec();
     context
-        .set_input(0, TensorType::U8, &[1], &tensor_data)
+        .set_input(0, TensorType::U8, &[tensor_data.len()], &tensor_data)
         .expect("Failed to set input");
 
     // Get the number of input tokens and llama.cpp versions.

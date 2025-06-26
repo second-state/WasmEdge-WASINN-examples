@@ -17,7 +17,12 @@ fn main() {
     // set the input text
     let text = "Welcome to the world of speech synthesis!";
     context
-        .set_input(0, wasmedge_wasi_nn::TensorType::U8, &[1], text.as_bytes())
+        .set_input(
+            0,
+            wasmedge_wasi_nn::TensorType::U8,
+            &[text.len()],
+            text.as_bytes(),
+        )
         .unwrap();
 
     // synthesize the audio
