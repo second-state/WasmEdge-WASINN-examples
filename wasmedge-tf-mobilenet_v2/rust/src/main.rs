@@ -26,7 +26,7 @@ fn main() {
         flat_img.push(rgb[1] as f32 / 255.);
         flat_img.push(rgb[2] as f32 / 255.);
     }
-    
+
     Note that the dependencies are needed in Cargo.toml:
     image = { version = "0.23.0", default-features = false, features = ["jpeg", "png", "gif"] }
     imageproc = "0.21.0"
