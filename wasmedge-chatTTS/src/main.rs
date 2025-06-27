@@ -29,10 +29,10 @@ fn main() {
         .init_execution_context()
         .expect("Failed to init context");
     context
-        .set_input(0, TensorType::U8, &[1], &tensor_data)
+        .set_input(0, TensorType::U8, &[tensor_data.len()], &tensor_data)
         .expect("Failed to set input");
     context
-        .set_input(1, TensorType::U8, &[1], &config_data)
+        .set_input(1, TensorType::U8, &[config_data.len()], &config_data)
         .expect("Failed to set input");
     context.compute().expect("Failed to compute");
     let output_bytes = get_data_from_context(&context, 0);
