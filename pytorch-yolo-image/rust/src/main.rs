@@ -200,6 +200,7 @@ fn transpose<T>(v: Vec<Vec<T>>) -> Vec<Vec<T>> {
 // Width + Height of bounding box
 // Probability and Class Name
 #[derive(Debug)]
+#[allow(dead_code)]
 struct InferenceResult {
     x: u32,
     y: u32,
