@@ -22,10 +22,36 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Load a tensor that precisely matches the graph input tensor (see
     // `fixture/frozen_inference_graph.xml`).
-    print!("Set input tensor ...");
+    print!("Load input tensor ...");
     let input_dims = vec![1, 3, 224, 224];
     let tensor_data = fs::read(tensor_name).unwrap();
-    context.set_input(0, TensorType::F32, &input_dims, tensor_data)?;
+    println!("done");
+
+    print!("Transpose input tensor ...");
+    // Transpose from [height, width, 3] to [3, height, width]
+    // For the historical reasons, the input tensor is in the format of [height, width, channels],
+    // but the graph expects it in the format of [channels, height, width].
+    // The input tensor is 224x224x3, so we need to transpose it
+    // to 3x224x224.
+    let height = 224;
+    let width = 224;
+    println!("tensor_data.len() = {}", tensor_data.len());
+    let mut transposed: Vec<u8> = vec![0; tensor_data.len()];
+    for ch in 0..3 {
+        for y in 0..height {
+            for x in 0..width {
+                let loc = y * height + x;
+                for b in 0..4 {
+                    transposed[(ch * width * height + loc) * 4 + b as usize] =
+                        tensor_data[(loc * 3 + ch) * 4 + b as usize];
+                }
+            }
+        }
+    }
+    println!("done");
+
+    print!("Set input tensor ...");
+    context.set_input(0, TensorType::F32, &input_dims, transposed)?;
     println!("done");
 
     print!("Perform graph inference ...");
