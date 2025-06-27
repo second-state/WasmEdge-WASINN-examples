@@ -32,7 +32,7 @@ fn main() {
         .expect("Failed to init context");
     let tensor_data = prompt.as_bytes().to_vec();
     context
-        .set_input(0, TensorType::U8, &[1], &tensor_data)
+        .set_input(0, TensorType::U8, &[tensor_data.len()], &tensor_data)
         .expect("Failed to set input");
     context.compute().expect("Failed to compute");
     let output = get_output_from_context(&context);
