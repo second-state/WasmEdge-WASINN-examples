@@ -2,9 +2,9 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::env;
 use std::fs::File;
-use std::io::{self, Write};
+use std::io::Write;
 use wasmedge_wasi_nn::{
-    self, BackendError, Error, ExecutionTarget, GraphBuilder, GraphEncoding, GraphExecutionContext,
+    self, Error, ExecutionTarget, GraphBuilder, GraphEncoding, GraphExecutionContext,
     TensorType,
 };
 
@@ -78,6 +78,7 @@ fn get_options_from_env() -> HashMap<&'static str, Value> {
     options
 }
 
+#[allow(dead_code)]
 fn set_data_to_context(context: &mut GraphExecutionContext, data: Vec<u8>) -> Result<(), Error> {
     context.set_input(0, TensorType::U8, &[data.len()], &data)
 }
