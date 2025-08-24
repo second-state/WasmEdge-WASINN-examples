@@ -32,9 +32,9 @@ fn read_json(path: &str) -> io::Result<Value> {
 }
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let audio = "audio.mp3";
     let model_name: &str = &args[1];
     let model_dir = &args[2];
+    let audio = &args[3];
     let config = read_json(&format!("{}/config.json", model_dir)).unwrap();
     let graph = GraphBuilder::new(GraphEncoding::Mlx, ExecutionTarget::AUTO)
         .config(config.to_string())
