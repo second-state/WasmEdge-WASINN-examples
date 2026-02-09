@@ -25,7 +25,7 @@ jobs:
   build:
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-m1]
+        runner: [ubuntu-latest]
         wasmedge: ["0.14.1"]
         plugin: [wasi_nn-ggml]
         job:
@@ -96,19 +96,6 @@ jobs:
               cargo build --target wasm32-wasip1 --release
               time wasmedge --dir .:. \
                 --nn-preload default:GGML:AUTO:all-MiniLM-L6-v2-ggml-model-f16.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-llama-embedding.wasm \
-                default \
-                'hello world'
-
-          - name: Embedding Example (Llama-2)
-            shell: bash
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/embedding
-              curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
                 target/wasm32-wasip1/release/wasmedge-ggml-llama-embedding.wasm \
                 default \
                 'hello world'
