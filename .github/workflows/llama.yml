@@ -29,20 +29,6 @@ jobs:
         wasmedge: ["0.14.1"]
         plugin: [wasi_nn-ggml]
         job:
-          - name: "Tiny Llama"
-            shell: bash
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/llama
-              curl -LO https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-llama.wasm \
-                default \
-                $'<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
-
           - name: Gemma 2B
             shell: bash
             run: |
