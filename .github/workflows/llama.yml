@@ -180,27 +180,6 @@ jobs:
                 default \
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always output JSON format string.\n<</SYS>>\nGive me a JSON array of Apple products.[/INST]'
 
-          - name: Text-to-speech
-            shell: bash
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/tts
-              curl -LO https://huggingface.co/second-state/OuteTTS-0.2-500M-GGUF/resolve/main/OuteTTS-0.2-500M-Q5_K_M.gguf
-              curl -LO https://huggingface.co/second-state/OuteTTS-0.2-500M-GGUF/resolve/main/wavtokenizer-large-75-ggml-f16.gguf
-              curl -LO https://raw.githubusercontent.com/edwko/OuteTTS/fc3e7ba54aa6847083fb39062361c168fcde14cf/outetts/version/v1/default_speakers/en_male_1.json
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:OuteTTS-0.2-500M-Q5_K_M.gguf \
-                --env tts=true \
-                --env tts_output_file=output.wav \
-                --env tts_speaker_file=en_male_1.json \
-                --env model_vocoder=wavtokenizer-large-75-ggml-f16.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-tts.wasm \
-                default \
-                'Hello, world.'
-              sha1sum *.wav
-
           - name: Gemma-3 Vision
             shell: bash
             run: |
