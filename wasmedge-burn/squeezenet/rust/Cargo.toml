@@ -1,0 +1,14 @@
+[package]
+name = "wasmedge-wasinn-example-squeezenet"
+version = "0.1.0"
+authors = ["Second-State"]
+readme = "README.md"
+edition = "2021"
+publish = false
+
+[dependencies]
+wasmedge-wasi-nn = "0.8.0"
+image = { version = "0.24.7", features = ["png", "jpeg"] }
+squeezenet-burn = { git = "https://github.com/second-state/burn-rs-models.git", branch = "prebuilt-feature", features = [
+    "weights_file",
+], default-features = false }
