@@ -77,13 +77,17 @@ fn image_to_tensor(path: String, height: u32, width: u32) -> Vec<u8> {
     let bytes_required = raw_u8_arr.len() * 4;
     let mut u8_f32_arr: Vec<u8> = vec![0; bytes_required];
 
-    for i in 0..raw_u8_arr.len() {
-        // Read the number as a f32 and break it into u8 bytes
-        let u8_f32: f32 = raw_u8_arr[i] as f32;
-        let u8_bytes = u8_f32.to_ne_bytes();
+    // put in NCHW format
+    let block_size: usize = (height * width) as usize;
+    for c in 0..3 {
+        for i in 0..block_size {
+            // Read the number as a f32 and break it into u8 bytes
+            let u8_f32: f32 = raw_u8_arr[i * 3 + c] as f32;
+            let u8_bytes = u8_f32.to_ne_bytes();
 
-        for j in 0..4 {
-            u8_f32_arr[(i * 4) + j] = u8_bytes[j];
+            for j in 0..4 {
+                u8_f32_arr[(c * block_size + i) * 4 + j] = u8_bytes[j];
+            }
         }
     }
     return u8_f32_arr;
