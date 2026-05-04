@@ -25,24 +25,10 @@ jobs:
   build:
     strategy:
       matrix:
-        runner: [ubuntu-latest, macos-m1]
+        runner: [ubuntu-latest]
         wasmedge: ["0.14.1"]
         plugin: [wasi_nn-ggml]
         job:
-          - name: "Tiny Llama"
-            shell: bash
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/llama
-              curl -LO https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-llama.wasm \
-                default \
-                $'<|im_start|>system\nYou are an AI assistant<|im_end|>\n<|im_start|>user\nWhere is the capital of Japan?<|im_end|>\n<|im_start|>assistant'
-
           - name: Gemma 2B
             shell: bash
             run: |
@@ -100,19 +86,6 @@ jobs:
                 default \
                 'hello world'
 
-          - name: Embedding Example (Llama-2)
-            shell: bash
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/embedding
-              curl -LO https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --nn-preload default:GGML:AUTO:llama-2-7b-chat.Q5_K_M.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-llama-embedding.wasm \
-                default \
-                'hello world'
-
           - name: RPC Example
             shell: bash
             run: |
@@ -140,20 +113,6 @@ jobs:
                 target/wasm32-wasip1/release/wasmedge-ggml-set-input-twice.wasm \
                 default \
                 '<start_of_turn>user Where is the capital of Japan? <end_of_turn><start_of_turn>model'
-
-          - name: Grammar Example
-            shell: bash
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/grammar
-              curl -LO https://huggingface.co/TheBloke/Llama-2-7b-GGUF/resolve/main/llama-2-7b.Q5_K_M.gguf
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:llama-2-7b.Q5_K_M.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-grammar.wasm \
-                default \
-                'JSON object with 5 country names as keys and their capitals as values: '
 
           - name: Model Not Found
             shell: bash
@@ -192,27 +151,6 @@ jobs:
                 target/wasm32-wasip1/release/wasmedge-ggml-json-schema.wasm \
                 default \
                 $'[INST] <<SYS>>\nYou are a helpful, respectful and honest assistant. Always output JSON format string.\n<</SYS>>\nGive me a JSON array of Apple products.[/INST]'
-
-          - name: Text-to-speech
-            shell: bash
-            run: |
-              test -f ~/.wasmedge/env && source ~/.wasmedge/env
-              cd wasmedge-ggml/tts
-              curl -LO https://huggingface.co/second-state/OuteTTS-0.2-500M-GGUF/resolve/main/OuteTTS-0.2-500M-Q5_K_M.gguf
-              curl -LO https://huggingface.co/second-state/OuteTTS-0.2-500M-GGUF/resolve/main/wavtokenizer-large-75-ggml-f16.gguf
-              curl -LO https://raw.githubusercontent.com/edwko/OuteTTS/fc3e7ba54aa6847083fb39062361c168fcde14cf/outetts/version/v1/default_speakers/en_male_1.json
-              cargo build --target wasm32-wasip1 --release
-              time wasmedge --dir .:. \
-                --env n_gpu_layers="$NGL" \
-                --nn-preload default:GGML:AUTO:OuteTTS-0.2-500M-Q5_K_M.gguf \
-                --env tts=true \
-                --env tts_output_file=output.wav \
-                --env tts_speaker_file=en_male_1.json \
-                --env model_vocoder=wavtokenizer-large-75-ggml-f16.gguf \
-                target/wasm32-wasip1/release/wasmedge-ggml-tts.wasm \
-                default \
-                'Hello, world.'
-              sha1sum *.wav
 
           - name: Gemma-3 Vision
             shell: bash

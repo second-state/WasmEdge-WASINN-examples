@@ -68,7 +68,7 @@ fn main() {
         println!("Prompt:\n{}", prompt);
         let tensor_data = prompt.as_bytes().to_vec();
         context
-            .set_input(0, TensorType::U8, &[1], &tensor_data)
+            .set_input(0, TensorType::U8, &[tensor_data.len()], &tensor_data)
             .expect("Failed to set input");
         println!("Response:");
 
@@ -86,7 +86,7 @@ fn main() {
 
         // Set the prompt, twice.
         context
-            .set_input(0, TensorType::U8, &[1], &tensor_data)
+            .set_input(0, TensorType::U8, &[tensor_data.len()], &tensor_data)
             .expect("Failed to set input");
 
         // Get the number of input tokens and llama.cpp versions.

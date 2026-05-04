@@ -1,9 +1,9 @@
 use image::io::Reader;
 use image::DynamicImage;
 use std::env;
-use std::fs;
 use std::error::Error;
-use wasi_nn::{GraphBuilder, GraphEncoding, ExecutionTarget, TensorType};
+use std::fs;
+use wasi_nn::{ExecutionTarget, GraphBuilder, GraphEncoding, TensorType};
 mod imagenet_classes;
 
 pub fn main() -> Result<(), Box<dyn Error>> {
@@ -14,7 +14,8 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let weights = fs::read(model_bin_name)?;
     println!("Read graph weights, size in bytes: {}", weights.len());
 
-    let graph = GraphBuilder::new(GraphEncoding::TensorflowLite, ExecutionTarget::CPU).build_from_bytes(&[&weights])?;
+    let graph = GraphBuilder::new(GraphEncoding::TensorflowLite, ExecutionTarget::CPU)
+        .build_from_bytes(&[&weights])?;
     let mut ctx = graph.init_execution_context()?;
     println!("Loaded graph into wasi-nn with ID: {}", graph);
 

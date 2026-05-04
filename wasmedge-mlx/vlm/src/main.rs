@@ -82,15 +82,15 @@ fn main() {
 
     let tensor_data = model_inputs["input_ids"].to_bytes();
     context
-        .set_input(0, TensorType::U8, &[1], &tensor_data)
+        .set_input(0, TensorType::U8, &[tensor_data.len()], &tensor_data)
         .expect("Failed to set input");
     let tensor_data = model_inputs["pixel_values"].to_bytes();
     context
-        .set_input(1, TensorType::U8, &[1], &tensor_data)
+        .set_input(1, TensorType::U8, &[tensor_data.len()], &tensor_data)
         .expect("Failed to set input");
     let tensor_data = model_inputs["mask"].to_bytes();
     context
-        .set_input(2, TensorType::U8, &[1], &tensor_data)
+        .set_input(2, TensorType::U8, &[tensor_data.len()], &tensor_data)
         .expect("Failed to set input");
 
     context.compute().expect("Failed to compute");

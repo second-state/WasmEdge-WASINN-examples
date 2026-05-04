@@ -1,5 +1,4 @@
 use std::env;
-use std::fs;
 use std::io::{self, Write};
 use wasmedge_wasi_nn;
 use wasmedge_wasi_nn::{ExecutionTarget, GraphBuilder, GraphEncoding, TensorType};
@@ -20,8 +19,8 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("done");
 
     print!("Set input tensor ...");
-    let input_dims = vec![1];
     let tensor_data = "Hello, how are you?".as_bytes().to_vec();
+    let input_dims = vec![tensor_data.len()];
     context.set_input(0, TensorType::U8, &input_dims, tensor_data)?;
     println!("done");
 
@@ -37,7 +36,8 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("done");
     println!("The size of the output buffer is {} bytes", size_in_bytes);
 
-    let string_output = String::from_utf8(output_buffer.iter().map(|&c| c as u8).collect()).unwrap();
+    let string_output =
+        String::from_utf8(output_buffer.iter().map(|&c| c as u8).collect()).unwrap();
     println!("Output: {}", string_output);
     println!("done");
     io::stdout().flush().unwrap();

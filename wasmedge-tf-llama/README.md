@@ -2,6 +2,10 @@
 
 This package is a high-level Rust bindings for [WasmEdge-TensorFlow plug-in](https://wasmedge.org/docs/develop/rust/tensorflow) example of Mobilenet.
 
+## Note
+
+To build this example, you will need the nightly version of Rust.
+
 ## Dependencies
 
 This crate depends on the `wasmedge_tensorflow_interface` in the `Cargo.toml`:

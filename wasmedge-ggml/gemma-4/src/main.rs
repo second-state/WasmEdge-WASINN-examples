@@ -7,6 +7,8 @@ use wasmedge_wasi_nn::{
     TensorType,
 };
 
+const MULTIMODAL_IMAGE_MARKER: &str = "<image>";
+
 fn read_input() -> String {
     loop {
         let mut answer = String::new();
@@ -22,18 +24,23 @@ fn read_input() -> String {
 fn get_options_from_env() -> HashMap<&'static str, Value> {
     let mut options = HashMap::new();
 
-    // Required parameters for llava
-    if let Ok(val) = env::var("mmproj") {
-        options.insert("mmproj", Value::from(val.as_str()));
-    } else {
-        eprintln!("Failed to get mmproj model.");
-        std::process::exit(1);
-    }
-    if let Ok(val) = env::var("image") {
-        options.insert("image", Value::from(val.as_str()));
-    } else {
-        eprintln!("Failed to get the target image.");
-        std::process::exit(1);
+    let mmproj = env::var("mmproj").ok();
+    let image = env::var("image").ok();
+
+    match (mmproj, image) {
+        (Some(mmproj), Some(image)) => {
+            options.insert("mmproj", Value::from(mmproj));
+            options.insert("image", Value::from(image));
+        }
+        (None, None) => {}
+        (Some(_), None) => {
+            eprintln!("The `image` environment variable is required when `mmproj` is set.");
+            std::process::exit(1);
+        }
+        (None, Some(_)) => {
+            eprintln!("The `mmproj` environment variable is required when `image` is set.");
+            std::process::exit(1);
+        }
     }
 
     // Optional parameters
@@ -41,6 +48,14 @@ fn get_options_from_env() -> HashMap<&'static str, Value> {
         options.insert("enable-log", serde_json::from_str(val.as_str()).unwrap());
     } else {
         options.insert("enable-log", Value::from(false));
+    }
+    if let Ok(val) = env::var("enable_debug_log") {
+        options.insert(
+            "enable-debug-log",
+            serde_json::from_str(val.as_str()).unwrap(),
+        );
+    } else {
+        options.insert("enable-debug-log", Value::from(false));
     }
     if let Ok(val) = env::var("ctx_size") {
         options.insert("ctx-size", serde_json::from_str(val.as_str()).unwrap());
@@ -79,6 +94,88 @@ fn get_metadata_from_context(context: &GraphExecutionContext) -> Value {
     serde_json::from_str(&get_data_from_context(context, 1)).expect("Failed to get metadata")
 }
 
+fn get_system_prompt_from_env() -> String {
+    env::var("system_prompt").unwrap_or_else(|_| "You are a helpful assistant.".to_string())
+}
+
+fn get_enable_thinking_from_env() -> bool {
+    env::var("enable_thinking")
+        .ok()
+        .and_then(|v| serde_json::from_str::<bool>(&v).ok())
+        .unwrap_or(true)
+}
+
+fn build_gemma4_system_turn(system_prompt: &str, enable_thinking: bool) -> String {
+    if enable_thinking {
+        format!("<|turn>system\n<|think|>{}<turn|>\n", system_prompt)
+    } else {
+        format!("<|turn>system\n{}<turn|>\n", system_prompt)
+    }
+}
+
+fn build_gemma4_user_turn(user_content: &str) -> String {
+    format!("<|turn>user\n{}<turn|>\n<|turn>model\n", user_content)
+}
+
+fn build_user_content(user_input: &str, multimodal_enabled: bool) -> String {
+    if multimodal_enabled {
+        format!("{}\n{}", MULTIMODAL_IMAGE_MARKER, user_input)
+    } else {
+        user_input.to_string()
+    }
+}
+
+fn strip_gemma4_thoughts(text: &str) -> String {
+    let mut cleaned = text.trim().to_string();
+    let thought_start_tags = ["<|channel|>thought", "<|channel>thought"];
+    let thought_end_tags = ["<|channel|>", "<channel|>"];
+
+    loop {
+        let Some(start) = thought_start_tags
+            .iter()
+            .filter_map(|tag| cleaned.find(tag))
+            .min()
+        else {
+            break;
+        };
+
+        let search_start = start + 1;
+        let Some(rel_end) = thought_end_tags
+            .iter()
+            .filter_map(|tag| cleaned[search_start..].find(tag).map(|idx| (idx, tag.len())))
+            .min_by_key(|(idx, _)| *idx)
+        else {
+            cleaned.truncate(start);
+            break;
+        };
+
+        let end = search_start + rel_end.0 + rel_end.1;
+        cleaned.replace_range(start..end, "");
+    }
+
+    cleaned.trim().to_string()
+}
+
+fn strip_gemma4_turn_suffix(text: &str) -> String {
+    text.trim()
+        .strip_suffix("<turn|>")
+        .unwrap_or(text.trim())
+        .trim()
+        .to_string()
+}
+
+fn parse_gemma4_output(text: &str) -> (String, String) {
+    let without_thoughts = strip_gemma4_thoughts(text);
+    let visible_output = strip_gemma4_turn_suffix(&without_thoughts);
+    let prompt_output = if visible_output.is_empty() {
+        String::new()
+    } else {
+        format!("{}<turn|>\n", visible_output)
+    };
+
+    (visible_output, prompt_output)
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let model_name: &str = &args[1];
@@ -97,11 +194,20 @@ fn main() {
         .init_execution_context()
         .expect("Failed to init context");
 
-    // If there is a third argument, use it as the prompt and enter non-interactive mode.
-    // This is mainly for the CI workflow.
+    let system_prompt = get_system_prompt_from_env();
+    let enable_thinking = get_enable_thinking_from_env();
+    let system_turn = build_gemma4_system_turn(&system_prompt, enable_thinking);
+    let multimodal_enabled = options.contains_key("mmproj") && options.contains_key("image");
+
+    // Non-interactive mode
     if args.len() >= 3 {
-        let prompt = &args[2];
-        // Set the prompt.
+        let user_input = &args[2];
+        let prompt = format!(
+            "{}{}",
+            system_turn,
+            build_gemma4_user_turn(&build_user_content(user_input, multimodal_enabled))
+        );
+
         println!("Prompt:\n{}", prompt);
         let tensor_data = prompt.as_bytes().to_vec();
         context
@@ -124,7 +230,8 @@ fn main() {
         // Get the output.
         context.compute().expect("Failed to compute");
         let output = get_output_from_context(&context);
-        println!("{}", output.trim());
+        let (visible_output, _) = parse_gemma4_output(&output);
+        println!("{}", visible_output);
 
         // Retrieve the output metadata.
         let metadata = get_metadata_from_context(&context);
@@ -136,29 +243,17 @@ fn main() {
             "[INFO] Number of output tokens: {}",
             metadata["output_tokens"]
         );
-        std::process::exit(0);
+        return;
     }
 
-    let mut saved_prompt = String::new();
-    let system_prompt = String::from("You are a helpful assistant.");
-    let image_placeholder = "<image>";
+    let mut saved_prompt = system_turn.clone();
 
     loop {
         println!("USER:");
         let input = read_input();
 
-        // Qwen2VL prompt format: <|im_start|>system\n{system_prompt}<|im_end|>\n<|im_start|>user\n<|vision_start|>{image_placeholder}<|vision_end|>{user_prompt}<|im_end|>\n<|im_start|>assistant\n";
-        if saved_prompt.is_empty() {
-            saved_prompt = format!(
-                "<|im_start|>system\n{}<|im_end|>\n<|im_start|>user\n<|vision_start|>{}<|vision_end|>{}<|im_end|>\n<|im_start|>assistant\n",
-                system_prompt, image_placeholder, input
-            );
-        } else {
-            saved_prompt = format!(
-                "{}<|im_start|>user\n{}<|im_end|>\n<|im_start|>assistant\n",
-                saved_prompt, input
-            );
-        }
+        let user_turn = build_gemma4_user_turn(&build_user_content(&input, multimodal_enabled));
+        saved_prompt.push_str(&user_turn);
 
         // Set prompt to the input tensor.
         set_data_to_context(&mut context, saved_prompt.as_bytes().to_vec())
@@ -183,15 +278,15 @@ fn main() {
         }
 
         // Retrieve the output.
-        let mut output = get_output_from_context(&context);
-        println!("ASSISTANT:\n{}", output.trim());
+        let output = get_output_from_context(&context);
+        let (visible_output, prompt_output) = parse_gemma4_output(&output);
+        println!("ASSISTANT:\n{}", visible_output);
 
         // Update the saved prompt.
         if reset_prompt {
-            saved_prompt.clear();
+            saved_prompt = system_turn.clone();
         } else {
-            output = output.trim().to_string();
-            saved_prompt = format!("{}{}<|im_end|>\n", saved_prompt, output);
+            saved_prompt.push_str(&prompt_output);
         }
     }
 }
