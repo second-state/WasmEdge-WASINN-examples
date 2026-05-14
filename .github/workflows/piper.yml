@@ -1,8 +1,6 @@
 name: Piper Example
 
 on:
-  schedule:
-    - cron: "0 0 * * *"
   push:
     paths:
       - ".github/workflows/piper.yml"

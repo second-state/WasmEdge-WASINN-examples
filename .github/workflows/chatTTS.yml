@@ -1,8 +1,6 @@
 name: ChatTTS example
 
 on:
-  schedule:
-    - cron: "0 0 * * *"
   push:
     paths:
       - ".github/workflows/chatTTS.yml"
