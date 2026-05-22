@@ -1,0 +1,11 @@
+[package]
+name = "wasmedge-wasinn-example-whisper"
+version = "0.1.0"
+authors = ["Second-State"]
+readme = "README.md"
+edition = "2021"
+publish = false
+
+[dependencies]
+wasmedge-wasi-nn = "0.8.0"
+hound = "3.5.0"
